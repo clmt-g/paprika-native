@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Supalta\\Paprika\\": "app/"
+            "Paprika\\": "app/"
         }
     },
     "authors": [
@@ -15,5 +15,12 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "php" : "^8.3",
+        "monolog/monolog" : "3.8.1"
+    },
+    "require-dev": {
+        "php" : "^8.3",
+        "symfony/var-dumper": "^7.3"
+    }
 }
