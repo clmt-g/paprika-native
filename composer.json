@@ -1,0 +1,19 @@
+{
+    "name": "supalta/paprika",
+    "description": "Projet BTS SIO2 2025",
+    "type": "ct",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Supalta\\Paprika\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Clément Guerault",
+            "email": "c.guerault@eleve.leschartreux.net"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
