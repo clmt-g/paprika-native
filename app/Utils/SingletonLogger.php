@@ -1,42 +1,36 @@
 <?php
 
-namespace Paprika\utils;
-
 class SingletonLogger
-
 {
-
-    // typage possible grace a php 8...
-
     private static $instance;
-    private PDO $pdo;
 
-    private function __construct(){
-        // TODO : read values from config.ini using SinglutonConfigReader
-        $dsn="mysql:host=localhost;dbname=worlddb2025;charset=utf8mb4";
-        $username="worlddbuser25";
-        $password="azerty01";
+    private $sqllogger;
 
-        $this->pdo =new PDO($dsn,$username,$password);       //version propre  
-     // $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ajouter "attribute ,value"
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ajouter "attribute ,value"
+    private $authlogger;
 
-        
+    private function __construct()
+    {
+
+        $SQLLoggerLevel = "WARNING" ;
+        $AuthLoggerLevel = "DEBUG" ;
+
     }
 
-    public static function getInstance() : SingletonDataBaseMariaDB {
-        if (is_null(self::$instance)){ 
-            self::$instance = new SingletonDataBaseMariaDB();
+    public static function getInstance(): SingletonLogger
+    {
+        if (is_null(self::$instance)) { 
+            self::$instance = new SingletonLogger();
         }
         return self::$instance;
     }
 
-
-    public function getPDO() : \PDO{
-
-        return $this->pdo;
-
+    public function getAuthLogger()
+    {
+        
     }
 
-    
-} 
+    public function getSQLLogger()
+    {
+        
+    }
+}
