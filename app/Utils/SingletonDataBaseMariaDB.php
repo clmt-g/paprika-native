@@ -13,11 +13,11 @@ class SingletonDataBaseMariaDB
 
     private function __construct(){
         // TODO : read values from config.ini using SinglutonConfigReader
-        $dsn="mysql:host=localhost;dbname=worlddb2025;charset=utf8mb4";
+        $dsn="mysql:host=localhost;dbname=worlddb25;charset=utf8mb4";
         $username="worlddbuser25";
-        $password="azerty01";
+        $password="User@dmin!";
 
-        $this->pdo =new PDO($dsn,$username,$password);       //version propre  
+        $this->pdo =new \PDO($dsn,$username,$password);       //version propre  
      // $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ajouter "attribute ,value"
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ajouter "attribute ,value"
 
