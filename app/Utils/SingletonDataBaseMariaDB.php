@@ -2,10 +2,10 @@
 
 namespace Paprika\utils;
 
+use \PDO;
+
 class SingletonDataBaseMariaDB
-
 {
-
     // typage possible grace a php 8...
 
     private static $instance;
@@ -17,11 +17,9 @@ class SingletonDataBaseMariaDB
         $username="worlddbuser25";
         $password="User@dmin!";
 
-        $this->pdo =new \PDO($dsn,$username,$password);       //version propre  
-     // $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ajouter "attribute ,value"
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); // ajouter "attribute ,value"
-
-        
+        $this->pdo =new \PDO($dsn,$username,$password);       //version propre
+     // $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);    
     }
 
     public static function getInstance() : SingletonDataBaseMariaDB {
@@ -31,12 +29,7 @@ class SingletonDataBaseMariaDB
         return self::$instance;
     }
 
-
     public function getPDO() : \PDO{
-
         return $this->pdo;
-
     }
-
-    
-} 
+}
