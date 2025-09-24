@@ -2,3 +2,4 @@
 .vscode
 app/Dummy.php
 public/scratch.php
+/vendor
