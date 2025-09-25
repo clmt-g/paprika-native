@@ -23,6 +23,16 @@ $pdo2 = SingletonDataBaseMariaDB::getInstance()->getPdo();
 assert($pdo1 == $pdo2);
 
 
+$configReader = \Paprika\Utils\SingletonConfigReader::getInstance()->getValue("mariadb", "dsn");
+echo $configReader;
+
+$db = \Paprika\Utils\SingletonDataBaseMariaDB::getInstance();
+$cnx = $db->getPDO();
+
+var_dump($cnx);
+
+die();
+
 
 die();
 
