@@ -2,7 +2,6 @@
 
 
 require_once __DIR__ . "/../app/utils/SingletonLogger.php";
-require_once __DIR__ . "/../app/utils/SingletonDataBaseMariaDB.php";
 
 use Paprika\utils\SingletonLogger;
 use Paprika\utils\SingletonDataBaseMariaDB;
