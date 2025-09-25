@@ -3,4 +3,4 @@
 app/Dummy.php
 public/scratch.php
 /vendor
-/config.ini
+config.ini
