@@ -1,35 +1,36 @@
 <?php
+/**
+     * returne Singleton Database MariaDB
+     * @return SingletonDataBaseMariaDB
+     */ 
 
 namespace Paprika\utils;
 
-use \PDO;
-
 class SingletonDataBaseMariaDB
 {
-    // typage possible grace a php 8...
-
     private static $instance;
-    private PDO $pdo;
+    private \PDO $pdo; // <-- bien avec le backslash
 
-    private function __construct(){
-        // TODO : read values from config.ini using SinglutonConfigReader
-        $dsn="mysql:host=localhost;dbname=worlddb2025;charset=utf8mb4";
-        $username="worlddbuser25";
-        $password="2526";
+    private function __construct() {
 
-        $this->pdo =new \PDO($dsn,$username,$password);       //version propre
-     // $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);    
+        $config = SingletonConfigReader::getInstance();
+
+        $dsn = $config->get ('mariadb','dns');
+        $username = $config->get ('mariadb','user');
+        $password = $config->get ('mariadb','password');
+
+        $this->pdo = new \PDO($dsn, $username, $password); 
+        $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
-    public static function getInstance() : SingletonDataBaseMariaDB {
-        if (is_null(self::$instance)){ 
+    public static function getInstance(): SingletonDataBaseMariaDB {
+        if (is_null(self::$instance)) {
             self::$instance = new SingletonDataBaseMariaDB();
         }
         return self::$instance;
     }
 
-    public function getPDO() : \PDO{
+    public function getPDO(): \PDO {
         return $this->pdo;
     }
 }

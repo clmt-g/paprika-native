@@ -1,17 +1,32 @@
 <?php
 
-require_once __DIR__ . DIRECTORY_SEPARATOR . "../vendor/autoload.php";
+
+require_once __DIR__ . "/../app/utils/SingletonLogger.php";
+require_once __DIR__ . "/../app/utils/SingletonDataBaseMariaDB.php";
+
+use Paprika\utils\SingletonLogger;
+use Paprika\utils\SingletonDataBaseMariaDB;
+
+// Logger 
+$logger = SingletonLogger::getInstance();
+$authLogger = $logger->getAuthLogger();
+$sqlLogger = $logger->getSQLLogger();
+
+$authLogger("Test Auth : utilisateur connecte", "INFO");
+$authLogger("Test Auth : echec connexion", "ERROR");
+$sqlLogger("Test SQL : requete executee", "WARNING");
+$sqlLogger("Test SQL : erreur connexion DB", "ERROR");
 
 
-
-$pdo1 = \Paprika\Utils\SingletonDataBaseMariaDB::getInstance()->getPdo();
-$pdo2 = \Paprika\Utils\SingletonDataBaseMariaDB::getInstance()->getPdo();
+$pdo1 = SingletonDataBaseMariaDB::getInstance()->getPdo();
+$pdo2 = SingletonDataBaseMariaDB::getInstance()->getPdo();
 assert($pdo1 == $pdo2);
-dd($pdo1);
 
 
 
 die();
+
+
 //echo "Hello world";
 
 // $c = new \Paprika\Dummy();
