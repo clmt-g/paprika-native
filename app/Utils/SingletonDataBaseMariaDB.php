@@ -23,8 +23,8 @@ class SingletonDataBaseMariaDB
         $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     }
 
-    public static function getInstance(): SingletonDataBaseMariaDB {
-        if (is_null(self::$instance)) {
+    public static function getInstance() : SingletonDataBaseMariaDB {
+        if (is_null(self::$instance)){
             self::$instance = new SingletonDataBaseMariaDB();
         }
         return self::$instance;
