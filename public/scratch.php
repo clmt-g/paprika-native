@@ -6,13 +6,26 @@ use Paprika\Utils\SingletonLogger;
 use Paprika\Utils\SingletonDataBaseMariaDB;
 use Paprika\Utils\SingletonConfigReader;
 
-// test SignletonConfigReader
+// --- Test SingletonConfigReader ---
 $configReader = SingletonConfigReader::getInstance()->getValue("mariadb", "dsn");
-echo $configReader;
+echo $configReader . "\n";
 
-// test SingletonDataBaseMariaDB
+// --- Test SingletonDataBaseMariaDB ---
 $instance = SingletonDataBaseMariaDB::getInstance();
 $cnx = $instance->getPDO();
-var_dump( $cnx );
+var_dump($cnx);
 
-die();
+// --- Test SingletonLogger ---
+$logger = SingletonLogger::getInstance();
+
+// Log SQL simulé
+$logger->getSQLLogger()->info("Test SQL : connexion réussie");
+
+// Log d'erreur simulé
+try {
+    throw new Exception("Test Error : fichier introuvable");
+} catch (Exception $e) {
+    $logger->getErrorLogger()->error($e->getMessage());
+}
+
+echo "Logs écrits dans sql.log et error.log\n";
