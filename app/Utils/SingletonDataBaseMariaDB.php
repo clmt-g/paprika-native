@@ -1,6 +1,6 @@
 <?php
 
-namespace Paprika\utils;
+namespace Paprika\Utils;
 
 use \Paprika\Utils\SingletonConfigReader;
 use \PDO;
@@ -20,7 +20,7 @@ class SingletonDataBaseMariaDB
         $password = $config->getValue("mariadb", "password");
 
 
-        $this->pdo =new PDO($dsn,$username,$password); //version propre
+        $this->pdo = new PDO($dsn,$username,$password); //version propre
         // $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }

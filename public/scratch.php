@@ -1,44 +1,18 @@
 <?php
 
+require __DIR__ . '/../vendor/autoload.php';
 
-require_once __DIR__ . "/../app/utils/SingletonLogger.php";
+use Paprika\Utils\SingletonLogger;
+use Paprika\Utils\SingletonDataBaseMariaDB;
+use Paprika\Utils\SingletonConfigReader;
 
-use Paprika\utils\SingletonLogger;
-use Paprika\utils\SingletonDataBaseMariaDB;
-
-// Logger 
-$logger = SingletonLogger::getInstance();
-$authLogger = $logger->getAuthLogger();
-$sqlLogger = $logger->getSQLLogger();
-
-$authLogger("Test Auth : utilisateur connecte", "INFO");
-$authLogger("Test Auth : echec connexion", "ERROR");
-$sqlLogger("Test SQL : requete executee", "WARNING");
-$sqlLogger("Test SQL : erreur connexion DB", "ERROR");
-
-
-$pdo1 = SingletonDataBaseMariaDB::getInstance()->getPdo();
-$pdo2 = SingletonDataBaseMariaDB::getInstance()->getPdo();
-assert($pdo1 == $pdo2);
-
-
-$configReader = \Paprika\Utils\SingletonConfigReader::getInstance()->getValue("mariadb", "dsn");
+// test SignletonConfigReader
+$configReader = SingletonConfigReader::getInstance()->getValue("mariadb", "dsn");
 echo $configReader;
 
-$db = \Paprika\Utils\SingletonDataBaseMariaDB::getInstance();
-$cnx = $db->getPDO();
-
-var_dump($cnx);
-
-die();
-
+// test SingletonDataBaseMariaDB
+$instance = SingletonDataBaseMariaDB::getInstance();
+$cnx = $instance->getPDO();
+var_dump( $cnx );
 
 die();
-
-
-//echo "Hello world";
-
-// $c = new \Paprika\Dummy();
-
-// $c->greeting();
-

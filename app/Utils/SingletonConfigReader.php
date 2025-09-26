@@ -1,6 +1,6 @@
 <?php
 
-namespace Paprika\utils;
+namespace Paprika\Utils;
 
 class SingletonConfigReader
 {
