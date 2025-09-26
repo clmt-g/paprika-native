@@ -5,6 +5,12 @@ namespace Paprika\Utils;
 use \Paprika\Utils\SingletonConfigReader;
 use \PDO;
 
+/** Class SingletonDataBaseMariaDB
+ * Is used to create a single connection to the database
+ *
+ * @author Selim
+ */
+
 class SingletonDataBaseMariaDB
 {
     // typage possible grace a php 8...
