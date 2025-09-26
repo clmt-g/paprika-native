@@ -16,6 +16,7 @@ class SingletonLogger
     {
         $config = SingletonConfigReader::getInstance();
 
+        //insert
         // Fonction simple pour convertir texte en niveau Monolog
         $getLevel = function($value, $default) {
             return match (strtoupper($value)) {
