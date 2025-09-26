@@ -16,21 +16,26 @@ class SingletonLogger
     {
         $config = SingletonConfigReader::getInstance();
 
-        // Lecture [log] dans config.ini
-        $sqlLevel   = $this->mapLevel($config->getValue("logs", "sql") ?? "WARNING");
-        $errorLevel = $this->mapLevel($config->getValue("logs", "error") ?? "ERROR");
+        // Fonction simple pour convertir texte en niveau Monolog
+        $getLevel = function($value, $default) {
+            return match (strtoupper($value)) {
+                "WARNING"   => Logger::WARNING,
+                "ERROR"     => Logger::ERROR,
+                default     => $default,
+            };
+        };
 
-        // Création logger SQL
+        //  la config 
+        $sqlLevel   = $getLevel($config->getValue("logs", "sql"), Logger::WARNING);
+        $errorLevel = $getLevel($config->getValue("logs", "error"), Logger::ERROR);
+
+        //  logger SQL
         $this->sqlLogger = new Logger("sql");
-        $this->sqlLogger->pushHandler(
-            new StreamHandler(__DIR__ . "/../../sql.log", $sqlLevel)
-        );
+        $this->sqlLogger->pushHandler(new StreamHandler(__DIR__ . "/../../sql.log", $sqlLevel));
 
-        // Création logger Error
+        //  logger Error
         $this->errorLogger = new Logger("error");
-        $this->errorLogger->pushHandler(
-            new StreamHandler(__DIR__ . "/../../error.log", $errorLevel)
-        );
+        $this->errorLogger->pushHandler(new StreamHandler(__DIR__ . "/../../error.log", $errorLevel));
     }
 
     public static function getInstance(): SingletonLogger
@@ -50,7 +55,4 @@ class SingletonLogger
     {
         return $this->errorLogger;
     }
-
-    
-    
 }
