@@ -2,6 +2,12 @@
 
 namespace Paprika\Utils;
 
+/** Class SingletonConfigReader
+ * Is used to read the data in config.ini
+ *
+ * @Clément
+ */
+
 class SingletonConfigReader
 {
     private static $instance;
@@ -9,7 +15,12 @@ class SingletonConfigReader
 
     private function __construct()
     {
-        $this->data = parse_ini_file(__DIR__ . "/../../config.ini", true);
+        $chemin = __DIR__ . "/../../config.ini";
+        if (file_exists($chemin)) {
+            $this->data = parse_ini_file($chemin, true) ?: [];
+        } else {
+            $this->data = [];
+        }
     }
 
     /**
@@ -28,8 +39,17 @@ class SingletonConfigReader
      * return a value associated to the key in one section
      * @return ?string
      */
-    public function getValue(string $section, string $key): ?string
+
+    public function getValue(string $key, ?string $section = null): ?string
     {
-        return $this->data[$section][$key] ?? null;
+        try {
+            if($section === null) {
+            return $this->data[$key] ?? null;
+            }
+            return $this->data[$section][$key] ?? null;
+        }
+        catch (\Exception $e) {
+            return null;
+        }
     }
 }
