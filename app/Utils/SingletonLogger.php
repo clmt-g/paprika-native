@@ -1,33 +1,38 @@
 <?php
- 
-/**
-     * returne Singleton Logger
-     * @return SingletonLogger
-     */
- 
- 
+
 namespace Paprika\utils;
- 
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
 class SingletonLogger
 {
     private static $instance;
- 
-    private $sqllogger;
- 
-    private $authlogger;
- 
+
+    private Logger $sqlLogger;
+    private Logger $errorLogger;
+
     private function __construct()
     {
-        $this->authlogger = function($message, $level = "DEBUG") {
-            file_put_contents('auth.log', "[".date('Y-m-d H:i:s')."] [$level] $message\n", FILE_APPEND);
-        };
-    
-        $this->sqllogger = function($message, $level = "WARNING") {
-            file_put_contents('sql.log', "[".date('Y-m-d H:i:s')."] [$level] $message\n", FILE_APPEND);
-        };
- 
+        $config = SingletonConfigReader::getInstance();
+
+        // Lecture [log] dans config.ini
+        $sqlLevel   = $this->mapLevel($config->getValue("logs", "sql") ?? "WARNING");
+        $errorLevel = $this->mapLevel($config->getValue("logs", "error") ?? "ERROR");
+
+        // Création logger SQL
+        $this->sqlLogger = new Logger("sql");
+        $this->sqlLogger->pushHandler(
+            new StreamHandler(__DIR__ . "/../../sql.log", $sqlLevel)
+        );
+
+        // Création logger Error
+        $this->errorLogger = new Logger("error");
+        $this->errorLogger->pushHandler(
+            new StreamHandler(__DIR__ . "/../../error.log", $errorLevel)
+        );
     }
- 
+
     public static function getInstance(): SingletonLogger
     {
         if (is_null(self::$instance)) {
@@ -35,14 +40,17 @@ class SingletonLogger
         }
         return self::$instance;
     }
- 
-    public function getAuthLogger(): callable
+
+    public function getSQLLogger(): Logger
     {
-        return $this->authlogger;
+        return $this->sqlLogger;
     }
- 
-        public function getSQLLogger(): callable // callable quelque chose qu’on peut appeler comme une fonction qui permet de renvoyer cette fonction pour que d’autres parties du code puissent l’utiliser sans savoir comment elle est définie à l’intérieur.
-        {
-        return $this->sqllogger;
+
+    public function getErrorLogger(): Logger
+    {
+        return $this->errorLogger;
     }
+
+    
+    
 }
