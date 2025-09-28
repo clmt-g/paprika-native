@@ -27,8 +27,8 @@ class SingletonLogger
         };
 
         //  la config 
-        $sqlLevel   = $getLevel($config->getValue("logs", "sql"), Logger::WARNING);
-        $errorLevel = $getLevel($config->getValue("logs", "error"), Logger::ERROR);
+        $sqlLevel   = $getLevel($config->getValue("sql", "logs"), Logger::WARNING);
+        $errorLevel = $getLevel($config->getValue("error", "logs"), Logger::ERROR);
 
         //  logger SQL
         $this->sqlLogger = new Logger("sql");
