@@ -21,9 +21,9 @@ class SingletonDataBaseMariaDB
     private function __construct(){
         $config = SingletonConfigReader::getInstance();
 
-        $dsn = $config->getValue("mariadb", "dsn");
-        $username = $config->getValue("mariadb", "user");
-        $password = $config->getValue("mariadb", "password");
+        $dsn = $config->getValue("dsn", "mariadb");
+        $username = $config->getValue("user", "mariadb");
+        $password = $config->getValue("password", "mariadb");
 
 
         $this->pdo = new PDO($dsn,$username,$password); //version propre
