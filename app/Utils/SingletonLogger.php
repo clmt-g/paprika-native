@@ -20,9 +20,9 @@ class SingletonLogger
         // Fonction simple pour convertir texte en niveau Monolog
         $getLevel = function($value, $default) {
             return match (strtoupper($value)) {
-                "WARNING"   => Logger::WARNING,
-                "ERROR"     => Logger::ERROR,
-                default     => $default,
+                "WARNING"   => Logger::WARNING,"ERROR"=> Logger::ERROR,default     => $default,
+                
+                
             };
         };
 
