@@ -1,6 +1,6 @@
 <?php
 
-namespace Paprika\Utils;
+namespace Paprika\utils;
 
 /** Class SingletonConfigReader
  * Is used to read the data in config.ini

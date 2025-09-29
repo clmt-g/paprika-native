@@ -7,4 +7,11 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Paprika\\model\\Caserne' => $baseDir . '/app/model/Caserne.php',
+    'Paprika\\model\\DAOCaserne' => $baseDir . '/app/model/DAOCaserne.php',
+    'Paprika\\model\\DAOPompiers' => $baseDir . '/app/model/DAOPompiers.php',
+    'Paprika\\model\\Pompiers' => $baseDir . '/app/model/Pompiers.php',
+    'Paprika\\utils\\SingletonConfigReader' => $baseDir . '/app/utils/SingletonConfigReader.php',
+    'Paprika\\utils\\SingletonDataBaseMariaDB' => $baseDir . '/app/utils/SingletonDataBaseMariaDB.php',
+    'Paprika\\utils\\SingletonLogger' => $baseDir . '/app/utils/SingletonLogger.php',
 );

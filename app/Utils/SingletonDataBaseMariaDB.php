@@ -1,8 +1,8 @@
 <?php
 
-namespace Paprika\Utils;
+namespace Paprika\utils;
 
-use \Paprika\Utils\SingletonConfigReader;
+use \Paprika\utils\SingletonConfigReader;
 use \PDO;
 
 /** Class SingletonDataBaseMariaDB

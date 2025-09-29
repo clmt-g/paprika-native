@@ -1,18 +1,14 @@
 <?php
 
-namespace Paprika\App\Model;
+namespace Paprika\model;
 
-use Paprika\App\Model\Caserne;
 use PDO;
 use PDOException;
 
 class DAOCaserne {
-
-    private \PDO $pdo;
-
-
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
+    private PDO $pdo;
+    public function __construct(PDO $pdo) { 
+        $this->pdo = $pdo; 
     }
 
     /** Class SingletonConfigReader
@@ -44,16 +40,7 @@ class DAOCaserne {
 }
 
 public function save(Caserne $caserne): bool {
-    try {
-        $stmt = $this->pdo->prepare("INSERT INTO casernes (nom, ville) VALUES (:nom, :ville)");
-        return $stmt->execute([
-            'nom' => $caserne->nom,
-            'ville' => $caserne->ville
-        ]);
-    } catch (PDOException $e) {
-        echo "Erreur save: " . $e->getMessage();
-    }
-    return false;
+    
 }
 
 public function update(Caserne $caserne): bool {
@@ -72,7 +59,7 @@ public function update(Caserne $caserne): bool {
 
 public function delete(int $id): bool {
     try {
-        $stmt = $this->pdo->prepare("DELETE FROM casernes WHERE id = :id");
+        $stmt = $this->pdo->prepare("DELETE FROM casernes WHERE NumCaserne = :id");
         return $stmt->execute(['id' => $id]);
     } catch (PDOException $e) {
         echo "Erreur delete: " . $e->getMessage();

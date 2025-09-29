@@ -1,6 +1,6 @@
 <?php
 
-namespace Paprika\Utils;
+namespace Paprika\utils;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;

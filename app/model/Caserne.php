@@ -1,8 +1,7 @@
 <?php
+namespace Paprika\model;
 
-namespace Paprika\App\Model;
-
-class Caserne extends \stdClass {
+class Caserne {
 
     private int $NumCaserne;
     private string $Adresse;
