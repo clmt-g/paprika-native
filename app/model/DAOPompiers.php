@@ -18,18 +18,18 @@ class DAOPompiers
     }
 
     /**
-     * Summary of find
+     * Return an entity according to the key $id
      * @param string $id
-     * @return void
+     * @return ?Pompiers
      */
     public function find(string $id): ?Pompiers {
-
+        // FIXME : log des requêtes
     }
 
     /**
-     * Summary of save
+     * Return True when the key $pompier was successfuly added to the database
      * @param \Paprika\model\Pompiers $pompier
-     * @return void
+     * @return bool
      */
     public function save(Pompiers $pompier): bool {
 
@@ -38,7 +38,7 @@ class DAOPompiers
     /**
      * Summary of update
      * @param \Paprika\model\Pompiers $pompier
-     * @return void
+     * @return bool
      */
     public function update(Pompiers $pompier): bool {
 
@@ -47,7 +47,7 @@ class DAOPompiers
     /**
      * Summary of delete
      * @param \Paprika\model\Pompiers $pompier
-     * @return void
+     * @return bool
      */
     public function delete(Pompiers $pompier): bool {
 
@@ -55,7 +55,7 @@ class DAOPompiers
 
     /**
      * Summary of findAll
-     * @return void
+     * @return array
      */
     public function findAll(int $maxItems = 100): array {
 
@@ -63,7 +63,7 @@ class DAOPompiers
 
     /**
      * Summary of count
-     * @return void
+     * @return int
      */
     public function count(): int {
 
@@ -72,7 +72,7 @@ class DAOPompiers
     /**
      * Summary of findByGrade
      * @param string $grade
-     * @return void
+     * @return ?Pompiers
      */
     public function findByGrade(string $grade): ?Pompiers {
 
