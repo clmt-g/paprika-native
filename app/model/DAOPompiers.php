@@ -5,7 +5,7 @@ namespace Paprika\model;
 use Paprika\model\Pompiers;
 
 /**
- *
+ * Classe DAOPompiers, qui met à disposition un CRUD pour la classe Pompiers
  * @author Clément
  */
 
@@ -66,6 +66,15 @@ class DAOPompiers
      * @return void
      */
     public function count(): int {
+
+    }
+
+    /**
+     * Summary of findByGrade
+     * @param string $grade
+     * @return void
+     */
+    public function findByGrade(string $grade): ?Pompiers {
 
     }
 
