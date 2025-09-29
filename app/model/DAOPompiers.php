@@ -2,6 +2,7 @@
 
 namespace Paprika\model;
 
+use Paprika\Utils\SingletonDataBaseMariaDB;
 use Paprika\model\Pompiers;
 
 /**
@@ -23,6 +24,20 @@ class DAOPompiers
      * @return ?Pompiers
      */
     public function find(string $id): ?Pompiers {
+        $instanceMariaDB = SingletonDataBaseMariaDB::getInstance();
+        $cnx = $instanceMariaDB->getPDO();
+
+        $SQL = "SELECT * FROM pompiers WHERE Matricule=:id";
+        $preparedStatement = $cnx->prepare("$SQL");
+        $preparedStatement->bindValue("id", $id);
+        $preparedStatement->execute();
+        $pompier = $preparedStatement->fetchObject(Pompiers::class);
+
+        if ($pompier === false) {
+            return null;
+        }
+        
+        return $pompier;
         // FIXME : log des requêtes
     }
 
@@ -32,7 +47,7 @@ class DAOPompiers
      * @return bool
      */
     public function save(Pompiers $pompier): bool {
-
+        // attention au deleted
     }
 
     /**
@@ -41,7 +56,7 @@ class DAOPompiers
      * @return bool
      */
     public function update(Pompiers $pompier): bool {
-
+        // attention au deleted
     }
 
     /**
@@ -50,7 +65,7 @@ class DAOPompiers
      * @return bool
      */
     public function delete(Pompiers $pompier): bool {
-
+        // ne pas supprimer, ajouter un champ DELETED
     }
 
     /**
@@ -58,7 +73,7 @@ class DAOPompiers
      * @return array
      */
     public function findAll(int $maxItems = 100): array {
-
+        // Attention au DELETED
     }
 
     /**
@@ -66,7 +81,7 @@ class DAOPompiers
      * @return int
      */
     public function count(): int {
-
+        // attention au DELETED
     }
 
     /**
@@ -75,7 +90,7 @@ class DAOPompiers
      * @return ?Pompiers
      */
     public function findByGrade(string $grade): ?Pompiers {
-
+        // Attention au DELETED
     }
 
 }
