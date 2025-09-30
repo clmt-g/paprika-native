@@ -15,6 +15,7 @@ class Pompiers extends stdClass
     private int $NumCaserne;
     private string $CodeGrade;
     private string $MatriculeRespo;
+    private bool $deleted;
 
     // exclure le champ deleted
 
@@ -57,6 +58,10 @@ class Pompiers extends stdClass
     public function getMatriculeRespo(): string
     {
         return $this->MatriculeRespo;
+    }
+    public function getDeleted(): bool
+    {
+        return $this->deleted;
     }
 
     public function setMatricule(string $Matricule): Pompiers
@@ -104,6 +109,11 @@ class Pompiers extends stdClass
     public function setMatriculeRespo(string $MatriculeRespo): Pompiers
     {
         $this->MatriculeRespo = $MatriculeRespo;
+        return $this;
+    }
+    public function setDeleted(bool $deleted): Pompiers 
+    {
+        $this->deleted = $deleted;
         return $this;
     }
 }
