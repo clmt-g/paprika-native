@@ -2,35 +2,20 @@
 
 namespace Paprika\utils;
 
-use PDOStatement;
+use PDO;
 
-class LoggedPDO extends \PDO
-
+class LoggedPDO extends PDO
 {
-
-    /**
-
-     * @return LoggedPDOStatement|false
-
-     */
-
-    public function prepare(string $query, array $options = []): PDOStatement|false
-
+    public function __construct(string $dsn, string $username = "", string $password = "", array $options = [])
     {
+        parent::__construct($dsn, $username, $password, $options);
 
-        $statement = parent::prepare($query, $options);
+        // Définir la classe de statement personnalisée
+        $this->setAttribute(PDO::ATTR_STATEMENT_CLASS, [
+            LoggedPDOStatement::class,
+            [SingletonLogger::getInstance()->getSQLLogger(), "selim"]
+        ]);
 
-        if ($statement == false) {
-
-            return false;
-
-        }
-
-        //cf $pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, [Custom::class]);
-
-        return new LoggedPDOStatement($statement, SingletonLogger::getInstance()->getSQLLogger(), $user = "user");
-
+        $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
-
 }
-
