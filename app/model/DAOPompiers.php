@@ -16,7 +16,7 @@ use PDO;
 class DAOPompiers
 {
     private \PDO $pdo;
-    private string $user = "user";
+    private string $user = "clement";
 
     public function __construct(\PDO $pdo) {
         $this->pdo = $pdo;
@@ -28,7 +28,7 @@ class DAOPompiers
      * @return ?Pompiers
      */
     public function find(string $id): ?Pompiers {
-        $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
 
         $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule FROM pompiers WHERE Matricule=:id AND deleted = 0";
         $preparedStatement = $pdo->prepare("$sql");
@@ -67,7 +67,7 @@ class DAOPompiers
                 $pompier->setMatricule($matricule);
 
                 // requete
-                $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+                $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
                 $sql = "INSERT INTO pompiers (Matricule, Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, deleted) 
                         VALUES (:matricule, :prenom, :nom, :chefAgret, :dateNaissance, :numCaserne, :codeGrade, :matriculeRespo, 0)";
                 $preparedStatement = $pdo->prepare("$sql");
@@ -101,7 +101,7 @@ class DAOPompiers
      */
     public function update(Pompiers $pompier): bool {
     try {
-        $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo 
                 WHERE Matricule = :matricule AND Deleted = 0";
 
@@ -136,7 +136,7 @@ class DAOPompiers
                 throw new Exception("Matricule manquant dans l'objet pompier");
             }
             // si il existe est n'est pas déjà supprimé
-            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
             $sql = "UPDATE pompiers SET deleted = 1 WHERE Matricule = :matricule";
 
             $preparedStatement = $pdo->prepare("$sql");
@@ -161,7 +161,7 @@ class DAOPompiers
      */
     public function findAll(int $maxItems = 100): array {
         try {
-            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
             $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule FROM pompiers WHERE deleted = 0 LIMIT :maxItems";
             $preparedStatement = $pdo->prepare("$sql");
             $preparedStatement->bindValue("maxItems", $maxItems, \PDO::PARAM_INT);
@@ -195,7 +195,7 @@ class DAOPompiers
      */
     public function count(): int {
         try {
-            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
             $sql = "SELECT COUNT(*) FROM pompiers WHERE deleted = 0";
             $preparedStatement = $pdo->prepare("$sql");
             $preparedStatement->execute();
@@ -221,7 +221,7 @@ class DAOPompiers
             }
 
             // requête
-            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
 
             $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule 
             FROM pompiers 
@@ -261,7 +261,7 @@ class DAOPompiers
      */
     public function keyGenerator(): string {
         // calcule du matricule
-        $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT MAX(matricule) FROM pompiers;";
         $preparedStatement = $pdo->prepare("$sql");
         $preparedStatement->execute();
