@@ -19,7 +19,7 @@ class Pompiers extends stdClass
 
     // exclure le champ deleted
 
-    // --- constructeur ---
+    // --- constructeurs ---
     public function __construct(string $Matricule = "", string $Prenom, string $Nom, string $ChefAgret, string $DateNaissance, int $NumCaserne,
     string $CodeGrade, string $MatriculeRespo) {
     if (!empty($Matricule)) {
@@ -37,7 +37,6 @@ class Pompiers extends stdClass
     $this->MatriculeRespo = $MatriculeRespo;
     $this->deleted = false;
     }
-
 
     // -- Getter setter ---
     public function getMatricule(): string

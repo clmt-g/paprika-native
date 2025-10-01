@@ -208,8 +208,17 @@ class DAOPompiers
 
             $pompiers = [];
 
-            while (($pompier = $preparedStatement->fetchObject(Pompiers::class)) != FALSE) {
-                $pompiers[] = $pompier;
+            while ($row = $preparedStatement->fetch(\PDO::FETCH_ASSOC)) {
+                $pompiers[] = new Pompiers(
+                    $row['Matricule'],
+                    $row['Prenom'],
+                    $row['Nom'],
+                    $row['ChefAgret'],
+                    $row['DateNaissance'],
+                    (int)$row['NumCaserne'],
+                    $row['CodeGrade'],
+                    $row['MatriculeRespo']
+                );
             }
             return $pompiers;
 
@@ -217,7 +226,6 @@ class DAOPompiers
             echo "Error : ". $e->getMessage();
             return [];
         }
-        // Attention au DELETED
     }
 
     /**
@@ -240,12 +248,49 @@ class DAOPompiers
     }
 
     /**
-     * Summary of findByGrade
+     * return a or serveral pompiers according to the value of the key $grade
      * @param string $grade
      * @return ?Pompiers
      */
-    public function findByGrade(string $grade): ?Pompiers {
-        // Attention au DELETED
+    public function findByGrade(string $grade): array {
+        try {
+            // vérifier que le grade n'est pas vide ou null
+            if ($grade == "" || $grade == null) {
+                throw new Exception("le grade est pas remplie ou null");
+            }
+
+            // requête
+            $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
+
+            $sql = "SELECT Matricule, Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo 
+            FROM pompiers 
+            WHERE CodeGrade = :codeGrade 
+            AND deleted = 0";
+
+            $preparedStatement = $cnx->prepare("$sql");
+            $preparedStatement->bindValue("codeGrade", $grade, \PDO::PARAM_STR);
+            $preparedStatement->execute();
+
+            $pompiers = [];
+
+            while ($row = $preparedStatement->fetch(\PDO::FETCH_ASSOC)) {
+                $pompiers[] = new Pompiers(
+                    $row['Matricule'],
+                    $row['Prenom'],
+                    $row['Nom'],
+                    $row['ChefAgret'],
+                    $row['DateNaissance'],
+                    (int)$row['NumCaserne'],
+                    $row['CodeGrade'],
+                    $row['MatriculeRespo']
+                );
+            }
+            return $pompiers;
+
+        } catch (Exception $e) { // si problème lors de l'éxécution de la requête
+            echo 'Error : ' .  $e->getMessage();
+            return NULL;
+        }
     }
 
     public function exists(string $dateNaissance, string $prenom, string $nom): bool {
