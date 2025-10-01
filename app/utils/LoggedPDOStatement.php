@@ -2,7 +2,6 @@
 
 namespace Paprika\utils;
 
-use Monolog\Logger;
 use PDO;
 use PDOStatement;
 
@@ -15,7 +14,6 @@ class LoggedPDOStatement extends PDOStatement
 {
     private PDOStatement $statement;
 
-    public function __construct(PDOStatement $statement, Logger $logger, string $user)
     {
         $this->statement = $statement;
     }
@@ -32,10 +30,8 @@ class LoggedPDOStatement extends PDOStatement
         $message = ob_get_contents();
         ob_end_clean();
         echo $message;
-
         //log $error content
         //log $message content
-
         return $result;
     }
 
@@ -63,7 +59,7 @@ class LoggedPDOStatement extends PDOStatement
 
     public function setFetchMode($mode = PDO::FETCH_DEFAULT, ...$args) : true
     {
-        $this->statement->setFetchMode($mode, ...$args);
+         $this->statement->setFetchMode($mode, ...$args);
     }
 
 }

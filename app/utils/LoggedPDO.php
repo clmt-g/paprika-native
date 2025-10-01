@@ -16,6 +16,5 @@ class LoggedPDO extends \PDO
             return false;
         }
         //cf $pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, [Custom::class]);
-        return new LoggedPDOStatement($statement, SingletonLogger::getInstance()->getSQLLogger(), $user = "user");
     }
 }
