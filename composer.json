@@ -17,7 +17,7 @@
     "minimum-stability": "stable",
     "require": {
         "php" : "^8.3",
-        "monolog/monolog" : "3.8.1"
+        "monolog/monolog" : "^3.9"
     },
     "require-dev": {
         "php" : "^8.3",
