@@ -2,8 +2,10 @@
 
 namespace Paprika\utils;
 
+use Monolog\Logger;
 use \Paprika\utils\SingletonConfigReader;
 use \PDO;
+use \Paprika\utils\LoggedPDO;
 
 /** Class SingletonDataBaseMariaDB
  * Is used to create a single connection to the database
@@ -17,6 +19,7 @@ class SingletonDataBaseMariaDB
 
     private static $instance;
     private PDO $pdo;
+    private Logger $loggedPDO;
 
     private function __construct(){
         $config = SingletonConfigReader::getInstance();
@@ -40,5 +43,8 @@ class SingletonDataBaseMariaDB
 
     public function getPDO() : PDO {
         return $this->pdo;
+    }
+    public function getLoggedPDO(): LoggedPDO {
+        return $this->loggedPDO;
     }
 }

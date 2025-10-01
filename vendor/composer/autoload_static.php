@@ -22,13 +22,6 @@ class ComposerStaticInita29be7c7ea7bde50539591d9eec01b08
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
-        'Paprika\\model\\Caserne' => __DIR__ . '/../..' . '/app/model/Caserne.php',
-        'Paprika\\model\\DAOCaserne' => __DIR__ . '/../..' . '/app/model/DAOCaserne.php',
-        'Paprika\\model\\DAOPompiers' => __DIR__ . '/../..' . '/app/model/DAOPompiers.php',
-        'Paprika\\model\\Pompiers' => __DIR__ . '/../..' . '/app/model/Pompiers.php',
-        'Paprika\\utils\\SingletonConfigReader' => __DIR__ . '/../..' . '/app/utils/SingletonConfigReader.php',
-        'Paprika\\utils\\SingletonDataBaseMariaDB' => __DIR__ . '/../..' . '/app/utils/SingletonDataBaseMariaDB.php',
-        'Paprika\\utils\\SingletonLogger' => __DIR__ . '/../..' . '/app/utils/SingletonLogger.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

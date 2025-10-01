@@ -3,7 +3,8 @@
 namespace Paprika\model;
 
 use Exception;
-use Paprika\Utils\SingletonDataBaseMariaDB;
+use Paprika\utils\SingletonDataBaseMariaDB;
+use Paprika\utils\SingletonLogger;
 use Paprika\model\Pompiers;
 
 /**
@@ -14,6 +15,7 @@ use Paprika\model\Pompiers;
 class DAOPompiers
 {
     private \PDO $pdo;
+    private string $user = "clement";
 
     public function __construct(\PDO $pdo) {
         $this->pdo = $pdo;
@@ -27,21 +29,21 @@ class DAOPompiers
     public function find(string $id): ?Pompiers {
         $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
 
-        $sql = "SELECT * FROM pompiers WHERE Matricule=:id";
+        $sql = "SELECT * FROM pompiers WHERE Matricule=:id AND deleted = 0";
         $preparedStatement = $cnx->prepare("$sql");
         $preparedStatement->bindValue("id", $id);
         $preparedStatement->execute();
-        $row = $preparedStatement->fetch(\PDO::FETCH_ASSOC);
-        if ($row) {
+
+        if ($row = $preparedStatement->fetch(\PDO::FETCH_ASSOC)) {
             $pompier = new Pompiers(
-                $row["Matricule"],
                 $row['Prenom'],
                 $row['Nom'],
                 $row['ChefAgret'],
                 $row['DateNaissance'],
                 (int)$row['NumCaserne'],
                 $row['CodeGrade'],
-                $row['MatriculeRespo']
+                $row['MatriculeRespo'],
+                $row["Matricule"]
             );
         } else {
             return null;
@@ -55,6 +57,7 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
+    // FIXME : Save or update --> pas de exists()
     public function save(Pompiers $pompier): bool {
         try {
         // récupération des données
@@ -71,6 +74,7 @@ class DAOPompiers
             throw new Exception("Le pompier existe déjà");
         }
 
+        // FIXME : en faire une méthode
         // calcule du matricule
         $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
         $sql = "SELECT MAX(matricule) FROM pompiers;";
@@ -88,6 +92,9 @@ class DAOPompiers
         $matricule = str_pad($matricule, 6, "0", STR_PAD_LEFT);
         $matricule = "P" . $matricule;
 
+        // modifier le matricule du pompier
+        $pompier->setMatricule($matricule);
+
         // requete
         $sql = "INSERT INTO pompiers VALUES (:matricule, :prenom, :nom, :chefAgret, :dateNaissance, :numCaserne, :codeGrade, :matriculeRespo, 0)";
         $preparedStatement = $cnx->prepare("$sql");
@@ -102,9 +109,6 @@ class DAOPompiers
 
         $preparedStatement->execute();
 
-        // set le matricule du pompier avec la vrai valeur si tous le reste a fonctionner
-        $pompier->setMatricule($matricule);
-
         return true;
         } catch (Exception $e) {
             echo "Erreur : " . $e->getMessage();
@@ -117,6 +121,7 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
+    // FIXME : est ce que exists() est vraiment utile ici ?
     public function update(Pompiers $pompier): bool {
     try {
         // Vérifier si le pompier existe et n’est pas supprimé
@@ -158,6 +163,7 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
+    // FIXME : est ce que exists est vraiment utile ici ?
     public function delete(Pompiers $pompier): bool {
         try {
             // vérifier si le pompier à bien été save / qu'il a un matricule
@@ -189,7 +195,7 @@ class DAOPompiers
 
             return true;
         } catch(Exception $e) { // si il y a une erreur lors de l'éxécution de la requête
-            echo "Error : ". $e->getMessage() ."";
+            echo "Error : ". $e->getMessage();
             return false;
         }
     }
@@ -210,14 +216,14 @@ class DAOPompiers
 
             while ($row = $preparedStatement->fetch(\PDO::FETCH_ASSOC)) {
                 $pompiers[] = new Pompiers(
-                    $row['Matricule'],
                     $row['Prenom'],
                     $row['Nom'],
                     $row['ChefAgret'],
                     $row['DateNaissance'],
                     (int)$row['NumCaserne'],
                     $row['CodeGrade'],
-                    $row['MatriculeRespo']
+                    $row['MatriculeRespo'],
+                    $row['Matricule']
                 );
             }
             return $pompiers;
@@ -250,9 +256,9 @@ class DAOPompiers
     /**
      * return a or serveral pompiers according to the value of the key $grade
      * @param string $grade
-     * @return ?Pompiers
+     * @return array
      */
-    public function findByGrade(string $grade): array {
+    public function findByGrade(string $grade): ?array {
         try {
             // vérifier que le grade n'est pas vide ou null
             if ($grade == "" || $grade == null) {
@@ -275,21 +281,21 @@ class DAOPompiers
 
             while ($row = $preparedStatement->fetch(\PDO::FETCH_ASSOC)) {
                 $pompiers[] = new Pompiers(
-                    $row['Matricule'],
                     $row['Prenom'],
                     $row['Nom'],
                     $row['ChefAgret'],
                     $row['DateNaissance'],
                     (int)$row['NumCaserne'],
                     $row['CodeGrade'],
-                    $row['MatriculeRespo']
+                    $row['MatriculeRespo'],
+                    $row['Matricule']
                 );
             }
             return $pompiers;
 
         } catch (Exception $e) { // si problème lors de l'éxécution de la requête
             echo 'Error : ' .  $e->getMessage();
-            return NULL;
+            return null;
         }
     }
 
