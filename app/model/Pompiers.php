@@ -20,9 +20,14 @@ class Pompiers extends stdClass
     // exclure le champ deleted
 
     // --- constructeur ---
-    public function __construct(string $Matricule = "", string $Prenom, string $Nom, string $ChefAgret, string $DateNaissance, 
-    int $NumCaserne, string $CodeGrade, string $MatriculeRespo) {
-    $this->Matricule = $Matricule;
+    public function __construct(string $Matricule = "", string $Prenom, string $Nom, string $ChefAgret, string $DateNaissance, int $NumCaserne,
+    string $CodeGrade, string $MatriculeRespo) {
+    if (!empty($Matricule)) {
+        $this->Matricule = $Matricule;
+    } else {
+        $this->Matricule = ""; // placeholder
+    }
+
     $this->Prenom = $Prenom;
     $this->Nom = $Nom;
     $this->ChefAgret = $ChefAgret;

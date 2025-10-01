@@ -119,16 +119,17 @@ class DAOPompiers
      */
     public function update(Pompiers $pompier): bool {
     try {
+        // Vérifier si le pompier existe et n’est pas supprimé
         $prenom = $pompier->getPrenom();
         $nom = $pompier->getNom();
         $dateNaissance = $pompier->getDateNaissance();
         $deleted = $pompier->getDeleted();
 
-        // Vérifier si le pompier existe et n’est pas supprimé
-        if (!$this->exists($dateNaissance, $prenom, $nom) || $deleted == true) {
+        if (!$this->exists($dateNaissance, $prenom, $nom) === false || $deleted === true) {
             throw new Exception("Le pompier n'existe pas ou a été supprimé");
         }
 
+        // si il existe ...
         $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
         $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo, deleted = 0
                 WHERE Matricule = :matricule";
@@ -143,7 +144,8 @@ class DAOPompiers
         $preparedStatement->bindValue("matriculeRespo", $pompier->getMatriculeRespo());
         $preparedStatement->bindValue("matricule", $pompier->getMatricule());
 
-        return $preparedStatement->execute();
+        $preparedStatement->execute();
+        return true;
 
     } catch (Exception $e) {
         return false;
@@ -152,12 +154,44 @@ class DAOPompiers
 
 
     /**
-     * Summary of delete
+     * update the deleted field in the database to 1
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
     public function delete(Pompiers $pompier): bool {
-        // ne pas supprimer, ajouter un champ DELETED
+        try {
+            // vérifier si le pompier à bien été save / qu'il a un matricule
+            $matricule = $pompier->getMatricule();
+            if (empty($matricule)) {
+                throw new Exception("Matricule manquant dans l'objet pompier.");
+            }
+
+            // Vérifier si le pompier existe et n’est pas déjà supprimé
+            $prenom = $pompier->getPrenom();
+            $nom = $pompier->getNom();
+            $dateNaissance = $pompier->getDateNaissance();
+            $deleted = $pompier->getDeleted();
+
+            if (!$this->exists($dateNaissance, $prenom, $nom) || $deleted) {
+                throw new Exception("Le pompier n'existe pas ou a été supprimé");
+            }
+
+            // si il existe est n'est pas déjà supprimé
+            $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $sql = "UPDATE pompiers SET deleted = 1 WHERE Matricule = :matricule";
+            
+            $preparedStatement = $cnx->prepare("$sql");
+            $preparedStatement->bindValue(":matricule", $pompier->getMatricule());
+            $preparedStatement->execute();
+
+            // mettre a jour le champ deleted de l'instance
+            $pompier->setDeleted(true);
+
+            return true;
+        } catch(Exception $e) { // si il y a une erreur lors de l'éxécution de la requête
+            echo "Error : ". $e->getMessage() ."";
+            return false;
+        }
     }
 
     /**
@@ -165,15 +199,44 @@ class DAOPompiers
      * @return array
      */
     public function findAll(int $maxItems = 100): array {
+        try {
+            $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $sql = "SELECT * FROM pompiers WHERE deleted = 0 LIMIT :maxItems";
+            $preparedStatement = $cnx->prepare("$sql");
+            $preparedStatement->bindValue("maxItems", $maxItems, \PDO::PARAM_INT);
+            $preparedStatement->execute();
+
+            $pompiers = [];
+
+            while (($pompier = $preparedStatement->fetchObject(Pompiers::class)) != FALSE) {
+                $pompiers[] = $pompier;
+            }
+            return $pompiers;
+
+        } catch (Exception $e) {
+            echo "Error : ". $e->getMessage();
+            return [];
+        }
         // Attention au DELETED
     }
 
     /**
-     * Summary of count
+     * count all the instances in the table pompier
      * @return int
      */
     public function count(): int {
-        // attention au DELETED
+        try {
+        $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
+        $sql = "SELECT COUNT(*) FROM pompiers WHERE deleted = 0";
+        $preparedStatement = $cnx->prepare("$sql");
+        $preparedStatement->execute();
+
+        $count = $preparedStatement->fetchColumn();
+        return (int) $count;
+        } catch (Exception $e) {
+            echo "Error : ". $e->getMessage();
+            return 0;
+        }
     }
 
     /**
@@ -198,6 +261,6 @@ class DAOPompiers
     $row = $preparedStatement->fetch(\PDO::FETCH_ASSOC);
 
     return $row !== false;
-}
+    }
 
 }
