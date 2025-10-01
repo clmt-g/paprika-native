@@ -30,7 +30,7 @@ class DAOPompiers
     public function find(string $id): ?Pompiers {
         $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
 
-        $sql = "SELECT * FROM pompiers WHERE Matricule=:id AND deleted = 0";
+        $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule FROM pompiers WHERE Matricule=:id AND deleted = 0";
         $preparedStatement = $pdo->prepare("$sql");
         $preparedStatement->bindValue("id", $id);
         $preparedStatement->execute();
@@ -68,7 +68,7 @@ class DAOPompiers
 
                 // requete
                 $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
-                $sql = "INSERT INTO pompiers (Matricule, Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo) 
+                $sql = "INSERT INTO pompiers (Matricule, Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, deleted) 
                         VALUES (:matricule, :prenom, :nom, :chefAgret, :dateNaissance, :numCaserne, :codeGrade, :matriculeRespo, 0)";
                 $preparedStatement = $pdo->prepare("$sql");
                 $preparedStatement->bindValue("matricule", $pompier->getMatricule(), PDO::PARAM_STR);
@@ -102,7 +102,7 @@ class DAOPompiers
     public function update(Pompiers $pompier): bool {
     try {
         $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
-        $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo, deleted = 0
+        $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo 
                 WHERE Matricule = :matricule AND Deleted = 0";
 
         $preparedStatement = $pdo->prepare($sql);
@@ -117,11 +117,11 @@ class DAOPompiers
         $preparedStatement->execute();
 
         return true;
-    } catch (Exception $e) {
-        return false;
+        } catch (Exception $e) {
+            echo 'Error : ' . $e->getMessage();
+            return false;
+        }
     }
-}
-
 
     /**
      * update the deleted field in the database to 1
@@ -133,21 +133,14 @@ class DAOPompiers
             // vérifier si le pompier à bien été save / qu'il a un matricule
             $matricule = $pompier->getMatricule();
             if (empty($matricule)) {
-                throw new Exception("Matricule manquant dans l'objet pompier.");
+                throw new Exception("Matricule manquant dans l'objet pompier");
             }
-
-            // Vérifier si le pompier existe et n’est pas déjà supprimé
-            $prenom = $pompier->getPrenom();
-            $nom = $pompier->getNom();
-            $dateNaissance = $pompier->getDateNaissance();
-            $deleted = $pompier->getDeleted();
-
             // si il existe est n'est pas déjà supprimé
-            $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
             $sql = "UPDATE pompiers SET deleted = 1 WHERE Matricule = :matricule";
-            
-            $preparedStatement = $cnx->prepare("$sql");
-            $preparedStatement->bindValue(":matricule", $pompier->getMatricule());
+
+            $preparedStatement = $pdo->prepare("$sql");
+            $preparedStatement->bindValue(":matricule", $pompier->getMatricule(), PDO::PARAM_STR);
             $preparedStatement->execute();
 
             // mettre a jour le champ deleted de l'instance
@@ -158,17 +151,19 @@ class DAOPompiers
             echo "Error : ". $e->getMessage();
             return false;
         }
+        // est ce que c'est mieux de pas vérifier si le pompier était déjà supprimer (et renvoyer false dans ce cas ? Ou est ce qu'on ne s'en préocupe pas)
     }
 
     /**
-     * Summary of findAll
+     * return an array of all the Pompiers in the database
+     * @param int $maxItems
      * @return array
      */
     public function findAll(int $maxItems = 100): array {
         try {
-            $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
-            $sql = "SELECT * FROM pompiers WHERE deleted = 0 LIMIT :maxItems";
-            $preparedStatement = $cnx->prepare("$sql");
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule FROM pompiers WHERE deleted = 0 LIMIT :maxItems";
+            $preparedStatement = $pdo->prepare("$sql");
             $preparedStatement->bindValue("maxItems", $maxItems, \PDO::PARAM_INT);
             $preparedStatement->execute();
 
@@ -200,13 +195,13 @@ class DAOPompiers
      */
     public function count(): int {
         try {
-        $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
-        $sql = "SELECT COUNT(*) FROM pompiers WHERE deleted = 0";
-        $preparedStatement = $cnx->prepare("$sql");
-        $preparedStatement->execute();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $sql = "SELECT COUNT(*) FROM pompiers WHERE deleted = 0";
+            $preparedStatement = $pdo->prepare("$sql");
+            $preparedStatement->execute();
 
-        $count = $preparedStatement->fetchColumn();
-        return (int) $count;
+            $count = $preparedStatement->fetchColumn();
+            return (int) $count;
         } catch (Exception $e) {
             echo "Error : ". $e->getMessage();
             return 0;
@@ -214,9 +209,9 @@ class DAOPompiers
     }
 
     /**
-     * return a or serveral pompiers according to the value of the key $grade
+     * return one or serveral pompiers according to the value of the key $grade
      * @param string $grade
-     * @return array
+     * @return ?array
      */
     public function findByGrade(string $grade): ?array {
         try {
@@ -226,14 +221,14 @@ class DAOPompiers
             }
 
             // requête
-            $cnx = SingletonDataBaseMariaDB::getInstance()->getPDO();
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
 
-            $sql = "SELECT Matricule, Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo 
+            $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule 
             FROM pompiers 
             WHERE CodeGrade = :codeGrade 
             AND deleted = 0";
 
-            $preparedStatement = $cnx->prepare("$sql");
+            $preparedStatement = $pdo->prepare("$sql");
             $preparedStatement->bindValue("codeGrade", $grade, \PDO::PARAM_STR);
             $preparedStatement->execute();
 
@@ -259,6 +254,11 @@ class DAOPompiers
         }
     }
 
+    /**
+     * Generate an id for every pompiers that get saved
+     * @return string
+     * @throws Exception
+     */
     public function keyGenerator(): string {
         // calcule du matricule
         $pdo = SingletonDataBaseMariaDB::getInstance()->getPDO();
@@ -271,14 +271,12 @@ class DAOPompiers
         if ($matricule === false || $matricule === null || $matricule === "") {
             throw new Exception("Impossible de récuperer le matricule maximum");
         }
+
         // incrémenter de 1
         $matricule = substr($matricule, 1);
         $matricule = (int) $matricule;
         $matricule++;
         $matricule = str_pad($matricule, 6, "0", STR_PAD_LEFT);
-        $matricule = "P" . $matricule;
-
-        return $matricule;
+        return "P" . $matricule;
     }
-
 }
