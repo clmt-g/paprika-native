@@ -40,11 +40,11 @@ class SingletonLogger
 
         //  logger SQL
         $this->sqlLogger = new Logger("sql");
-        $this->sqlLogger->pushHandler(new StreamHandler(__DIR__ . "/../../sql.log", $sqlLevel));
+        $this->sqlLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/sql.log", $sqlLevel));
 
         //  logger Error
         $this->errorLogger = new Logger("error");
-        $this->errorLogger->pushHandler(new StreamHandler(__DIR__ . "/../../error.log", $errorLevel));
+        $this->errorLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/error.log", $errorLevel));
     }
 
     public static function getInstance(): SingletonLogger
