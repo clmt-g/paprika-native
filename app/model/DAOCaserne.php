@@ -1,7 +1,7 @@
 <?php
 
 namespace Paprika\model;
-
+//a
 use PDO;
 use Paprika\utils\SingletonLogger;
 
