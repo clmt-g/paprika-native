@@ -26,6 +26,8 @@ stages:          # List of stages for jobs, and their order of execution
 default:
     interruptible: false
     image : php:8.3
+    tags:
+        - slam2
 
 
 information-job:
