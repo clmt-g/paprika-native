@@ -25,6 +25,8 @@ stages:          # List of stages for jobs, and their order of execution
 default :
     interruptible: false
     image : php:8.3
+    tags:
+      - slam2
 
 information-job:
     stage: info
@@ -33,7 +35,6 @@ information-job:
         - echo $pwd
         - env
         - php --version
-        - php install xdebug-3.2.1
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
