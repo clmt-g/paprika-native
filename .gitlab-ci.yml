@@ -22,6 +22,10 @@ stages:          # List of stages for jobs, and their order of execution
   - test
   - deploy
 
+default :
+    interruptible: false
+    image : php:8.3
+
 information-job:
     stage: info
     script:
