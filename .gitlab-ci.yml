@@ -25,7 +25,7 @@ stages:          # List of stages for jobs, and their order of execution
 
 default:
     interruptible: false
-    image : php:8.3
+    image : harbor.ad.supalta.com/library/phpci
     tags:
         - slam2
 
