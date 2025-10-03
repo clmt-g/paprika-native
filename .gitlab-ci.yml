@@ -33,6 +33,7 @@ information-job:
         - echo $pwd
         - env
         - php --version
+        - php install xdebug-3.2.1
 
 build-job:       # This job runs in the build stage, which runs first.
   stage: build
