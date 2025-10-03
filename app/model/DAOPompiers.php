@@ -62,9 +62,8 @@ class DAOPompiers
         $matricule = $pompier->getMatricule();
         if ($matricule === "") {
             try {
-                // calcule du matricule et modification du matricule du pompier
+                // calcule du matricule
                 $matricule = $this->keyGenerator();
-                $pompier->setMatricule($matricule);
 
                 // requete
                 $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
@@ -82,6 +81,8 @@ class DAOPompiers
 
                 $preparedStatement->execute();
 
+                // modification du matricule apres calcul et requete
+                $pompier->setMatricule($matricule);
                 return true;
             } catch (Exception $e) {
                 // FIXME : logger
