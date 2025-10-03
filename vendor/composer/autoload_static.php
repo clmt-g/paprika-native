@@ -13,6 +13,10 @@ class ComposerStaticInita29be7c7ea7bde50539591d9eec01b08
     );
 
     public static $prefixLengthsPsr4 = array (
+        'p' => 
+        array (
+            'phpDocumentor\\' => 14,
+        ),
         'S' => 
         array (
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -21,6 +25,7 @@ class ComposerStaticInita29be7c7ea7bde50539591d9eec01b08
         'P' => 
         array (
             'Psr\\Log\\' => 8,
+            'PharIo\\ComposerDistributor\\' => 27,
             'Paprika\\' => 8,
         ),
         'M' => 
@@ -30,6 +35,10 @@ class ComposerStaticInita29be7c7ea7bde50539591d9eec01b08
     );
 
     public static $prefixDirsPsr4 = array (
+        'phpDocumentor\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpdocumentor/shim/src',
+        ),
         'Symfony\\Polyfill\\Mbstring\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
@@ -41,6 +50,10 @@ class ComposerStaticInita29be7c7ea7bde50539591d9eec01b08
         'Psr\\Log\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/log/src',
+        ),
+        'PharIo\\ComposerDistributor\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phar-io/composer-distributor/src',
         ),
         'Paprika\\' => 
         array (
@@ -54,6 +67,20 @@ class ComposerStaticInita29be7c7ea7bde50539591d9eec01b08
 
     public static $classMap = array (
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'PharIo\\Executor\\Exception' => __DIR__ . '/..' . '/phar-io/executor/src/ExecutorException.php',
+        'PharIo\\Executor\\Executor' => __DIR__ . '/..' . '/phar-io/executor/src/Executor.php',
+        'PharIo\\Executor\\ExecutorResult' => __DIR__ . '/..' . '/phar-io/executor/src/ExecutorResult.php',
+        'PharIo\\FileSystem\\Directory' => __DIR__ . '/..' . '/phar-io/filesystem/src/Directory.php',
+        'PharIo\\FileSystem\\DirectoryException' => __DIR__ . '/..' . '/phar-io/filesystem/src/DirectoryException.php',
+        'PharIo\\FileSystem\\Exception' => __DIR__ . '/..' . '/phar-io/filesystem/src/Exception.php',
+        'PharIo\\FileSystem\\File' => __DIR__ . '/..' . '/phar-io/filesystem/src/File.php',
+        'PharIo\\FileSystem\\Filename' => __DIR__ . '/..' . '/phar-io/filesystem/src/Filename.php',
+        'PharIo\\FileSystem\\FilenameException' => __DIR__ . '/..' . '/phar-io/filesystem/src/FilenameException.php',
+        'PharIo\\FileSystem\\LastModifiedDate' => __DIR__ . '/..' . '/phar-io/filesystem/src/LastModifiedDate.php',
+        'PharIo\\GnuPG\\ErrorStrings' => __DIR__ . '/..' . '/phar-io/gnupg/src/ErrorStrings.php',
+        'PharIo\\GnuPG\\Exception' => __DIR__ . '/..' . '/phar-io/gnupg/src/Exception.php',
+        'PharIo\\GnuPG\\Factory' => __DIR__ . '/..' . '/phar-io/gnupg/src/Factory.php',
+        'PharIo\\GnuPG\\GnuPG' => __DIR__ . '/..' . '/phar-io/gnupg/src/GnuPG.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

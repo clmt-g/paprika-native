@@ -6,9 +6,11 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'phpDocumentor\\' => array($vendorDir . '/phpdocumentor/shim/src'),
     'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Component\\VarDumper\\' => array($vendorDir . '/symfony/var-dumper'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
+    'PharIo\\ComposerDistributor\\' => array($vendorDir . '/phar-io/composer-distributor/src'),
     'Paprika\\' => array($baseDir . '/app'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
 );
