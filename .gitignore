@@ -1,9 +1,7 @@
 .idea
 .vscode
 public/scratch.php
-/vendor
+vendor/
 config.ini
 TODO.me
 public/.phpdoc/
-storage/sqll.log
-storage/errorr.log

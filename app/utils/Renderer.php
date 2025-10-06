@@ -19,14 +19,11 @@ class Renderer
         $content = preg_replace('/{{ \s*(.+?)\s*}}/', "<?php echo $1 ?>", $content);
 
         // @if with @endif
-        $content = preg_replace('@if/{{ \s*(.+?)\s*}}/', '<?php if ($1)', $content);
-        $content = preg_replace('/@endif/', 'endif ?>', $content);
 
         // @foreach with @endforeach
-        $content = preg_replace();
 
         // save $content in storage/cache directory
-        $filepath = __DIR__ . "/../../storage/cache/";
+        $filepath = __DIR__ . "/../../storage/cache/$file.php";
         file_put_contents($filepath, $content);
 
         ob_start();
