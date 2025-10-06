@@ -8,6 +8,14 @@
     <title>Document</title>
 </head>
 <body>
-<?php echo "hello world!"; ?>
+
+
+@foreach ($tel as $type => $numero)
+
+<span>{{ $type }} : {{ $numero }}</span>
+
+@endforeach
+
+
 </body>
 </html>

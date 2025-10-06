@@ -9,7 +9,7 @@ class Renderer
 
         $path = __DIR__ . '/../view/' . $file . '.php'; // mettre le chemin du fichier
         $content = file_get_contents($path);
-        $content = preg_match('/ff\s*(.+?)\s*}}/', "<?php echo $1?>", $content);
+        $content = preg_replace('/\{\{\s*(.+?)\s*\}\}/', '<?php echo $1; ?>', $content);
 
         //TODO : @if with @endif
         $content = preg_replace('/@if\s*\((.*?)\)/', '<?php if ($1): ?>', $content);
