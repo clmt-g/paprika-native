@@ -4,4 +4,6 @@ public/scratch.php
 /vendor
 config.ini
 TODO.me
-.phpdoc
+public/.phpdoc/
+storage/sqll.log
+storage/errorr.log
