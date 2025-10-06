@@ -18,9 +18,15 @@ class Renderer
         $content = file_get_contents($path);
         $content = preg_replace('/{{ \s*(.+?)\s*}}/', "<?php echo $1 ?>", $content);
 
-        // @if with @endif
+        // @if(condition)
+        $content = preg_replace('/@if\s*\((.+?)\)/', '<?php if ($1): ?>', $content);
+        // @endif
+        $content = preg_replace('/@endif/', '<?php endif; ?>', $content);
 
-        // @foreach with @endforeach
+        // @foreach(loop
+        $content = preg_replace('/@foreach\s*\((.+?)\)/', '<?php foreach ($1): ?>', $content);
+        // @endforeach
+        $content = preg_replace('/@endforeach/', '<?php endforeach; ?>', $content);
 
         // save $content in storage/cache directory
         $filepath = __DIR__ . "/../../storage/cache/$file.php";

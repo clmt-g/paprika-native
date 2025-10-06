@@ -8,6 +8,10 @@
     <title>Home</title>
 </head>
 <body>
-<?php echo 'Hello World!'?>
+{{ $age }}
+{{ $nom }}
+@foreach ( $tels as $type => $numero)
+<span> {{ $type }}  {{ $numero }} </span>
+@endforeach
 </body>
 </html>
