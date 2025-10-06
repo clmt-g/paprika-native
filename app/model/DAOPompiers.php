@@ -70,7 +70,7 @@ class DAOPompiers
                 $sql = "INSERT INTO pompiers (Matricule, Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, deleted) 
                         VALUES (:matricule, :prenom, :nom, :chefAgret, :dateNaissance, :numCaserne, :codeGrade, :matriculeRespo, 0)";
                 $preparedStatement = $pdo->prepare("$sql");
-                $preparedStatement->bindValue("matricule", $pompier->getMatricule(), PDO::PARAM_STR);
+                $preparedStatement->bindValue("matricule", $matricule, PDO::PARAM_STR);
                 $preparedStatement->bindValue("prenom", $pompier->getPrenom(), PDO::PARAM_STR);
                 $preparedStatement->bindValue("nom", $pompier->getNom(), PDO::PARAM_STR);
                 $preparedStatement->bindValue("chefAgret", $pompier->getChefAgret(), PDO::PARAM_STR);
@@ -85,13 +85,11 @@ class DAOPompiers
                 $pompier->setMatricule($matricule);
                 return true;
             } catch (Exception $e) {
-                // FIXME : logger
-                echo $e->getMessage();
+                echo "Error : " . $e->getMessage();
                 return false;
             }
         } else {
-            $this->update($pompier);
-            return true;
+            return $this->update($pompier);
         }
     }
 
@@ -152,7 +150,6 @@ class DAOPompiers
             echo "Error : ". $e->getMessage();
             return false;
         }
-        // est ce que c'est mieux de pas vérifier si le pompier était déjà supprimer (et renvoyer false dans ce cas ? Ou est ce qu'on ne s'en préocupe pas)
     }
 
     /**
