@@ -15,6 +15,7 @@ class CaserneController extends BaseController
         $this->daoCaserne = new DAOCaserne(SingletonConfigReader::getInstance()->getLoggedPDO());
     }
 
+
     public function create() : string {
 
         //Invocation du renderer qui renvoie la page avec le formulaire

@@ -8,11 +8,11 @@
     <title>Document</title>
 </head>
 <body>
-
+{{ $nom }} {{ $age }}
 
 @foreach ($tel as $type => $numero)
 
-<span>{{ $type }} : {{ $numero }}</span>
+<span>{{ $type }}  {{ $numero }}</span>
 
 @endforeach
 
