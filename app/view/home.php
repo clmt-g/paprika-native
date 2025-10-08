@@ -3,19 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+          content="width=device-width, initial-scale=1.0">
+    <title>Test Paprika</title>
 </head>
 <body>
-{{ $nom }} {{ $age }}
 
+<h1>Infos utilisateur</h1>
+<p>Nom : {{ $nom }}</p>
+<p>Age : {{ $age }}</p>
+<p>Couleur : <span style="color: {{ $couleur }}">{{ $couleur }}</span></p>
+<p>Examplediv : {{ $examplediv }}</p>
+<p>Compteur : {{ $compteur }}</p>
+
+<h2>Numéros de téléphone</h2>
 @foreach ($tel as $type => $numero)
-
-<span>{{ $type }}  {{ $numero }}</span>
-
+<p>{{ $type }} : {{ $numero }}</p>
 @endforeach
-
 
 </body>
 </html>
