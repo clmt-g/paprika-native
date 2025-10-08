@@ -22,25 +22,38 @@ class PompiersController extends BaseController
     /**
      * @return string
      */
-    public function create(): string
+    public function create(): void
     {
         // invocation du renderer qui renvoie la page avec le formulaire
-        return '';
     }
 
-    public function do_create($data)
+    public function show(): void
     {
-
+        // TODO: Implement show() method.
     }
 
-    public function update($matricule)
+    public function do_create($data): void
     {
-
+        // TODO: Implement do_create() method.
     }
 
-    public function do_update($matricule, $data)
+    public function update($id): void
     {
-
+        // TODO: Implement update() method.
     }
 
+    public function do_update($data): void
+    {
+        // TODO: Implement do_update() method.
+    }
+
+    public function delete($id): void
+    {
+        // TODO: Implement delete() method.
+    }
+
+    public function do_delete($id): void
+    {
+        // TODO: Implement do_delete() method.
+    }
 }
