@@ -3,6 +3,7 @@
 namespace Paprika\utils;
 
 use PDO;
+use Paprika\utils\SingletonLogger;
 
 class LoggedPDO extends PDO
 {

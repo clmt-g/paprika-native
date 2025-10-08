@@ -19,7 +19,7 @@ class SingletonLogger
         //insert
         // Fonction simple pour convertir texte en niveau Monolog
         $getLevel = function(?string $value, int $default): int {
-            if (!$value) return $default;
+            if (!$value) { return $default; }
 
             return match (strtoupper($value)) {
                 'DEBUG'     => Logger::DEBUG,
@@ -34,7 +34,7 @@ class SingletonLogger
             };
         };
 
-        //  la config 
+        //  la config
         $sqlLevel   = $getLevel($config->getValue("sql", "logs"), Logger::WARNING);
         $errorLevel = $getLevel($config->getValue("error", "logs"), Logger::ERROR);
 

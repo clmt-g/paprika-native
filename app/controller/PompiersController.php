@@ -4,6 +4,7 @@ namespace Paprika\controller;
 
 use Paprika\model\DAOPompiers;
 use Paprika\utils\SingletonDataBaseMariaDB;
+use Paprika\utils\Renderer;
 
 /**
  *
@@ -25,12 +26,20 @@ class PompiersController extends BaseController
     public function create(): string
     {
         // invocation du renderer qui renvoie la page avec le formulaire
+        return '';
     }
-
+    
     public function show($id) : void {
-        $dao = new PompierDAO();
-        $pompier = $dao->find($id);
+        if (!$id) {
+            header('Location: /');
+            exit;
+        }
+        $pompier = $this->pompierDAO->find($id);
 
+        if (!$pompier) {
+            header("location: /404.php");
+            exit;
+        }
         Renderer::render('pompiers/show', ['pompier' => $pompier]);
     }
 
