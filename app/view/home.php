@@ -8,10 +8,16 @@
     <title>Home</title>
 </head>
 <body>
-{{ $age }}
-{{ $nom }}
+{{ $age }}<br>
+{{ $nom }}<br>
+{{ $tels['home'] }}<br>
+@if($age == 15)
+<p>L'age est 15</p>
+@endif
 @foreach ( $tels as $type => $numero)
-<span> {{ $type }}  {{ $numero }} </span>
+<span> {{ $type }} <br> {{ $numero }} </span>
 @endforeach
+<span style="color: {{ $couleur }}">Test</span>
+
 </body>
 </html>
