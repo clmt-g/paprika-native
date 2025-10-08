@@ -22,14 +22,16 @@ class PompiersController extends BaseController
     /**
      * @return string
      */
-    public function create(): void
+    public function create(): string
     {
         // invocation du renderer qui renvoie la page avec le formulaire
     }
 
-    public function show(): void
-    {
-        // TODO: Implement show() method.
+    public function show($id) : void {
+        $dao = new PompierDAO();
+        $pompier = $dao->find($id);
+
+        Renderer::render('pompiers/show', ['pompier' => $pompier]);
     }
 
     public function do_create($data): void

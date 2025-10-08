@@ -9,6 +9,7 @@ require_once '../vendor/autoload.php';
 
 use \Paprika\controller\DefaultController;
 use \Paprika\controller\CaserneController;
+use \Paprika\controller\PompiersController;
 
 if (isset($_SERVER["PATH_INFO"])) {
     $path = trim($_SERVER["PATH_INFO"], "/");
@@ -29,7 +30,7 @@ switch ($control) {
         defaultRoutes_get($fragments);
         break;
     }
-    case "pompier" :
+    case "pompiers" :
     {
         //echo "Gestion des routes pour pompier <hr>";
         //calling function to prevend all hard code here
@@ -56,7 +57,7 @@ switch ($control) {
     {
         //FIXME : Redirection vers une page 404
         //echo "Erreur URL ... ";
-        header('Location: /404.html');
+        header('Location: /404.php');
     }
 }
 
@@ -79,7 +80,7 @@ function pompierRoutes_get($fragments)
         {
             //http://127.0.0.1:8080/pompier/show/5?p=25&a=12
             //echo "Calling pompierController->show <hr>";
-            call_user_func_array([new PompierController(), "showAll"], $fragments);
+            call_user_func_array([new PompierController(), "show"], $fragments);
             break;
         }
         case "demo" :
