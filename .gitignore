@@ -5,3 +5,4 @@ vendor/
 config.ini
 TODO.me
 public/.phpdoc/
+public/template.php
