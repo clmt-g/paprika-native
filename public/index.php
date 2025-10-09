@@ -77,20 +77,16 @@ function pompierRoutes_get($fragments)
     //var_dump($action);
 
     switch ($action) {
-        case "show" :
-        {
-            //http://127.0.0.1:8080/pompier/show/5?p=25&a=12
-            //echo "Calling pompierController->show <hr>";
-            echo call_user_func_array([new PompiersController(), "show"], $fragments);
+        case "show":
+            // Vérifie si on a "detail" après show
+            if (isset($fragments[0]) && $fragments[0] === "detail" && isset($fragments[1])) {
+                $id = $fragments[1];
+                echo call_user_func_array([new \Paprika\controller\PompiersController(), "detail"], [$id]);
+            } else {
+                // Sinon, affiche la liste
+                echo call_user_func_array([new \Paprika\controller\PompiersController(), "show"], $fragments);
+            }
             break;
-        }
-        case "delete" :
-        {
-            //echo "Calling pompierController->del <hr>";
-            //Access permission can be checked here too
-            call_user_func_array([new PompiersController(), "delete"], $fragments);
-            break;
-        }
         case "edit" :
         {
             //echo "Calling pompierController->del <hr>";

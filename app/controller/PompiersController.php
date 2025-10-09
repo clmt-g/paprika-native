@@ -29,7 +29,18 @@ class PompiersController extends BaseController
         return '';
     }
 
-    public function show($id) : string {
+    public function show() : string
+    {
+        $pompiers = $this->pompierDAO->findAll(100000);
+        if (!$pompiers) {
+            header("location: /404.php");
+            exit;
+        }
+        $i = 1;
+        return Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'i' => $i]);
+    }
+
+    public function detail($id) : string {
         if (!$id) {
             header('Location: /');
             exit;
@@ -40,7 +51,7 @@ class PompiersController extends BaseController
             header("location: /404.php");
             exit;
         }
-        return Renderer::render('pompiers/show', ['pompier' => $pompier]);
+        return Renderer::render('pompiers/detail', ['pompier' => $pompier]);
     }
 
     public function do_create($data): void
