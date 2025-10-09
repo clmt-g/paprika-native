@@ -24,6 +24,8 @@ class DAOCaserne {
         return $stmt->fetchObject(Caserne::class) ?: null;
     }
 
+    //crée methode detail
+
     public function save(Caserne $c): bool {
         $stmt = $this->pdo->prepare("
             INSERT INTO casernes (NumCaserne, Adresse, CP, Ville, CodeTypeC, deleted)
