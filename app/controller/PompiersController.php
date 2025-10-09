@@ -28,8 +28,8 @@ class PompiersController extends BaseController
         // invocation du renderer qui renvoie la page avec le formulaire
         return '';
     }
-    
-    public function show($id) : void {
+
+    public function show($id) : string {
         if (!$id) {
             header('Location: /');
             exit;
@@ -40,7 +40,7 @@ class PompiersController extends BaseController
             header("location: /404.php");
             exit;
         }
-        Renderer::render('pompiers/show', ['pompier' => $pompier]);
+        return Renderer::render('pompiers/show', ['pompier' => $pompier]);
     }
 
     public function do_create($data): void

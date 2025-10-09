@@ -16,9 +16,10 @@ class DefaultController extends BaseController
 
     }
 
-    public function show($id): void
+    public function show($id): string
     {
         // TODO: Implement show() method.
+        return '';
     }
 
     public function create(): string

@@ -81,7 +81,7 @@ function pompierRoutes_get($fragments)
         {
             //http://127.0.0.1:8080/pompier/show/5?p=25&a=12
             //echo "Calling pompierController->show <hr>";
-            call_user_func_array([new PompiersController(), "show"], $fragments);
+            echo call_user_func_array([new PompiersController(), "show"], $fragments);
             break;
         }
         case "delete" :

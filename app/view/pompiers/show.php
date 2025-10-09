@@ -9,12 +9,10 @@
 </head>
 <body>
 </body>
-<p>test</p>
+<p style="color: black;">test</p>
 @if($pompier)
-<span>Nom : {{ $pompier->getNom }}</span>
-<span>Prénom : {{ $pompier->getPrenom }}</span>
-@else
-<span>Pompier introuvable</span>
+<span>Nom : {{ $pompier->getNom() }}</span>
+<span>Prénom : {{ $pompier->getPrenom() }}</span>
 @endif
 
 </html>
