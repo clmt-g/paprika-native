@@ -20,37 +20,8 @@
         "monolog/monolog" : "^3.9",
       "ext-pdo": "*"
     },
-
-  "scripts": {
-    "phpcbf": "vendor/bin/phpcbf -p --standard=PSR12 app",
-    "phpcs": "vendor/bin/phpcs -p --standard=PSR12 --report=full app",
-    "csfixer": "vendor/bin/php-cs-fixer fix app --rules=@PSR12",
-    "csgenerate": "vendor/bin/cs-generator generate",
-    "csgen": [
-      "mkdir -p storage/reports",
-      "vendor/bin/phpcs -p --standard=PSR12 --report=full app > storage/reports/generated.txt || exit 0"
-    ],
-    "phpstan": [
-      "docker run --rm -v $(pwd):/app ghcr.io/phpstan/phpstan analyse -l 6 app --error-format=table"
-    ],
-    "phpmetrics": "vendor/bin/phpmetrics --report-html=storage/phpmetrics app/",
-    "phpmd": "vendor/bin/phpmd app text cleancode,codesize,unusedcode,naming"
-  },
-
-  "require-dev": {
-    "php" : "^8.3",
-    "symfony/var-dumper": "^7.3",
-    "phpdocumentor/shim": "^3.8",
-    "squizlabs/php_codesniffer": "^4.0",
-    "friendsofphp/php-cs-fixer": "^3.88",
-    "symfony/console": "^7.3",
-    "phpmetrics/phpmetrics": "^2.9",
-        "phpmd/phpmd": "^2.15"
-  },
-
-    "config": {
-        "allow-plugins": {
-            "phpdocumentor/shim": true
-        }
+    "require-dev": {
+        "php" : "^8.3",
+        "symfony/var-dumper": "^7.3"
     }
 }

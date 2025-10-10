@@ -1,0 +1,6 @@
+projectKey=paprika-t4s
+serverUrl=http://sonarqube.ad.supalta.com
+serverVersion=10.2.1.78527
+dashboardUrl=http://sonarqube.ad.supalta.com/dashboard?id=paprika-t4s
+ceTaskId=AZnObDrlodsQjXt1ogP3
+ceTaskUrl=http://sonarqube.ad.supalta.com/api/ce/task?id=AZnObDrlodsQjXt1ogP3
