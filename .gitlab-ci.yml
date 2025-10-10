@@ -1,0 +1,70 @@
+stages:          # List of stages for jobs, and their order of execution
+  - info
+  - build
+  - test
+  - deploy
+ 
+ 
+default:
+    interruptible: false
+    image : harbor.ad.supalta.com/library/phpci
+    tags:
+        - slam2
+ 
+ 
+information-job:
+    stage: info
+    script:
+        - uname -a
+        - echo $PWD
+        - env
+        - php --version
+
+phpcs-lint-job:
+  stage : test
+  image : harbor.ad.supalta.com/library/phpci:8.3
+  allow_failure: true
+  tags :
+    - slam2
+  before_script :
+    - composer install
+    - composer require --dev micheh/phpcs-gitlab
+  script:
+    - ./vendor/bin/phpcs --config-set ignore_errors_on_exit 1
+    - ./vendor/bin/phpcs --config-set ignore_warnings_on_exit 1
+    - ./vendor/bin/phpcs -s -p --extensions=php --report=full --standard=PSR12 app/
+    #- ./vendor/bin/phpcs --extensions=php  --standard=PSR12 --report=junit app/ > phpcs-report.xml
+    - ./vendor/bin/phpcs --extensions=php --report=full --report-\\Micheh\\PhpCodeSniffer\\Report\\Gitlab=phpcs-quality-report.json --standard=PSR12 app/
+  artifacts:
+    reports:
+#      junit:
+#        - phpcs-report.xml
+      codequality:
+        - phpcs-quality-report.json
+ 
+build-job:       # This job runs in the build stage, which runs first.
+  stage: build
+  script:
+    - echo "Compiling the code..."
+    - echo "Compile complete."
+ 
+unit-test-job:   # This job runs in the test stage.
+  stage: test    # It only starts when the job in the build stage completes successfully.
+  script:
+    - echo "Running unit tests... This will take about 60 seconds."
+    - sleep 60
+    - echo "Code coverage is 90%"
+ 
+lint-test-job:   # This job also runs in the test stage.
+  stage: test    # It can run at the same time as unit-test-job (in parallel).
+  script:
+    - echo "Linting code... This will take about 10 seconds."
+    - sleep 10
+    - echo "No lint issues found."
+ 
+deploy-job:      # This job runs in the deploy stage.
+  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."
