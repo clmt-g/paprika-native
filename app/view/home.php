@@ -26,10 +26,19 @@
             padding: 1rem 0;
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
-
+        header .logo {
+            width: 181px;
+            height: 40px;
+            object-fit: scale-down;
+            margin-right: -75px;
+            vertical-align: middle;
+        }
         header h1 {
+            display: inline-block;
+            vertical-align: middle;
             font-weight: 700;
             font-size: 1.8rem;
+            margin: 0;
         }
 
         /* SIDEBAR */
@@ -117,9 +126,12 @@
 
 <!-- HEADER -->
 <header class="text-center">
-    <div class="container">
-        <h1><i class="bi bi-fire"></i> Paprika</h1>
-        <p class="lead mb-0">Système de gestion des casernes et pompiers</p>
+    <div class="container d-flex flex-column align-items-center">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+            <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
+            <h1>Paprika</h1>
+        </div>
+        <p class="lead mb-0">Gestion des casernes & des pompiers</p>
     </div>
 </header>
 
@@ -128,9 +140,9 @@
 
         <!-- SIDEBAR -->
         <aside class="col-md-2 sidebar">
-            <a href="#" class="active"><i class="bi bi-house"></i> Accueil</a>
-            <a href="#"><i class="bi bi-building"></i> Casernes</a>
-            <a href="#"><i class="bi bi-people"></i> Pompiers</a>
+            <a href="" class="active"><i class="bi bi-house"></i> Accueil</a>
+            <a href="/caserne/show"><i class="bi bi-building"></i> Casernes</a>
+            <a href="/pompiers/show"><i class="bi bi-people"></i> Pompiers</a>
         </aside>
 
         <!-- CONTENU PRINCIPAL -->
@@ -144,7 +156,7 @@
                             <div class="card-body">
                                 <i class="bi bi-building display-5 text-danger"></i>
                                 <h5 class="mt-2">Casernes actives</h5>
-                                <h3>6</h3>
+                                <h3>6</h3> <!-- fixme : coder en dur -->
                             </div>
                         </div>
                     </div>
@@ -154,7 +166,7 @@
                             <div class="card-body">
                                 <i class="bi bi-person-fill display-5 text-danger"></i>
                                 <h5 class="mt-2">Pompiers disponibles</h5>
-                                <h3>45</h3>
+                                <h3>45</h3> <!-- fixme : coder en dur -->
                             </div>
                         </div>
                     </div>
@@ -170,6 +182,7 @@
                     </div>
                 </div>
 
+                <!-- fixme : est ce qu'on garde ? -->
                 <!-- PETITE INTERACTION DYNAMIQUE -->
                 <div class="mt-5 text-center">
                     <button id="refreshBtn" class="btn btn-danger">
@@ -185,7 +198,6 @@
 <!-- FOOTER -->
 <footer>
     <p>&copy; 2025 Paprika — Gestion des casernes et pompiers. Créé avec ❤️ par Clément.</p>
-    <p><a href="#">Mentions légales</a> | <a href="#">Contact</a></p>
 </footer>
 
 <script>
