@@ -9,3 +9,4 @@ public/template.php
 /Makefile
 /sonar/
 /.scannerwork/
+/.php-cs-fixer.cache
