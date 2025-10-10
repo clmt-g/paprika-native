@@ -8,3 +8,4 @@ public/.phpdoc/
 public/template.php
 /Makefile
 /sonar/
+/.scannerwork/
