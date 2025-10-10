@@ -2,23 +2,27 @@
 
 namespace Paprika\controller;
 
-/**
- *
- */
 abstract class BaseController
 {
 
-    public function __construct()
-    {
+    public function __construct(){
+
+
 
     }
 
-    public abstract function detail($id) : string ;
-    public abstract function show() : string ;
-    public abstract function create() : string ;
+    public abstract function show() : void ;
+
+    public abstract function create() : void ;
+
     public abstract function do_create($data) : void ;
+
     public abstract function update($id) : void ;
+
     public abstract function do_update($data) : void ;
+
     public abstract function delete($id) : void ;
+
     public abstract function do_delete($id) : void ;
+
 }

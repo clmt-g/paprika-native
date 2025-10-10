@@ -4,52 +4,16 @@ namespace Paprika\controller;
 
 class DefaultController extends BaseController
 {
+    public function show(): void {}
+    public function create(): void {}
+    public function do_create($data): void {}
+    public function update($id): void {}
+    public function do_update($data): void {}
+    public function delete($id): void {}
+    public function do_delete($id): void {}
 
-    public function __construct()
-    {
-        parent::__construct();
-        // ...
+    public function index() {
+        echo "Bienvenue sur la page par défaut !";
     }
 
-    public function index()
-    {
-
-    }
-
-    public function show($id): string
-    {
-        // TODO: Implement show() method.
-        return '';
-    }
-
-    public function create(): string
-    {
-        // TODO: Implement create() method.
-        return '';
-    }
-
-    public function do_create($data): void
-    {
-        // TODO: Implement do_create() method.
-    }
-
-    public function update($id): void
-    {
-        // TODO: Implement update() method.
-    }
-
-    public function do_update($data): void
-    {
-        // TODO: Implement do_update() method.
-    }
-
-    public function delete($id): void
-    {
-        // TODO: Implement delete() method.
-    }
-
-    public function do_delete($id): void
-    {
-        // TODO: Implement do_delete() method.
-    }
 }
