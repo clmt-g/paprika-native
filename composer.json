@@ -42,7 +42,8 @@
     "phpstan": [
       "docker run --rm -v $(pwd):/app ghcr.io/phpstan/phpstan analyse -l 6 app --error-format=table"
     ],
-    "phpmetrics": "vendor/bin/phpmetrics --report-html=storage/phpmetrics app/"
+    "phpmetrics": "vendor/bin/phpmetrics --report-html=storage/phpmetrics app/",
+    "phpmd": "vendor/bin/phpmd app text cleancode,codesize,unusedcode,naming"
   },
   "config": {
     "allow-plugins": {
