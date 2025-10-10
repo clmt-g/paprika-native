@@ -118,7 +118,7 @@
             <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
             <h1>Paprika</h1>
         </div>
-        <p class="lead mb-0">Gestion des casernes & des pompiers</p>
+        <p class="lead mb-0">Gesltion des casernes & des pompiers</p>
     </div>
 </header>
 
@@ -131,7 +131,7 @@
             <a href="/caserne/show" class="active">
                 <i class="bi bi-building"></i> Casernes
             </a>
-            <a href="/pompiers">
+            <a href="/pompiers/show">
                 <i class="bi bi-people"></i> Pompiers
             </a>
         </aside>

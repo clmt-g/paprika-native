@@ -16,4 +16,8 @@ class DefaultController extends BaseController
         echo "Bienvenue sur la page par défaut !";
     }
 
+    public function detail($id): void
+    {
+        // TODO: Implement detail() method.
+    }
 }

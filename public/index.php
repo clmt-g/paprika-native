@@ -39,7 +39,7 @@ switch ($control) {
         break;
 
     default:
-        header('Location: /404.html');
+        header('Location: /404.php');
         break;
 }
 
