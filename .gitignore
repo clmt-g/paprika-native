@@ -6,3 +6,5 @@ config.ini
 TODO.me
 public/.phpdoc/
 public/template.php
+/Makefile
+/sonar/
