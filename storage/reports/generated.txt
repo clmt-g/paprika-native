@@ -1,0 +1,14 @@
+
+FILE: /Users/usenmezselim/Documents/Paprika/paprika/app/model/DAOPompiers.php
+-----------------------------------------------------------------------------
+FOUND 0 ERRORS AND 7 WARNINGS AFFECTING 7 LINES
+-----------------------------------------------------------------------------
+  35 | WARNING | Line exceeds 120 characters; contains 162 characters
+  59 | WARNING | Line exceeds 120 characters; contains 171 characters
+  74 | WARNING | Line exceeds 120 characters; contains 144 characters
+  75 | WARNING | Line exceeds 120 characters; contains 133 characters
+ 109 | WARNING | Line exceeds 120 characters; contains 209 characters
+ 159 | WARNING | Line exceeds 120 characters; contains 155 characters
+ 171 | WARNING | Line exceeds 120 characters; contains 164 characters
+-----------------------------------------------------------------------------
+

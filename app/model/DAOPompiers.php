@@ -18,7 +18,8 @@ class DAOPompiers
     private \PDO $pdo;
     private string $user = "clement";
 
-    public function __construct(\PDO $pdo) {
+    public function __construct(\PDO $pdo)
+    {
         $this->pdo = $pdo;
     }
 
@@ -27,7 +28,8 @@ class DAOPompiers
      * @param string $id
      * @return ?Pompiers
      */
-    public function find(string $id): ?Pompiers {
+    public function find(string $id): ?Pompiers
+    {
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
 
         $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule FROM pompiers WHERE Matricule=:id AND deleted = 0";
@@ -58,7 +60,8 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
-    public function save(Pompiers $pompier): bool {
+    public function save(Pompiers $pompier): bool
+    {
         $matricule = $pompier->getMatricule();
         if ($matricule === "") {
             try {
@@ -99,24 +102,25 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
-    public function update(Pompiers $pompier): bool {
-    try {
-        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
-        $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo 
+    public function update(Pompiers $pompier): bool
+    {
+        try {
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
+            $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo 
                 WHERE Matricule = :matricule AND Deleted = 0";
 
-        $preparedStatement = $pdo->prepare($sql);
-        $preparedStatement->bindValue("prenom", $pompier->getPrenom(), PDO::PARAM_STR);
-        $preparedStatement->bindValue("nom", $pompier->getNom(), PDO::PARAM_STR);
-        $preparedStatement->bindValue("chefAgret", $pompier->getChefAgret(), PDO::PARAM_STR);
-        $preparedStatement->bindValue("dateNaissance", $pompier->getDateNaissance(), PDO::PARAM_STR);
-        $preparedStatement->bindValue("numCaserne", $pompier->getNumCaserne(), PDO::PARAM_INT);
-        $preparedStatement->bindValue("codeGrade", $pompier->getCodeGrade(), PDO::PARAM_STR);
-        $preparedStatement->bindValue("matriculeRespo", $pompier->getMatriculeRespo(), PDO::PARAM_STR);
-        $preparedStatement->bindValue("matricule", $pompier->getMatricule(), PDO::PARAM_STR);
-        $preparedStatement->execute();
+            $preparedStatement = $pdo->prepare($sql);
+            $preparedStatement->bindValue("prenom", $pompier->getPrenom(), PDO::PARAM_STR);
+            $preparedStatement->bindValue("nom", $pompier->getNom(), PDO::PARAM_STR);
+            $preparedStatement->bindValue("chefAgret", $pompier->getChefAgret(), PDO::PARAM_STR);
+            $preparedStatement->bindValue("dateNaissance", $pompier->getDateNaissance(), PDO::PARAM_STR);
+            $preparedStatement->bindValue("numCaserne", $pompier->getNumCaserne(), PDO::PARAM_INT);
+            $preparedStatement->bindValue("codeGrade", $pompier->getCodeGrade(), PDO::PARAM_STR);
+            $preparedStatement->bindValue("matriculeRespo", $pompier->getMatriculeRespo(), PDO::PARAM_STR);
+            $preparedStatement->bindValue("matricule", $pompier->getMatricule(), PDO::PARAM_STR);
+            $preparedStatement->execute();
 
-        return true;
+            return true;
         } catch (Exception $e) {
             echo 'Error : ' . $e->getMessage();
             return false;
@@ -128,7 +132,8 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
-    public function delete(Pompiers $pompier): bool {
+    public function delete(Pompiers $pompier): bool
+    {
         try {
             // vérifier si le pompier à bien été save / qu'il a un matricule
             $matricule = $pompier->getMatricule();
@@ -147,8 +152,8 @@ class DAOPompiers
             $pompier->setDeleted(true);
 
             return true;
-        } catch(Exception $e) { // si il y a une erreur lors de l'éxécution de la requête
-            echo "Error : ". $e->getMessage();
+        } catch (Exception $e) { // si il y a une erreur lors de l'éxécution de la requête
+            echo "Error : " . $e->getMessage();
             return false;
         }
         // est ce que c'est mieux de pas vérifier si le pompier était déjà supprimer (et renvoyer false dans ce cas ? Ou est ce qu'on ne s'en préocupe pas)
@@ -159,7 +164,8 @@ class DAOPompiers
      * @param int $maxItems
      * @return array
      */
-    public function findAll(int $maxItems = 100): array {
+    public function findAll(int $maxItems = 100): array
+    {
         try {
             $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
             $sql = "SELECT Prenom, Nom, ChefAgret, DateNaissance, NumCaserne, CodeGrade, MatriculeRespo, Matricule FROM pompiers WHERE deleted = 0 LIMIT :maxItems";
@@ -182,9 +188,8 @@ class DAOPompiers
                 );
             }
             return $pompiers;
-
         } catch (Exception $e) {
-            echo "Error : ". $e->getMessage();
+            echo "Error : " . $e->getMessage();
             return [];
         }
     }
@@ -193,7 +198,8 @@ class DAOPompiers
      * count all the instances in the table pompier
      * @return int
      */
-    public function count(): int {
+    public function count(): int
+    {
         try {
             $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
             $sql = "SELECT COUNT(*) FROM pompiers WHERE deleted = 0";
@@ -203,7 +209,7 @@ class DAOPompiers
             $count = $preparedStatement->fetchColumn();
             return (int) $count;
         } catch (Exception $e) {
-            echo "Error : ". $e->getMessage();
+            echo "Error : " . $e->getMessage();
             return 0;
         }
     }
@@ -213,7 +219,8 @@ class DAOPompiers
      * @param string $grade
      * @return ?array
      */
-    public function findByGrade(string $grade): ?array {
+    public function findByGrade(string $grade): ?array
+    {
         try {
             // vérifier que le grade n'est pas vide ou null
             if ($grade == "" || $grade == null) {
@@ -247,7 +254,6 @@ class DAOPompiers
                 );
             }
             return $pompiers;
-
         } catch (Exception $e) { // si problème lors de l'éxécution de la requête
             echo 'Error : ' .  $e->getMessage();
             return null;
@@ -259,7 +265,8 @@ class DAOPompiers
      * @return string
      * @throws Exception
      */
-    public function keyGenerator(): string {
+    public function keyGenerator(): string
+    {
         // calcule du matricule
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT MAX(matricule) FROM pompiers;";

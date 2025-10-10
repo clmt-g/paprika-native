@@ -44,8 +44,8 @@ class SingletonConfigReader
 
     public function getValue(string $key, ?string $section = null): ?string
     {
-        if($section === null) {
-        return $this->data[$key] ?? null;
+        if ($section === null) {
+            return $this->data[$key] ?? null;
         }
         return $this->data[$section][$key] ?? null;
     }

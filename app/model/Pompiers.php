@@ -20,22 +20,30 @@ class Pompiers extends stdClass
     // exclure le champ deleted
 
     // --- constructeurs ---
-    public function __construct(string $Prenom, string $Nom, string $ChefAgret, string $DateNaissance, int $NumCaserne,
-    string $CodeGrade, string $MatriculeRespo, string $Matricule = "") {
-    if (!empty($Matricule)) {
-        $this->Matricule = $Matricule;
-    } else {
-        $this->Matricule = ""; // placeholder
-    }
+    public function __construct(
+        string $Prenom,
+        string $Nom,
+        string $ChefAgret,
+        string $DateNaissance,
+        int $NumCaserne,
+        string $CodeGrade,
+        string $MatriculeRespo,
+        string $Matricule = ""
+    ) {
+        if (!empty($Matricule)) {
+            $this->Matricule = $Matricule;
+        } else {
+            $this->Matricule = ""; // placeholder
+        }
 
-    $this->Prenom = $Prenom;
-    $this->Nom = $Nom;
-    $this->ChefAgret = $ChefAgret;
-    $this->DateNaissance = $DateNaissance;
-    $this->NumCaserne = $NumCaserne;
-    $this->CodeGrade = $CodeGrade;
-    $this->MatriculeRespo = $MatriculeRespo;
-    $this->deleted = false;
+        $this->Prenom = $Prenom;
+        $this->Nom = $Nom;
+        $this->ChefAgret = $ChefAgret;
+        $this->DateNaissance = $DateNaissance;
+        $this->NumCaserne = $NumCaserne;
+        $this->CodeGrade = $CodeGrade;
+        $this->MatriculeRespo = $MatriculeRespo;
+        $this->deleted = false;
     }
 
     // -- Getter setter ---
@@ -130,7 +138,7 @@ class Pompiers extends stdClass
         $this->MatriculeRespo = $MatriculeRespo;
         return $this;
     }
-    public function setDeleted(bool $deleted): Pompiers 
+    public function setDeleted(bool $deleted): Pompiers
     {
         $this->deleted = $deleted;
         return $this;
