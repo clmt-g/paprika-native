@@ -23,13 +23,12 @@ class PompiersController extends BaseController
     /**
      * @return string
      */
-    public function create(): string
+    public function create(): void
     {
         // invocation du renderer qui renvoie la page avec le formulaire
-        return '';
     }
 
-    public function show() : string
+    public function show() : void
     {
         $pompiers = $this->pompierDAO->findAll(100000);
         if (!$pompiers) {
@@ -37,10 +36,10 @@ class PompiersController extends BaseController
             exit;
         }
         $i = 1;
-        return Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'i' => $i]);
+        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'i' => $i]);
     }
 
-    public function detail($id) : string {
+    public function detail($id) : void {
         if (!$id) {
             header('Location: /');
             exit;
@@ -51,7 +50,7 @@ class PompiersController extends BaseController
             header("location: /404.php");
             exit;
         }
-        return Renderer::render('pompiers/detail', ['pompier' => $pompier]);
+        echo Renderer::render('pompiers/detail', ['pompier' => $pompier]);
     }
 
     public function do_create($data): void

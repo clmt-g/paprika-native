@@ -165,19 +165,19 @@
                         <tbody id="tableCasernes">
                         <?php foreach ($casernes as $c): ?>
                         <tr>
-                            <td><span class="badge bg-secondary"><?php echo $c->getNumCaserne(); ?></span></td>
-                            <td><?php echo $c->getAdresse(); ?></td>
-                            <td><?php echo $c->getCp(); ?></td>
-                            <td><i class="bi bi-geo-alt text-danger"></i> <?php echo $c->getVille(); ?></td>
-                            <td><span class="badge bg-info">Type <?php echo $c->getCodeTypeC(); ?></span></td>
+                            <td><span class="badge bg-secondary"><?php echo $c->getNumCaserne() ?></span></td>
+                            <td><?php echo $c->getAdresse() ?></td>
+                            <td><?php echo $c->getCp() ?></td>
+                            <td><i class="bi bi-geo-alt text-danger"></i> <?php echo $c->getVille() ?></td>
+                            <td><span class="badge bg-info">Type <?php echo $c->getCodeTypeC() ?></span></td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
-                                    <a href="/caserne/show/detail/<?php echo $c->getNumCaserne(); ?>"
+                                    <a href="/caserne/show/detail/<?php echo $c->getNumCaserne() ?>"
                                        class="btn btn-outline-primary"
                                        title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="/caserne/update/<?php echo $c->getNumCaserne(); ?>"
+                                    <a href="/caserne/update/<?php echo $c->getNumCaserne() ?>"
                                        class="btn btn-outline-warning"
                                        title="Modifier">
                                         <i class="bi bi-pencil"></i>
@@ -186,7 +186,7 @@
                                           action="/caserne/delete"
                                           style="display:inline;"
                                           onsubmit="return confirm('Voulez-vous vraiment supprimer cette caserne ?');">
-                                        <input type="hidden" name="id" value="<?php echo $c->getNumCaserne(); ?>">
+                                        <input type="hidden" name="id" value="<?php echo $c->getNumCaserne() ?>">
                                         <button type="submit"
                                                 class="btn btn-outline-danger"
                                                 title="Supprimer">

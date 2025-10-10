@@ -96,20 +96,20 @@
 </head>
 <body>
 
-<h1>Détails de la Caserne n° <?php echo $caserne->getNumCaserne(); ?></h1>
+<h1>Détails de la Caserne n° <?php echo $caserne->getNumCaserne() ?></h1>
 
 <div class="detail-container">
-    <p><strong>Adresse :</strong> <?php echo $caserne->getAdresse(); ?></p>
-    <p><strong>Code Postal :</strong> <?php echo $caserne->getCp(); ?></p>
-    <p><strong>Ville :</strong> <?php echo $caserne->getVille(); ?></p>
-    <p><strong>Type de Caserne :</strong> <?php echo $caserne->getCodeTypeC(); ?></p>
+    <p><strong>Adresse :</strong> <?php echo $caserne->getAdresse() ?></p>
+    <p><strong>Code Postal :</strong> <?php echo $caserne->getCp() ?></p>
+    <p><strong>Ville :</strong> <?php echo $caserne->getVille() ?></p>
+    <p><strong>Type de Caserne :</strong> <?php echo $caserne->getCodeTypeC() ?></p>
 
     <div class="actions">
         <a href="/caserne/show">← Retour à la liste</a>
-        <a href="/caserne/update/<?php echo $caserne->getNumCaserne(); ?>">Modifier</a>
+        <a href="/caserne/update/<?php echo $caserne->getNumCaserne() ?>">Modifier</a>
 
         <form method="POST" action="/caserne/delete" onsubmit="return confirm('Voulez-vous vraiment supprimer cette caserne ?');">
-            <input type="hidden" name="id" value="<?php echo $caserne->getNumCaserne(); ?>">
+            <input type="hidden" name="id" value="<?php echo $caserne->getNumCaserne() ?>">
             <button type="submit">Supprimer</button>
         </form>
     </div>

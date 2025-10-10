@@ -4,6 +4,7 @@ require_once '../vendor/autoload.php';
 
 use \Paprika\controller\DefaultController;
 use \Paprika\controller\CaserneController;
+use \Paprika\controller\PompiersController;
 
 if (isset($_SERVER["PATH_INFO"])) {
     $path = trim($_SERVER["PATH_INFO"], "/");
@@ -19,7 +20,7 @@ switch ($control) {
         defaultRoutes_get($fragments);
         break;
 
-    case "pompier":
+    case "pompiers":
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             pompierRoutes_get($fragments);
         }
@@ -57,23 +58,23 @@ function caserneRoutes_get($fragments)
             // Vérifie si on a "detail" après show
             if (isset($fragments[0]) && $fragments[0] === "detail" && isset($fragments[1])) {
                 $id = (int)$fragments[1];
-                call_user_func_array([new \Paprika\controller\CaserneController(), "detail"], [$id]);
+                echo call_user_func_array([new \Paprika\controller\CaserneController(), "detail"], [$id]);
             } else {
                 // Sinon, affiche la liste
-                call_user_func_array([new \Paprika\controller\CaserneController(), "show"], $fragments);
+                echo call_user_func_array([new \Paprika\controller\CaserneController(), "show"], $fragments);
             }
             break;
 
         case "add":
-            call_user_func_array([new \Paprika\controller\CaserneController(), "create"], $fragments);
+            echo call_user_func_array([new \Paprika\controller\CaserneController(), "create"], $fragments);
             break;
 
         case "update":
-            call_user_func_array([new \Paprika\controller\CaserneController(), "update"], $fragments);
+            echo call_user_func_array([new \Paprika\controller\CaserneController(), "update"], $fragments);
             break;
 
         case "delete":
-            call_user_func_array([new \Paprika\controller\CaserneController(), "delete"], $fragments);
+            echo call_user_func_array([new \Paprika\controller\CaserneController(), "delete"], $fragments);
             break;
 
         default:

@@ -13,6 +13,8 @@ abstract class BaseController
 
     public abstract function show() : void ;
 
+    public abstract function detail($id) : void ;
+
     public abstract function create() : void ;
 
     public abstract function do_create($data) : void ;
