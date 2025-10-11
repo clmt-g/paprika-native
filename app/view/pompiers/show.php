@@ -189,12 +189,9 @@
                                     <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form method="POST" action="/pompiers/delete" style="display:inline;" onsubmit="return confirm('Supprimer ce pompier ?');">
-                                        <input type="hidden" name="id" value="{{ $pompier->getMatricule() }}">
-                                        <button type="submit" class="btn btn-outline-danger" title="Supprimer">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <a href="#" class="btn btn-outline-danger" title="Supprimer" onclick="loadDeleteModal('/pompiers/delete/{{ $pompier->getMatricule() }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -222,6 +219,27 @@
             r.style.display = r.textContent.toLowerCase().includes(val) ? '' : 'none';
         });
     });
+    function loadDeleteModal(url) {
+        // Change l'URL sans recharger la page
+        window.history.pushState({}, '', url);
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                let container = document.createElement('div');
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                let modal = new bootstrap.Modal(document.querySelector('.modal'));
+                modal.show();
+
+                // Quand on ferme la modale, revenir à l'URL précédente
+                document.querySelector('.modal').addEventListener('hidden.bs.modal', function() {
+                    window.history.back();
+                    this.parentElement.remove();
+                });
+            });
+    }
 </script>
 </body>
 </html>

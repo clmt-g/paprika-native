@@ -127,14 +127,17 @@ function pompierRoutes_get($fragments)
             break;
         case "update" :
         {
-            //echo "Calling pompierController->del <hr>";
             call_user_func_array([new PompiersController(), "update"], $fragments);
             break;
         }
         case "create" :
         {
-            //echo "Calling pompierController->del <hr>";
             call_user_func_array([new PompiersController(), "create"], $fragments);
+            break;
+        }
+        case "delete" :
+        {
+            call_user_func_array([new PompiersController(), "delete"], $fragments);
             break;
         }
 
@@ -151,7 +154,7 @@ function pompierRoutes_post($fragments)
 
     $action = array_shift($fragments);
     switch ($action) {
-        case "delete":
+        case "do_delete":
             //Access permission can be checked here too
             call_user_func_array([new PompiersController(), "do_delete"], $fragments);
             break;

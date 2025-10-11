@@ -80,11 +80,22 @@ class PompiersController extends BaseController
 
     public function delete($id): void
     {
-        // TODO: Implement delete() method.
+        $pompier = $this->pompierDAO->find($id);
+        if (!$pompier) {
+            echo "Pompier introuvable";
+            return;
+        }
+        echo Renderer::render('pompiers/delete', ['pompier' => $pompier]);
     }
 
     public function do_delete($id): void
     {
-        // TODO: Implement do_delete() method.
+        $pompier = $this->pompierDAO->find($id);
+        if ($this->pompierDAO->delete($pompier)) {
+            header("Location: /pompiers/show");
+            exit;
+        } else {
+            echo "Erreur lors de la suppression du pompier.";
+        }
     }
 }
