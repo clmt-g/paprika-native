@@ -51,6 +51,34 @@
             background-color: var(--rouge-fonce);
             transform: translateY(-2px);
         }
+        .input-group .btn {
+            border: 1px solid #dee2e6;
+            color: var(--rouge-paprika);
+            transition: all 0.2s ease;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.9rem;
+        }
+        .input-group .btn:hover {
+            background-color: var(--rouge-paprika);
+            color: white;
+            transform: translateY(-2px);
+        }
+        .caserne-link {
+            display: block;
+            padding: 0.375rem 0.75rem;
+            background-color: #f5f5f5;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            color: #555;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 1rem;
+        }
+        .caserne-link:hover {
+            background-color: #efefef;
+            color: var(--rouge-paprika);
+            border-color: var(--rouge-paprika);
+            transform: translateY(-2px);
     </style>
 </head>
 <body>
@@ -79,8 +107,9 @@
                     <input type="hidden" name="chefAgret" value="{{ $pompier->getChefAgret() }}">
 
                     <label for="numCaserne">Caserne</label>
-                    <input type="text" id="numCaserne" class="form-control"
-                           value="{{ 'Caserne n°'.$pompier->getNumCaserne() }}" disabled>
+                    <a href="/caserne/show/detail/{{ $pompier->getNumCaserne() }}" class="caserne-link">
+                        Caserne n°{{ $pompier->getNumCaserne() }}
+                    </a>
                 </div>
 
                 <div class="col-md-6">
