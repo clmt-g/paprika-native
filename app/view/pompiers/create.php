@@ -62,35 +62,35 @@
             <hr>
         </div>
 
-        <form class="px-3">
+        <form class="px-3" method="POST" action="/pompiers/create">
             <div class="row">
                 <div class="col-md-6">
                     <label for="nom">Nom</label>
-                    <input type="text" id="nom" class="form-control" required>
+                    <input type="text" id="nom" name="nom" class="form-control" required>
 
                     <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" class="form-control" required>
+                    <input type="text" id="prenom" name="prenom" class="form-control" required>
 
                     <label for="chefAgret">Chef d'agrès</label>
-                    <select id="chefAgret" class="form-select" required>
+                    <select id="chefAgret" name="chefAgret" class="form-select" required>
                         <option value="N">Non</option>
                         <option value="O">Oui</option>
                     </select>
 
                     <!-- FIXME : liste des casernes existantes -->
                     <label for="numCaserne">Caserne</label>
-                    <input type="text" id="numCaserne" class="form-control" required>
+                    <input type="text" id="numCaserne" name="numCaserne" class="form-control" required>
                 </div>
 
                 <div class="col-md-6">
                     <label for="dateNaissance">Date de naissance</label>
-                    <input type="date" id="dateNaissance" class="form-control" required>
+                    <input type="date" id="dateNaissance" name="dateNaissance" class="form-control" required>
 
                     <label for="codeGrade">Code grade</label>
-                    <input type="text" id="codeGrade" class="form-control" required>
+                    <input type="text" id="codeGrade" name="codeGrade" class="form-control" required>
 
                     <label for="matriculeRespo">Matricule du responsable</label>
-                    <input type="text" id="matriculeRespo" class="form-control" required>
+                    <input type="text" id="matriculeRespo" name="matriculeRespo" class="form-control" required>
                 </div>
             </div>
 
@@ -98,9 +98,9 @@
                 <a href="/pompiers/show/" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
-                <a href="#" class="btn btn-danger">
+                <button type="submit" class="btn btn-danger">
                     <i class="bi bi-pencil"></i> Créer ce pompier
-                </a>
+                </button>
             </div>
         </form>
     </div>

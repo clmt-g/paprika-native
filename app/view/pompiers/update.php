@@ -62,7 +62,7 @@
             <hr>
         </div>
 
-        <form method="POST" action="/pompiers/do_update/{{ $pompier->getMatricule() }}" class="px-3">
+        <form method="POST" action="/pompiers/update/{{ $pompier->getMatricule() }}" class="px-3">
             <div class="row">
                 <div class="col-md-6">
                     <label for="matricule">Matricule</label>

@@ -141,12 +141,15 @@ function pompierRoutes_post($fragments)
 {
     $action = array_shift($fragments);
     switch ($action) {
-        case "do_delete":
+        case "delete":
             //Access permission can be checked here too
             call_user_func_array([new PompiersController(), "do_delete"], $fragments);
             break;
-        case "do_update" :
+        case "update" :
             call_user_func_array([new PompiersController(), "do_update"], $fragments);
+            break;
+        case "create" :
+            call_user_func_array([new PompiersController(), "do_create"], [null]);
             break;
         default:
             echo "Action '$action' non defini <hr>";

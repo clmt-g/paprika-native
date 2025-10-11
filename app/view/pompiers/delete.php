@@ -98,7 +98,7 @@
                 <a href="/pompiers/show" type="button" class="btn btn-secondary">
                     <i class="bi bi-x-circle me-2"></i>Annuler
                 </a>
-                <form method="POST" action="/pompiers/do_delete/{{ $pompier->getMatricule() }}" style="display:inline;">
+                <form method="POST" action="/pompiers/delete/{{ $pompier->getMatricule() }}" style="display:inline;">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash me-2"></i>Oui, supprimer
                     </button>

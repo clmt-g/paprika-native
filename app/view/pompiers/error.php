@@ -110,9 +110,16 @@
             </ul>
         </div>
 
+        @if($type === 'create')
+        <a href="/pompiers/create" class="btn-back">
+            <i class="bi bi-arrow-left me-2"></i>Retour à la création
+        </a>
+        @endif
+        @if($type === 'update')
         <a href="/pompiers/update/{{ $matricule }}" class="btn-back">
             <i class="bi bi-arrow-left me-2"></i>Retour à la modification
         </a>
+        @endif
     </div>
 </div>
 
