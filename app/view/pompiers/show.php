@@ -186,10 +186,10 @@
                                     <a href="/pompiers/show/detail/{{ $pompier->getMatricule() }}" class="btn btn-outline-primary" title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="/pompier/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
+                                    <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form method="POST" action="/pompier/delete" style="display:inline;" onsubmit="return confirm('Supprimer ce pompier ?');">
+                                    <form method="POST" action="/pompiers/delete" style="display:inline;" onsubmit="return confirm('Supprimer ce pompier ?');">
                                         <input type="hidden" name="id" value="{{ $pompier->getMatricule() }}">
                                         <button type="submit" class="btn btn-outline-danger" title="Supprimer">
                                             <i class="bi bi-trash"></i>

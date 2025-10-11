@@ -125,10 +125,10 @@ function pompierRoutes_get($fragments)
                 echo call_user_func_array([new \Paprika\controller\PompiersController(), "show"], $fragments);
             }
             break;
-        case "edit" :
+        case "update" :
         {
             //echo "Calling pompierController->del <hr>";
-            call_user_func_array([new PompiersController(), "edit"], $fragments);
+            call_user_func_array([new PompiersController(), "update"], $fragments);
             break;
         }
         case "create" :

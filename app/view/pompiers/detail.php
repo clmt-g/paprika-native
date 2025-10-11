@@ -71,9 +71,10 @@
 
                     <label for="chefAgret">Chef d'agrès</label>
                     <select id="chefAgret" class="form-select" disabled>
-                        <option value="0" {{ $pompier->getChefAgret() == 0 ? 'selected' : '' }}>Non</option>
-                        <option value="1" {{ $pompier->getChefAgret() == 1 ? 'selected' : '' }}>Oui</option>
+                        <option value="O" {{ $pompier->getChefAgret() == 'O' ? 'selected' : '' }}>Oui</option>
+                        <option value="N" {{ $pompier->getChefAgret() == 'N' ? 'selected' : '' }}>Non</option>
                     </select>
+                    <input type="hidden" name="chefAgret" value="{{ $pompier->getChefAgret() }}">
 
                     <label for="numCaserne">Caserne</label>
                     <input type="text" id="numCaserne" class="form-control"
@@ -96,7 +97,7 @@
                 <a href="/pompiers/show/" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
-                <a href="/pompier/update/{{ $pompier->getMatricule() }}" class="btn btn-danger">
+                <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-danger">
                     <i class="bi bi-pencil"></i> Modifier ce pompier
                 </a>
             </div>

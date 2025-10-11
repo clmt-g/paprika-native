@@ -60,7 +60,17 @@ class PompiersController extends BaseController
 
     public function update($id): void
     {
-        // TODO: Implement update() method.
+        if (!$id) {
+            header('Location: /');
+            exit;
+        }
+        $pompier = $this->pompierDAO->find($id);
+
+        if (!$pompier) {
+            header("location: /404.php");
+            exit;
+        }
+        echo Renderer::render('pompiers/update', ['pompier' => $pompier]);
     }
 
     public function do_update($data): void
