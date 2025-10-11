@@ -76,8 +76,8 @@
     }
 </style>
 
-<!-- HTML de la modale (à retourner par ta route /pompiers/delete/) -->
-<div class="modal fade" tabindex="-1">
+<!-- HTML de la modale -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -95,9 +95,9 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <a href="/pompiers/show" type="button" class="btn btn-secondary">
                     <i class="bi bi-x-circle me-2"></i>Annuler
-                </button>
+                </a>
                 <form method="POST" action="/pompiers/do_delete/{{ $pompier->getMatricule() }}" style="display:inline;">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash me-2"></i>Oui, supprimer

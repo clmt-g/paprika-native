@@ -39,7 +39,7 @@ switch ($control) {
         break;
 
     default:
-        header('Location: /404.php');
+        header('Location: /error404.php');
         break;
 }
 
@@ -52,7 +52,6 @@ function defaultRoutes_get($fragments)
 function caserneRoutes_get($fragments)
 {
     $action = array_shift($fragments);
-
     switch ($action) {
         case "show":
             // Vérifie si on a "detail" après show
@@ -64,19 +63,15 @@ function caserneRoutes_get($fragments)
                 echo call_user_func_array([new \Paprika\controller\CaserneController(), "show"], $fragments);
             }
             break;
-
         case "add":
             echo call_user_func_array([new \Paprika\controller\CaserneController(), "create"], $fragments);
             break;
-
         case "update":
             echo call_user_func_array([new \Paprika\controller\CaserneController(), "update"], $fragments);
             break;
-
         case "delete":
             echo call_user_func_array([new \Paprika\controller\CaserneController(), "delete"], $fragments);
             break;
-
         default:
             echo "Action '$action' non définie <hr>";
             break;
@@ -86,7 +81,6 @@ function caserneRoutes_get($fragments)
 function caserneRoutes_post($fragments)
 {
     $action = array_shift($fragments);
-
     switch ($action) {
         case "add":
             echo call_user_func_array([new CaserneController(), "do_create"], [$_POST]);
@@ -108,9 +102,6 @@ function caserneRoutes_post($fragments)
 
 function pompierRoutes_get($fragments)
 {
-
-    //var_dump($fragment);
-
     $action = array_shift($fragments);
     //var_dump($action);
 
@@ -140,28 +131,22 @@ function pompierRoutes_get($fragments)
             call_user_func_array([new PompiersController(), "delete"], $fragments);
             break;
         }
-
-        default :
         {
             echo "Action '$action' non defini <hr>";
-            //Gestion du probleme
         }
     }
 }
 
 function pompierRoutes_post($fragments)
 {
-
     $action = array_shift($fragments);
     switch ($action) {
         case "do_delete":
             //Access permission can be checked here too
             call_user_func_array([new PompiersController(), "do_delete"], $fragments);
             break;
-        case "update" :
-            //echo "Action '$action' ready <hr>";
-            //Access permission can be checked here too
-            call_user_func_array([new PompiersController(), "update"], $fragments);
+        case "do_update" :
+            call_user_func_array([new PompiersController(), "do_update"], $fragments);
             break;
         default:
             echo "Action '$action' non defini <hr>";

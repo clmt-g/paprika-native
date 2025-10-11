@@ -50,7 +50,6 @@ class DAOPompiers
             return null;
         }
         return $pompier;
-        // FIXME : log des requêtes
     }
 
     /**

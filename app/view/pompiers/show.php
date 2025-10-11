@@ -121,7 +121,7 @@
     <div class="row">
         <!-- Sidebar -->
         <aside class="col-md-2 sidebar">
-            <a href="" class="">
+            <a href="/" class="">
                 <i class="bi bi-speedometer2"></i> Tableau de bord
             </a>
             <a href="/caserne/show">

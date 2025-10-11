@@ -137,7 +137,7 @@
 <div class="message" id="message">
     <h1>Erreur 404</h1>
     <p>Cette page s’est volatilisée dans un nuage de paprika 🌶️</p>
-    <a href="/">Retour à la caserne</a>
+    <a href="/">Retour à l'accueil</a>
 </div>
 
 <footer>&copy; 2025 Paprika — Gestion des casernes et pompiers</footer>

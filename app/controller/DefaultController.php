@@ -17,9 +17,5 @@ class DefaultController extends BaseController
     public function do_update($data): void {}
     public function delete($id): void {}
     public function do_delete($id): void {}
-
-    public function detail($id): void
-    {
-        // TODO: Implement detail() method.
-    }
+    public function detail($id): void {}
 }

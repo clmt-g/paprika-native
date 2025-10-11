@@ -58,8 +58,7 @@
 <main>
     <div class="card p-4 fade-in">
         <div class="text-center">
-            <h2 class="fw-bold text-danger mb-0">Détails du pompier {{ $pompier->getPrenom() }} {{ $pompier->getNom() }}</h2>
-            <p class="text-muted">Grade : <span class="fw-semibold">{{ $pompier->getCodeGrade() ?? $pompier->getCodeGrade() }}</span></p>
+            <h2 class="fw-bold text-danger mb-0">Détails du pompier</h2>
             <hr>
         </div>
 
@@ -68,6 +67,9 @@
                 <div class="col-md-6">
                     <label for="matricule">Matricule</label>
                     <input type="text" id="matricule" class="form-control" value="{{ $pompier->getMatricule() }}" disabled>
+
+                    <label for="prenom">Prénom</label>
+                    <input type="text" id="prenom" name="prenom" class="form-control" value="{{ $pompier->getPrenom() }}" disabled>
 
                     <label for="chefAgret">Chef d'agrès</label>
                     <select id="chefAgret" class="form-select" disabled>
@@ -82,6 +84,9 @@
                 </div>
 
                 <div class="col-md-6">
+                    <label for="nom">Nom</label>
+                    <input type="text" id="nom" name="nom" class="form-control" value="{{ $pompier->getNom() }}" disabled>
+
                     <label for="dateNaissance">Date de naissance</label>
                     <input type="date" id="dateNaissance" class="form-control" value="{{ $pompier->getDateNaissance() }}" disabled>
 

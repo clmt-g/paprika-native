@@ -62,14 +62,14 @@
             <hr>
         </div>
 
-        <form class="px-3">
+        <form method="POST" action="/pompiers/do_update/{{ $pompier->getMatricule() }}" class="px-3">
             <div class="row">
                 <div class="col-md-6">
                     <label for="matricule">Matricule</label>
-                    <input type="text" id="matricule" class="form-control" value="{{ $pompier->getMatricule() }}" disabled>
+                    <input type="text" id="matricule" name="matricule" class="form-control" value="{{ $pompier->getMatricule() }}" readonly>
 
                     <label for="prenom">Prénom</label>
-                    <input type="text" id="prenom" class="form-control" value="{{ $pompier->getPrenom() }}" required>
+                    <input type="text" id="prenom" name="prenom" class="form-control" value="{{ $pompier->getPrenom() }}" required>
 
                     <label for="chefAgret">Chef d'agrès</label>
                     <select id="chefAgret" class="form-select" required>
@@ -78,23 +78,23 @@
                     </select>
                     <input type="hidden" name="chefAgret" value="{{ $pompier->getChefAgret() }}">
 
-                    <label for="numCaserne">Caserne</label>
-                    <input type="text" id="numCaserne" class="form-control"
-                           value="{{ 'Caserne n°'.$pompier->getNumCaserne() }}" required>
+                    <label for="numCaserne">Caserne n°</label>
+                    <input type="number" id="numCaserne" name="numCaserne" class="form-control"
+                           value="{{ $pompier->getNumCaserne() }}" required>
                 </div>
 
                 <div class="col-md-6">
                     <label for="nom">Nom</label>
-                    <input type="text" id="nom" class="form-control" value="{{ $pompier->getNom() }}" required>
+                    <input type="text" id="nom" name="nom" class="form-control" value="{{ $pompier->getNom() }}" required>
 
                     <label for="dateNaissance">Date de naissance</label>
-                    <input type="date" id="dateNaissance" class="form-control" value="{{ $pompier->getDateNaissance() }}" required>
+                    <input type="date" id="dateNaissance" name="dateNaissance" class="form-control" value="{{ $pompier->getDateNaissance() }}" required>
 
                     <label for="codeGrade">Code grade</label>
-                    <input type="text" id="codeGrade" class="form-control" value="{{ $pompier->getCodeGrade() }}" required>
+                    <input type="text" id="codeGrade" name="codeGrade" class="form-control" value="{{ $pompier->getCodeGrade() }}" required>
 
                     <label for="matriculeRespo">Matricule du responsable</label>
-                    <input type="text" id="matriculeRespo" class="form-control" value="{{ $pompier->getMatriculeRespo() }}" required>
+                    <input type="text" id="matriculeRespo" name="matriculeRespo" class="form-control" value="{{ $pompier->getMatriculeRespo() }}" required>
                 </div>
             </div>
 
@@ -102,9 +102,9 @@
                 <a href="/pompiers/show/" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
-                <a href="#" class="btn btn-danger">
+                <button type="submit" class="btn btn-danger">
                     <i class="bi bi-pencil"></i> Enregistrer les modifications
-                </a>
+                </button>
             </div>
         </form>
     </div>
