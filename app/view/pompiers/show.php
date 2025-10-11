@@ -121,7 +121,7 @@
     <div class="row">
         <!-- Sidebar -->
         <aside class="col-md-2 sidebar">
-            <a href="/" class="">
+            <a href="" class="">
                 <i class="bi bi-speedometer2"></i> Tableau de bord
             </a>
             <a href="/caserne/show">
@@ -136,7 +136,7 @@
         <main class="col-md-10 fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-fire text-danger"></i> Liste des pompiers</h2>
-                <a href="/pompier/add" class="btn btn-danger">
+                <a href="/pompiers/create" class="btn btn-danger">
                     <i class="bi bi-plus-circle"></i> Ajouter un pompier
                 </a>
             </div>

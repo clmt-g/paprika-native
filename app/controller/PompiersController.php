@@ -25,7 +25,7 @@ class PompiersController extends BaseController
      */
     public function create(): void
     {
-        // invocation du renderer qui renvoie la page avec le formulaire
+        echo Renderer::render('pompiers/create');
     }
 
     public function show() : void

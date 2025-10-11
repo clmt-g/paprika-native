@@ -131,6 +131,12 @@ function pompierRoutes_get($fragments)
             call_user_func_array([new PompiersController(), "edit"], $fragments);
             break;
         }
+        case "create" :
+        {
+            //echo "Calling pompierController->del <hr>";
+            call_user_func_array([new PompiersController(), "create"], $fragments);
+            break;
+        }
 
         default :
         {
