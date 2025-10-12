@@ -9,10 +9,7 @@ use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
 use DateTime;
 
-/**
- *
- */
-
+/** controller class : used to display the pages in view through the renderer */
 class PompiersController extends BaseController
 {
     private DAOPompiers $pompierDAO;
@@ -25,18 +22,19 @@ class PompiersController extends BaseController
         $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
     }
 
-    /**
+    /** display the create page
      * @return string
      */
     public function create(): void
     {
+        // recupere les casernesNum et ville pour les afficher dans une balise option
         $casernes = $this->caserneDAO->getAllVilles();
         if (!$casernes) {
             echo 'Erreur: aucune caserne disponible';
             exit;
         }
 
-        // récuperer les grades
+        // récuperer les grades pour les afficher dans une balise option
         $codesGrade = $this->pompierDAO->getAllCodeGrade();
         if (!$codesGrade) {
             echo 'Erreur: aucune grade disponible';
@@ -45,8 +43,13 @@ class PompiersController extends BaseController
         echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade]);
     }
 
+    /** create a pompier
+     * @param $data
+     * @return void
+     */
     public function do_create($data): void
     {
+        // vérifie la validité des données submit
         $result = $this->verifyData(isCreate: true);
 
         if (!$result['valid']) {
@@ -56,6 +59,8 @@ class PompiersController extends BaseController
             return;
         }
         $cleanData = $result['data'];
+
+        // créer une instance de pompier et appel de la méthode save
         $pompier = new Pompiers($cleanData['prenom'], $cleanData['nom'], $cleanData['chefAgret'],
             $cleanData['dateNaissance'] , $cleanData['numCaserne'], $cleanData['codeGrade'], $cleanData['matriculeRespo']);
         $this->pompierDAO->save($pompier);
@@ -65,41 +70,56 @@ class PompiersController extends BaseController
         exit;
     }
 
+    /** display the show page
+     * @return void
+     */
     public function show(): void
     {
+        // gestion des erreurs
         $pompiers = $this->pompierDAO->findAll(100000);
         if (!$pompiers) {
             header("location: /404.php");
             exit;
         }
 
+        // affichage des villes plutot que des numéro de caserne
         $villes = [];
         foreach ($pompiers as $pompier) {
             $villes[$pompier->getMatricule()] = $this->caserneDAO->findCaserneVille($pompier->getNumCaserne());
         }
 
+        // affichage des nom de grade plutot que des numéro
         $nomsGrades = [];
         foreach ($pompiers as $pompier) {
             $nomsGrades[$pompier->getMatricule()] = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
         }
 
+        // variable pour nuémroter les lignes du tableau
         $i = 1;
+
         echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i, 'nomsGrades' => $nomsGrades,]);
     }
 
+    /** display the detail page
+     * @param $id
+     * @return void
+     */
     public function detail($id): void
     {
+        // gestion des erreurs
         if (!$id) {
             header('Location: /pompiers/show');
             exit;
         }
-        $pompier = $this->pompierDAO->find($id);
 
+        // affichage du pompier par l'id et gestion des erreurs
+        $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
             header("location: /404.php");
             exit;
         }
 
+        // affichage des nom de caserne et grade dans des balises option
         $caserne = $this->caserneDAO->findCaserneVille($pompier->getNumCaserne());
         if (!$caserne) {
             $caserne = 'error';
@@ -111,27 +131,33 @@ class PompiersController extends BaseController
         echo Renderer::render('pompiers/detail', ['pompier' => $pompier, 'caserne' => $caserne, 'grade' => $grade]);
     }
 
+    /** display the update page
+     * @param $id
+     * @return void
+     */
     public function update($id): void
     {
+        // gestion des erreurs
         if (!$id) {
             header('Location: /pompiers/show');
             exit;
         }
 
+        // affichage en fonction du pompier + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
             header("location: /404.php");
             exit;
         }
 
-        // Récupérer les casernes disponibles
+        // Récupérer les noms des casernes disponibles
         $casernes = $this->caserneDAO->getAllVilles();
         if (!$casernes) {
             echo 'Erreur: aucune caserne disponible';
             exit;
         }
 
-        // récuperer les grades
+        // récuperer les noms des grades
         $codesGrade = $this->pompierDAO->getAllCodeGrade();
         if (!$codesGrade) {
             echo 'Erreur: aucune grade disponible';
@@ -145,8 +171,13 @@ class PompiersController extends BaseController
         ]);
     }
 
+    /** update a pompier
+     * @param $data
+     * @return void
+     */
     public function do_update($data): void
     {
+        // vérifier la validité des données
         $result = $this->verifyData(isCreate: false);
 
         if (!$result['valid']) {
@@ -156,6 +187,7 @@ class PompiersController extends BaseController
             return;
         }
 
+        // find le pompier
         $pompier = $this->pompierDAO->find($data);
         if (!$pompier) {
             echo Renderer::render('pompiers/error',
@@ -167,6 +199,7 @@ class PompiersController extends BaseController
         // Récupérer les données nettoyées
         $cleanData = $result['data'];
 
+        // update les informations
         $pompier->setPrenom($cleanData['prenom']);
         $pompier->setNom($cleanData['nom']);
         $pompier->setChefAgret($cleanData['chefAgret']);
@@ -175,23 +208,35 @@ class PompiersController extends BaseController
         $pompier->setCodeGrade($cleanData['codeGrade']);
         $pompier->setMatriculeRespo($cleanData['matriculeRespo']);
 
+        // appel a la méthode update + redirection
         $this->pompierDAO->update($pompier);
         header('Location: /pompiers/show/detail/' . $cleanData['matricule']);
         exit;
     }
 
+    /** display the delete page
+     * @param $id
+     * @return void
+     */
     public function delete($id): void
     {
+        // affichage du pompier en fonction de l'id + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
             echo "Pompier introuvable";
             return;
         }
+        // affichage du modal de suppresion
         echo Renderer::render('pompiers/delete', ['pompier' => $pompier]);
     }
 
+    /** delete a pompier
+     * @param $id
+     * @return void
+     */
     public function do_delete($id): void
     {
+        // appel de la méthode delete pour le pompier + gestion d'erreur
         $pompier = $this->pompierDAO->find($id);
         if ($this->pompierDAO->delete($pompier)) {
             header("Location: /pompiers/show");
@@ -201,6 +246,11 @@ class PompiersController extends BaseController
         }
     }
 
+    /** verify the data submited when either updatin or creating a pompier
+     * @param $isCreate
+     * @return array
+     * @throws \DateMalformedStringException
+     */
     private function verifyData($isCreate = false): array
     {
         $errors = [];
