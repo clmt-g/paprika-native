@@ -42,8 +42,7 @@
             margin-top: 2rem;
         }
 
-        a,
-        button {
+        a {
             display: inline-block;
             margin: 0.5rem;
             text-decoration: none;
@@ -51,32 +50,12 @@
             border-radius: 8px;
             font-weight: bold;
             transition: all 0.2s ease;
-        }
-
-        a {
             background-color: #b22222;
             color: white;
-            border: none;
         }
 
         a:hover {
             background-color: #8b1a1a;
-            transform: translateY(-2px);
-        }
-
-        form {
-            display: inline;
-        }
-
-        button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #b02a37;
             transform: translateY(-2px);
         }
 
@@ -102,16 +81,10 @@
     <p><strong>Adresse :</strong> {{ $caserne->getAdresse() }}</p>
     <p><strong>Code Postal :</strong> {{ $caserne->getCp() }}</p>
     <p><strong>Ville :</strong> {{ $caserne->getVille() }}</p>
-    <p><strong>Type de Caserne :</strong> {{ $caserne->getCodeTypeC() }}</p>
+    <p><strong>Type de Caserne :</strong> {{ $caserne->getTypeTexte() }}</p>
 
     <div class="actions">
         <a href="/caserne/show">← Retour à la liste</a>
-        <a href="/caserne/update/{{ $caserne->getNumCaserne() }}">Modifier</a>
-
-        <form method="POST" action="/caserne/delete" onsubmit="return confirm('Voulez-vous vraiment supprimer cette caserne ?');">
-            <input type="hidden" name="id" value="{{ $caserne->getNumCaserne() }}">
-            <button type="submit">Supprimer</button>
-        </form>
     </div>
 </div>
 

@@ -10,6 +10,8 @@ class Caserne {
     private int $CodeTypeC;
     private int $deleted = 0; // default 0
 
+    private int $nbPompiers = 0;
+
     public function getNumCaserne(): int {
         return $this->NumCaserne;
     }
@@ -62,5 +64,23 @@ class Caserne {
 
     public function isDeleted(): int {
         return $this->deleted ?? 0;
+    }
+
+    public function setNbPompiers(int $nb): self {
+        $this->nbPompiers = $nb;
+        return $this;
+    }
+
+    public function getNbPompiers(): int {
+        return $this->nbPompiers;
+    }
+
+    public function getTypeTexte(): string {
+        return match($this->getCodeTypeC()) {
+            1 => 'Professionnelle',
+            2 => 'Mixte',
+            3 => 'Volontaires',
+            default => 'Inconnu',
+        };
     }
 }

@@ -159,6 +159,7 @@
                             <th>Code Postal</th>
                             <th>Ville</th>
                             <th>Type Caserne</th>
+                            <th class="text-center">Nombre de pompiers</th>
                             <th class="text-center">Actions</th>
                         </tr>
                         </thead>
@@ -169,7 +170,10 @@
                             <td>{{ $c->getAdresse() }}</td>
                             <td>{{ $c->getCp() }}</td>
                             <td><i class="bi bi-geo-alt text-danger"></i> {{ $c->getVille() }}</td>
-                            <td><span class="badge bg-info">Type {{ $c->getCodeTypeC() }}</span></td>
+                            <td><span class="badge bg-info">{{ $c->getTypeTexte() }}</span></td>
+                            <td class="text-center">
+                                <span class="badge bg-dark">{{ $c->getNbPompiers() }}</span>
+                            </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm" role="group">
                                     <a href="/caserne/show/detail/{{ $c->getNumCaserne() }}"

@@ -65,14 +65,36 @@ class DAOCaserne {
 
     public function findAll(int $max = 100): array {
         $stmt = $this->pdo->prepare("
-            SELECT NumCaserne, Adresse, CP AS Cp, Ville, CodeTypeC, deleted
-            FROM casernes
-            WHERE deleted = 0
-            LIMIT :max
-        ");
+        SELECT 
+            c.NumCaserne, 
+            c.Adresse, 
+            c.CP AS Cp, 
+            c.Ville, 
+            c.CodeTypeC, 
+            c.deleted,
+            COUNT(p.Matricule) AS nbPompiers
+        FROM casernes c
+        LEFT JOIN pompiers p ON p.NumCaserne = c.NumCaserne AND p.deleted = 0
+        WHERE c.deleted = 0
+        GROUP BY c.NumCaserne
+        LIMIT :max
+    ");
         $stmt->bindValue('max', $max, PDO::PARAM_INT);
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_CLASS, Caserne::class);
+
+        $casernes = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $c = new Caserne();
+            $c->setNumCaserne($row['NumCaserne'])
+                ->setAdresse($row['Cp'])
+                ->setCp($row['Cp'])
+                ->setVille($row['Ville'])
+                ->setCodeTypeC($row['CodeTypeC'])
+                ->setNbPompiers((int)$row['nbPompiers']);
+            $casernes[] = $c;
+        }
+
+        return $casernes;
     }
 
     public function count(): int {
