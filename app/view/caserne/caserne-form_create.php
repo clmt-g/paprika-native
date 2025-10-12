@@ -1,3 +1,14 @@
+<?php
+// caserne-form_create.php
+// Variables attendues par le renderer : $errors (array), $data (array)
+$errors = $errors ?? [];
+$data = $data ?? [];
+
+// helper pour échapper avant affichage
+function h($v) {
+    return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -96,49 +107,70 @@
         .accordion-button:focus {
             box-shadow: 0 0 0 0.2rem rgba(178, 34, 34, 0.25);
         }
+
+        .alert-errors {
+            background-color: #fff3f3;
+            border-left: 4px solid #b22222;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            color: #b22222;
+        }
+
+        .alert-errors li { margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
 
 <h1>Ajouter une Caserne</h1>
 
-<form method="POST" action="/caserne/add">
+<?php if (!empty($errors) && is_array($errors)): ?>
+    <div class="alert-errors">
+        <ul class="mb-0">
+            <?php foreach ($errors as $err): ?>
+                <li><?php echo h($err); ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+<?php endif; ?>
+
+<form method="POST" action="/caserne/add" novalidate>
     <label>Adresse :
-        <input type="text" name="adresse" required>
+        <input type="text" name="adresse" value="<?php echo h($data['adresse'] ?? ''); ?>" required>
     </label>
 
     <label>Code Postal :
-        <input type="text" name="cp" required>
+        <input type="text" name="cp" value="<?php echo h($data['cp'] ?? ''); ?>" required>
     </label>
 
     <label>Ville :
-        <input type="text" name="ville" required>
+        <input type="text" name="ville" value="<?php echo h($data['ville'] ?? ''); ?>" required>
     </label>
 
     <!-- Accordéon Type Caserne -->
     <div class="accordion mt-3" id="accordionType">
         <div class="accordion-item">
             <h2 class="accordion-header">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#typeCaserne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#typeCaserne" aria-expanded="false" aria-controls="typeCaserne">
                     Choisir le Type de Caserne
                 </button>
             </h2>
             <div id="typeCaserne" class="accordion-collapse collapse" data-bs-parent="#accordionType">
                 <div class="accordion-body">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="codeTypeC" id="type1" value="1" required>
+                        <input class="form-check-input" type="radio" name="codeTypeC" id="type1" value="1" <?php echo (isset($data['codeTypeC']) && $data['codeTypeC'] == 1) ? 'checked' : ''; ?> required>
                         <label class="form-check-label" for="type1">
                             🚒 Caserne <strong>Professionnelle</strong>
                         </label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="codeTypeC" id="type2" value="2">
+                        <input class="form-check-input" type="radio" name="codeTypeC" id="type2" value="2" <?php echo (isset($data['codeTypeC']) && $data['codeTypeC'] == 2) ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="type2">
                             🧯 Caserne <strong>Mixte</strong>
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="codeTypeC" id="type3" value="3">
+                        <input class="form-check-input" type="radio" name="codeTypeC" id="type3" value="3" <?php echo (isset($data['codeTypeC']) && $data['codeTypeC'] == 3) ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="type3">
                             👨‍🚒 Caserne <strong>Volontaires</strong>
                         </label>

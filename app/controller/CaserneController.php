@@ -16,116 +16,151 @@ class CaserneController extends BaseController
         $this->daoCaserne = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
     }
 
-    /**
-     * Affiche la liste des casernes
-     */
+    /** Liste des casernes */
     public function show(): void
     {
         $casernes = $this->daoCaserne->findAll();
         echo Renderer::render('caserne/caserne-list', ['casernes' => $casernes]);
     }
 
-    /**
-     * Affiche le détail d'une caserne par ID
-     */
+    /** Détail d'une caserne */
     public function detail($id): void
     {
-        $caserne = $this->daoCaserne->find((int)$id);
-        if (!$caserne) {
-            echo "Caserne introuvable";
-            return;
-        }
-        echo \Paprika\utils\Renderer::render('caserne/caserne-detail', ['caserne' => $caserne]);
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if (!$id) { echo "ID invalide."; return; }
+
+        $caserne = $this->daoCaserne->find($id);
+        if (!$caserne) { echo "Caserne introuvable."; return; }
+
+        echo Renderer::render('caserne/caserne-detail', ['caserne' => $caserne]);
     }
 
-    /**
-     * Formulaire de création d'une caserne
-     */
+    /** Formulaire création */
     public function create(): void
     {
         echo Renderer::render('caserne/caserne-form_create');
     }
 
-    /**
-     * Exécution de la création (POST)
-     */
+    /** Création POST */
     public function do_create($data): void
     {
+        $errors = $this->validateCaserneData($data);
+        if (!empty($errors)) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => $errors,
+                'type' => 'create',
+                'id' => null
+            ]);
+            return;
+        }
+
         $caserne = new \Paprika\model\Caserne();
         $caserne->setNumCaserne($this->daoCaserne->generateNextId())
             ->setAdresse($data['adresse'])
-            ->setCp($data['cp'])
+            ->setCp((int)$data['cp'])
             ->setVille($data['ville'])
             ->setCodeTypeC((int)$data['codeTypeC']);
 
-        if ($this->daoCaserne->save($caserne)) {
+        try {
+            $this->daoCaserne->save($caserne);
             header("Location: /caserne/show");
             exit;
-        } else {
-            echo "Erreur lors de la création de la caserne.";
+        } catch (\PDOException $e) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => ["Erreur base de données : " . $e->getMessage()],
+                'type' => 'create',
+                'idOrMatricule' => null
+            ]);
         }
     }
 
-    /**
-     * Formulaire de modification d'une caserne
-     */
+    /** Formulaire update */
     public function update($id): void
     {
-        $caserne = $this->daoCaserne->find((int)$id);
-        if (!$caserne) {
-            echo "Caserne introuvable";
-            return;
-        }
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if (!$id) { echo "ID invalide."; return; }
+
+        $caserne = $this->daoCaserne->find($id);
+        if (!$caserne) { echo "Caserne introuvable."; return; }
+
         echo Renderer::render('caserne/caserne-form_update', ['caserne' => $caserne]);
     }
 
-    /**
-     * Exécution de la modification (POST)
-     */
+    /** Update POST */
     public function do_update($data): void
     {
+        if (empty($data['NumCaserne']) || !is_numeric($data['NumCaserne'])) {
+            echo "ID de la caserne invalide."; return;
+        }
+
         $caserne = $this->daoCaserne->find((int)$data['NumCaserne']);
-        if (!$caserne) {
-            echo "Caserne introuvable";
+        if (!$caserne) { echo "Caserne introuvable."; return; }
+
+        $errors = $this->validateCaserneData($data);
+        if (!empty($errors)) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => $errors,
+                'type' => 'update',
+                'id' => $data['NumCaserne']
+            ]);
             return;
         }
 
         $caserne->setAdresse($data['adresse'])
-            ->setCp($data['cp'])
+            ->setCp((int)$data['cp'])
             ->setVille($data['ville'])
             ->setCodeTypeC((int)$data['codeTypeC']);
 
         if ($this->daoCaserne->update($caserne)) {
-            header("Location: /caserne/show");
-            exit;
+            header("Location: /caserne/show"); exit;
         } else {
             echo "Erreur lors de la mise à jour de la caserne.";
         }
     }
 
-    /**
-     * Confirmation de suppression
-     */
+    /** Confirmation suppression */
     public function delete($id): void
     {
-        $caserne = $this->daoCaserne->find((int)$id);
-        if (!$caserne) {
-            echo "Caserne introuvable";
-            return;
-        }
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if (!$id) { echo "ID invalide."; return; }
+
+        $caserne = $this->daoCaserne->find($id);
+        if (!$caserne) { echo "Caserne introuvable."; return; }
+
         echo Renderer::render('caserne/caserne-confirm_delete', ['caserne' => $caserne]);
     }
 
-    /**
-     * suppression (POST)
-     */
+    /** Suppression POST */
     public function do_delete($id): void
     {
-        if ($this->daoCaserne->delete((int)$id)) {
-            header("Location: /caserne/show");
-            exit;
+        $id = filter_var($id, FILTER_VALIDATE_INT);
+        if (!$id) { echo "ID invalide."; return; }
+
+        $caserne = $this->daoCaserne->find($id);
+        if (!$caserne) { echo "Caserne introuvable."; return; }
+
+        if ($this->daoCaserne->delete($id)) {
+            header("Location: /caserne/show"); exit;
         } else {
             echo "Erreur lors de la suppression de la caserne.";
         }
+    }
+
+    /** Validation des champs d'une caserne */
+    private function validateCaserneData($data): array
+    {
+        $errors = [];
+        if (empty($data['adresse'])) $errors[] = "Adresse obligatoire.";
+        if (empty($data['cp'])) $errors[] = "Code postal obligatoire.";
+        if (empty($data['ville'])) $errors[] = "Ville obligatoire.";
+        if (empty($data['codeTypeC'])) $errors[] = "Type de caserne obligatoire.";
+
+        if (!empty($data['cp']) && filter_var($data['cp'], FILTER_VALIDATE_INT) === false)
+            $errors[] = "Code postal invalide.";
+
+        if (!empty($data['codeTypeC']) && filter_var($data['codeTypeC'], FILTER_VALIDATE_INT) === false)
+            $errors[] = "Type de caserne invalide.";
+
+        return $errors;
     }
 }
