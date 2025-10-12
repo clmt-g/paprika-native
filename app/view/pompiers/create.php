@@ -98,9 +98,6 @@
                         @endforeach
                     </select>
 
-                    <label for="codeGrade">Code grade</label>
-                    <input type="text" id="codeGrade" name="codeGrade" class="form-control" required>
-
                     <label for="matriculeRespo">Matricule du responsable</label>
                     <input type="text" id="matriculeRespo" name="matriculeRespo" class="form-control" required>
                 </div>

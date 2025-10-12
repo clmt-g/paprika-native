@@ -345,7 +345,10 @@ class PompiersController extends BaseController
             $errors[] = "Le matricule du responsable n'existe pas";
         }
 
-        // FIXME : vérifier que la caserne existe
+        // la caserne existe
+        if (!$this->caserneDAO->find($numCaserne)) {
+            $errors[] = "La caserne n'existe pas";
+        }
 
         if (!empty($errors)) {
             return ['valid' => false, 'errors' => $errors, 'data' => null];
