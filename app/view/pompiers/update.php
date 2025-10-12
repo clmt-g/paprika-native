@@ -72,11 +72,10 @@
                     <input type="text" id="prenom" name="prenom" class="form-control" value="{{ $pompier->getPrenom() }}" required>
 
                     <label for="chefAgret">Chef d'agrès</label>
-                    <select id="chefAgret" class="form-select" required>
+                    <select id="chefAgret" name="chefAgret" class="form-select" required>
                         <option value="O" {{ $pompier->getChefAgret() == 'O' ? 'selected' : '' }}>Oui</option>
                         <option value="N" {{ $pompier->getChefAgret() == 'N' ? 'selected' : '' }}>Non</option>
                     </select>
-                    <input type="hidden" name="chefAgret" value="{{ $pompier->getChefAgret() }}">
 
                     <label for="numCaserne">Caserne</label>
                     <select id="numCaserne" name="numCaserne" class="form-select" required>
