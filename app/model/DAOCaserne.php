@@ -120,7 +120,7 @@ class DAOCaserne {
         return ($row['maxId'] !== null) ? (int)$row['maxId'] + 1 : 1;
     }
 
-    /** return the Ville field based on the key id
+    /** return the Ville field based on the key id (used to display the casernes in pompiers)
      * @param $id
      * @return string|null
      */
@@ -137,5 +137,24 @@ class DAOCaserne {
         }
 
         return $ville;
+    }
+
+    /** return all NumCaserne and Ville fields in the database that are not deleted (used for pompier in update and create)
+     * @return array
+     */
+    public function getAllVilles() : array {
+        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
+        $sql = "SELECT NumCaserne, Ville FROM casernes WHERE deleted = 0";
+        $preparedStatement = $pdo->prepare($sql);
+        $preparedStatement->execute();
+
+        $villes = [];
+        while ($row = $preparedStatement->fetch(PDO::FETCH_ASSOC)) {
+            $villes[] = $row;
+        }
+        if (empty($villes)) {
+            return [];
+        }
+        return $villes;
     }
 }

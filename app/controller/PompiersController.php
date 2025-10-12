@@ -30,7 +30,8 @@ class PompiersController extends BaseController
      */
     public function create(): void
     {
-        echo Renderer::render('pompiers/create');
+        $casernes = $this->caserneDAO->getAllVilles();
+        echo Renderer::render('pompiers/create', ['casernes' => $casernes]);
     }
 
     public function do_create($data): void

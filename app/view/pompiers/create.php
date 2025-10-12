@@ -77,9 +77,13 @@
                         <option value="O">Oui</option>
                     </select>
 
-                    <!-- FIXME : liste des casernes existantes -->
                     <label for="numCaserne">Caserne</label>
-                    <input type="text" id="numCaserne" name="numCaserne" class="form-control" required>
+                    <select id="numCaserne" name="numCaserne" class="form-select" required>
+                        <option value="">-- Choisir une caserne --</option>
+                        @foreach($casernes as $caserne)
+                        <option value="{{ $caserne['NumCaserne'] }}">{{ $caserne['Ville'] }}</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="col-md-6">
