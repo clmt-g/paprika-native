@@ -12,10 +12,13 @@
             --rouge-fonce: #8b1a1a;
             --gris-fond: #f8f9fa;
         }
+
         body {
             background-color: var(--gris-fond);
             overflow-x: hidden;
+            font-family: "Segoe UI", sans-serif;
         }
+
         header {
             background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d);
             color: white;
@@ -36,6 +39,7 @@
             font-size: 1.8rem;
             margin: 0;
         }
+
         .sidebar {
             background-color: #2b2b2b;
             min-height: 100vh;
@@ -55,6 +59,7 @@
             color: white;
             transform: translateX(4px);
         }
+
         main {
             padding: 2rem;
         }
@@ -67,6 +72,7 @@
             transform: translateY(-5px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
+
         table {
             border-radius: 10px;
             overflow: hidden;
@@ -79,23 +85,15 @@
             background-color: #fff3f3;
             cursor: pointer;
         }
+
         footer {
             background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d);
             color: #fff;
             text-align: center;
             padding: 1rem;
             font-size: 0.9rem;
-            margin-top: 3rem;
         }
-        .btn-danger {
-            background-color: var(--rouge-paprika);
-            border: none;
-            transition: transform 0.2s ease;
-        }
-        .btn-danger:hover {
-            background-color: var(--rouge-fonce);
-            transform: translateY(-2px);
-        }
+
         .fade-in {
             animation: fadeIn 0.5s ease forwards;
         }
@@ -103,9 +101,45 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
+
         .form-control:focus {
             border-color: var(--rouge-paprika);
             box-shadow: 0 0 0 0.2rem rgba(178, 34, 34, 0.25);
+        }
+
+        .btn-danger,
+        .btn-outline-warning,
+        .btn-outline-primary,
+        .btn-outline-danger {
+            transition: all 0.25s ease, box-shadow 0.25s ease;
+        }
+        .btn-danger {
+            background-color: var(--rouge-paprika);
+            border: none;
+        }
+        .btn-danger:hover {
+            background-color: var(--rouge-fonce);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(178,34,34,0.3);
+        }
+        .btn-outline-danger {
+            color: #b22222;
+            border: 1px solid #b22222;
+            background-color: transparent;
+            position: relative;
+        }
+        .btn-outline-danger i {
+            transition: transform 0.25s ease;
+        }
+        .btn-outline-danger:hover {
+            color: #fff;
+            background-color: #b22222;
+            border-color: #8b1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(178, 34, 34, 0.3);
+        }
+        .btn-outline-danger:hover i {
+            transform: rotate(-15deg) scale(1.2);
         }
     </style>
 </head>
@@ -113,12 +147,11 @@
 
 <header class="text-center">
     <div class="container d-flex flex-column align-items-center">
-        <!-- 🖼️ Ton logo personnalisé -->
         <div class="d-flex align-items-center justify-content-center mb-2">
             <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
             <h1>Paprika</h1>
         </div>
-        <p class="lead mb-0">Gesltion des casernes & des pompiers</p>
+        <p class="lead mb-0">Gestion des casernes & des pompiers</p>
     </div>
 </header>
 
@@ -186,17 +219,12 @@
                                        title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
-                                    <form method="POST"
-                                          action="/caserne/delete"
-                                          style="display:inline;"
-                                          onsubmit="return confirm('Voulez-vous vraiment supprimer cette caserne ?');">
-                                        <input type="hidden" name="id" value="{{ $c->getNumCaserne() }}">
-                                        <button type="submit"
-                                                class="btn btn-outline-danger"
-                                                title="Supprimer">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
+                                    <a href="#"
+                                       class="btn btn-outline-danger"
+                                       title="Supprimer"
+                                       onclick="loadDeleteModal('{{ $c->getNumCaserne() }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -213,17 +241,45 @@
     <p>&copy; 2025 Paprika – Gestion des casernes et pompiers. Créé avec ❤️ par Clément.</p>
 </footer>
 
+<!-- Modal de suppression -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i> Confirmer la suppression</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                Voulez-vous vraiment supprimer cette caserne ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <form id="deleteForm" method="POST" action="/caserne/delete" style="display:inline;">
+                    <input type="hidden" name="id" id="deleteCaserneId" value="">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Recherche dans le tableau
     const search = document.getElementById('searchCasernes');
     const rows = document.querySelectorAll('#tableCasernes tr');
-
     search.addEventListener('keyup', () => {
         const val = search.value.toLowerCase();
-        rows.forEach(r => {
-            r.style.display = r.textContent.toLowerCase().includes(val) ? '' : 'none';
-        });
+        rows.forEach(r => r.style.display = r.textContent.toLowerCase().includes(val) ? '' : 'none');
     });
+
+    // Chargement du modal et assignation de l'ID à supprimer
+    function loadDeleteModal(caserneId) {
+        document.getElementById('deleteCaserneId').value = caserneId;
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
 </script>
+
 </body>
 </html>
