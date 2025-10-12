@@ -92,13 +92,24 @@ class PompiersController extends BaseController
             header('Location: /pompiers/show');
             exit;
         }
-        $pompier = $this->pompierDAO->find($id);
 
+        $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
             header("location: /404.php");
             exit;
         }
-        echo Renderer::render('pompiers/update', ['pompier' => $pompier]);
+
+        // Récupérer les casernes disponibles
+        $casernes = $this->caserneDAO->getAllVilles();
+        if (!$casernes) {
+            echo 'Erreur: aucune caserne disponible';
+            exit;
+        }
+
+        echo Renderer::render('pompiers/update', [
+            'pompier' => $pompier,
+            'casernes' => $casernes
+        ]);
     }
 
     public function do_update($data): void

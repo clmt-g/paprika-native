@@ -78,9 +78,16 @@
                     </select>
                     <input type="hidden" name="chefAgret" value="{{ $pompier->getChefAgret() }}">
 
-                    <label for="numCaserne">Caserne n°</label>
-                    <input type="number" id="numCaserne" name="numCaserne" class="form-control"
-                           value="{{ $pompier->getNumCaserne() }}" required>
+                    <label for="numCaserne">Caserne</label>
+                    <select id="numCaserne" name="numCaserne" class="form-select" required>
+                        @foreach($casernes as $cas)
+                        <option value="{{ $cas['NumCaserne'] }}"
+                                {{ isset($pompier) && $pompier->getNumCaserne() == $cas['NumCaserne'] ? 'selected' : '' }}
+                            >
+                            {{ $cas['Ville'] }}
+                        </option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <div class="col-md-6">
