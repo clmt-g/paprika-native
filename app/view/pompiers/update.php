@@ -98,7 +98,16 @@
                     <input type="date" id="dateNaissance" name="dateNaissance" class="form-control" value="{{ $pompier->getDateNaissance() }}" required>
 
                     <label for="codeGrade">Code grade</label>
-                    <input type="text" id="codeGrade" name="codeGrade" class="form-control" value="{{ $pompier->getCodeGrade() }}" required>
+                    <select id="codeGrade" name="codeGrade" class="form-control" required>
+                        <option value="">-- Choisir un grade --</option>
+                        @foreach($codesGrade as $code)
+                        <option value="{{ $code['CodeGrade'] }}"
+                                {{ isset($pompier) && $pompier->getCodeGrade() == $code['CodeGrade'] ? 'selected' : '' }}
+                            >
+                            {{ $code['NomGrade'] }}
+                        </option>
+                        @endforeach
+                    </select>
 
                     <label for="matriculeRespo">Matricule du responsable</label>
                     <input type="text" id="matriculeRespo" name="matriculeRespo" class="form-control" value="{{ $pompier->getMatriculeRespo() }}" required>

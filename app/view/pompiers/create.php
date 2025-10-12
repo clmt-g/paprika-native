@@ -91,6 +91,14 @@
                     <input type="date" id="dateNaissance" name="dateNaissance" class="form-control" required>
 
                     <label for="codeGrade">Code grade</label>
+                    <select id="codeGrade" name="codeGrade" class="form-control" required>
+                        <option value="">-- Choisir un grade --</option>
+                        @foreach($codesGrade as $code)
+                        <option value="{{ $code['CodeGrade'] }}">{{ $code['NomGrade'] }}</option>
+                        @endforeach
+                    </select>
+
+                    <label for="codeGrade">Code grade</label>
                     <input type="text" id="codeGrade" name="codeGrade" class="form-control" required>
 
                     <label for="matriculeRespo">Matricule du responsable</label>

@@ -179,9 +179,7 @@
                                     {{ $villes[$pompier->getMatricule()] }}
                                 </a>
                             </td>
-                            <td><span class="badge bg-info">{{ $pompier->getCodeGrade() }}</span></td>
-                            <td>{{ $pompier->getMatriculeRespo() }}</td>
-                            <td class="text-center">
+                            <td>{{ $nomsGrades[$pompier->getMatricule()] ?? $pompier->getCodeGrade() }}</td>                            <td class="text-center">
                                 <div class="btn-group btn-group-sm">
                                     <a href="/pompiers/show/detail/{{ $pompier->getMatricule() }}" class="btn btn-outline-primary" title="Détails">
                                         <i class="bi bi-eye"></i>

@@ -31,7 +31,18 @@ class PompiersController extends BaseController
     public function create(): void
     {
         $casernes = $this->caserneDAO->getAllVilles();
-        echo Renderer::render('pompiers/create', ['casernes' => $casernes]);
+        if (!$casernes) {
+            echo 'Erreur: aucune caserne disponible';
+            exit;
+        }
+
+        // récuperer les grades
+        $codesGrade = $this->pompierDAO->getAllCodeGrade();
+        if (!$codesGrade) {
+            echo 'Erreur: aucune grade disponible';
+            exit;
+        }
+        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade]);
     }
 
     public function do_create($data): void
@@ -67,8 +78,13 @@ class PompiersController extends BaseController
             $villes[$pompier->getMatricule()] = $this->caserneDAO->findCaserneVille($pompier->getNumCaserne());
         }
 
+        $nomsGrades = [];
+        foreach ($pompiers as $pompier) {
+            $nomsGrades[$pompier->getMatricule()] = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
+        }
+
         $i = 1;
-        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i]);
+        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i, 'nomsGrades' => $nomsGrades,]);
     }
 
     public function detail($id): void
@@ -106,9 +122,17 @@ class PompiersController extends BaseController
             exit;
         }
 
+        // récuperer les grades
+        $codesGrade = $this->pompierDAO->getAllCodeGrade();
+        if (!$codesGrade) {
+            echo 'Erreur: aucune grade disponible';
+            exit;
+        }
+
         echo Renderer::render('pompiers/update', [
             'pompier' => $pompier,
-            'casernes' => $casernes
+            'casernes' => $casernes,
+            'codesGrade' => $codesGrade
         ]);
     }
 
