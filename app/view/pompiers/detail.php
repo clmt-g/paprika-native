@@ -108,7 +108,7 @@
 
                     <label for="numCaserne">Caserne</label>
                     <a href="/caserne/show/detail/{{ $pompier->getNumCaserne() }}" class="caserne-link">
-                        Caserne n°{{ $pompier->getNumCaserne() }}
+                        Caserne n°{{ $caserne }}
                     </a>
                 </div>
 
@@ -120,7 +120,7 @@
                     <input type="date" id="dateNaissance" class="form-control" value="{{ $pompier->getDateNaissance() }}" disabled>
 
                     <label for="codeGrade">Code grade</label>
-                    <input type="text" id="codeGrade" class="form-control" value="{{ $pompier->getCodeGrade() }}" disabled>
+                    <input type="text" id="codeGrade" class="form-control" value="{{ $grade }}" disabled>
 
                     <label for="matriculeRespo">Matricule du responsable</label>
                     <input type="text" id="matriculeRespo" class="form-control" value="{{ $pompier->getMatriculeRespo() }}" disabled>

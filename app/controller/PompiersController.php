@@ -99,7 +99,16 @@ class PompiersController extends BaseController
             header("location: /404.php");
             exit;
         }
-        echo Renderer::render('pompiers/detail', ['pompier' => $pompier]);
+
+        $caserne = $this->caserneDAO->findCaserneVille($pompier->getNumCaserne());
+        if (!$caserne) {
+            $caserne = 'error';
+        }
+        $grade = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
+        if (!$grade) {
+            $grade = 'error';
+        }
+        echo Renderer::render('pompiers/detail', ['pompier' => $pompier, 'caserne' => $caserne, 'grade' => $grade]);
     }
 
     public function update($id): void
