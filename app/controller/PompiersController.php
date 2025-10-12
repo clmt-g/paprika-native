@@ -2,6 +2,7 @@
 
 namespace Paprika\controller;
 
+use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
 use Paprika\utils\SingletonDataBaseMariaDB;
@@ -15,11 +16,13 @@ use DateTime;
 class PompiersController extends BaseController
 {
     private DAOPompiers $pompierDAO;
+    private DAOCaserne $caserneDAO;
 
     public function __construct()
     {
         parent::__construct();
         $this->pompierDAO = new DAOPompiers(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
     }
 
     /**
@@ -57,8 +60,14 @@ class PompiersController extends BaseController
             header("location: /404.php");
             exit;
         }
+
+        $villes = [];
+        foreach ($pompiers as $pompier) {
+            $villes[$pompier->getMatricule()] = $this->caserneDAO->findCaserneVille($pompier->getNumCaserne());
+        }
+
         $i = 1;
-        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'i' => $i]);
+        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i]);
     }
 
     public function detail($id): void

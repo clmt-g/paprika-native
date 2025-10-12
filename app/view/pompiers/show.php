@@ -176,7 +176,7 @@
                                 <a href="/caserne/show/detail/{{ $pompier->getNumCaserne() }}"
                                    class="text-decoration-none text-danger fw-bold">
                                     <i class="bi bi-geo-alt-fill"></i>
-                                    {{ $pompier->getNumCaserne() }}
+                                    {{ $villes[$pompier->getMatricule()] }}
                                 </a>
                             </td>
                             <td><span class="badge bg-info">{{ $pompier->getCodeGrade() }}</span></td>

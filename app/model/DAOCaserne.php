@@ -2,6 +2,7 @@
 
 namespace Paprika\model;
 
+use Paprika\utils\SingletonDataBaseMariaDB;
 use PDO;
 use Paprika\utils\SingletonLogger;
 
@@ -117,5 +118,24 @@ class DAOCaserne {
         $stmt = $this->pdo->query("SELECT MAX(NumCaserne) AS maxId FROM casernes");
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return ($row['maxId'] !== null) ? (int)$row['maxId'] + 1 : 1;
+    }
+
+    /** return the Ville field based on the key id
+     * @param $id
+     * @return string|null
+     */
+    public function findCaserneVille($id) : ?string {
+        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
+        $sql = "SELECT Ville FROM casernes WHERE NumCaserne = :id AND deleted = 0";
+        $preparedStatement = $pdo->prepare("$sql");
+        $preparedStatement->bindValue("id", $id, \PDO::PARAM_INT);
+        $preparedStatement->execute();
+        $ville = $preparedStatement->fetchColumn();
+
+        if ($ville === false || $ville === null || $ville === "") {
+            return null;
+        }
+
+        return $ville;
     }
 }
