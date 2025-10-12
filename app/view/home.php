@@ -156,7 +156,7 @@
                             <div class="card-body">
                                 <i class="bi bi-building display-5 text-danger"></i>
                                 <h5 class="mt-2">Casernes actives</h5>
-                                <h3>6</h3> <!-- fixme : coder en dur -->
+                                <h3>{{ $nbCasernes }}</h3>
                             </div>
                         </div>
                     </div>
@@ -166,7 +166,7 @@
                             <div class="card-body">
                                 <i class="bi bi-person-fill display-5 text-danger"></i>
                                 <h5 class="mt-2">Pompiers disponibles</h5>
-                                <h3>45</h3> <!-- fixme : coder en dur -->
+                                <h3>{{ $nbPompiers }}</h3>
                             </div>
                         </div>
                     </div>
@@ -176,13 +176,12 @@
                             <div class="card-body">
                                 <i class="bi bi-alarm display-5 text-danger"></i>
                                 <h5 class="mt-2">Alertes récentes</h5>
-                                <h3>2</h3>
+                                <h3>2</h3> <!-- code en dur exprès -->
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- fixme : est ce qu'on garde ? -->
                 <!-- PETITE INTERACTION DYNAMIQUE -->
                 <div class="mt-5 text-center">
                     <button id="refreshBtn" class="btn btn-danger">

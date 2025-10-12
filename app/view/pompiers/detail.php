@@ -108,7 +108,7 @@
 
                     <label for="numCaserne">Caserne</label>
                     <a href="/caserne/show/detail/{{ $pompier->getNumCaserne() }}" class="caserne-link">
-                        Caserne n°{{ $caserne }}
+                        {{ $caserne }}
                     </a>
                 </div>
 

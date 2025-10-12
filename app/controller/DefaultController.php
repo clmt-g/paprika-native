@@ -2,12 +2,24 @@
 
 namespace Paprika\controller;
 
+use Paprika\model\DAOCaserne;
+use Paprika\model\DAOPompiers;
 use Paprika\utils\Renderer;
+use Paprika\utils\SingletonDataBaseMariaDB;
 
 class DefaultController extends BaseController
 {
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->pompierDAO = new DAOPompiers(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+    }
     public function index() : void {
-        echo Renderer::render('home');
+        $nbPompiers = $this->pompierDAO->count();
+        $nbCasernes = $this->caserneDAO->count();
+        echo Renderer::render('home', ['nbPompiers' => $nbPompiers, 'nbCasernes' => $nbCasernes]);
     }
 
     public function show(): void {}
