@@ -86,7 +86,7 @@ class DAOCaserne {
         while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             $c = new Caserne();
             $c->setNumCaserne($row['NumCaserne'])
-                ->setAdresse($row['Cp'])
+                ->setAdresse($row['Adresse'])   // <-- bien prendre l'adresse
                 ->setCp($row['Cp'])
                 ->setVille($row['Ville'])
                 ->setCodeTypeC($row['CodeTypeC'])
