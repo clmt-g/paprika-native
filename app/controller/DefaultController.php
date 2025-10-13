@@ -9,6 +9,8 @@ use Paprika\utils\SingletonDataBaseMariaDB;
 
 class DefaultController extends BaseController
 {
+    private DAOPompiers $pompierDAO;
+    private DAOCaserne $caserneDAO;
 
     public function __construct()
     {
@@ -16,10 +18,15 @@ class DefaultController extends BaseController
         $this->pompierDAO = new DAOPompiers(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
         $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
     }
-    public function index() : void {
+
+    public function index(): void
+    {
         $nbPompiers = $this->pompierDAO->count();
         $nbCasernes = $this->caserneDAO->count();
-        echo Renderer::render('home', ['nbPompiers' => $nbPompiers, 'nbCasernes' => $nbCasernes]);
+        echo Renderer::render('home', [
+            'nbPompiers' => $nbPompiers,
+            'nbCasernes' => $nbCasernes
+        ]);
     }
 
     public function show(): void {}
