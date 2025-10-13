@@ -246,7 +246,7 @@ class PompiersController extends BaseController
         }
     }
 
-    /** verify the data submited when either updatin or creating a pompier
+    /** verify the data submited when either updating or creating a pompier
      * @param $isCreate
      * @return array
      * @throws \DateMalformedStringException
@@ -344,6 +344,8 @@ class PompiersController extends BaseController
         if (!$this->pompierDAO->find($matriculeRespo)) {
             $errors[] = "Le matricule du responsable n'existe pas";
         }
+
+        // FIXME : le matricule existe
 
         // la caserne existe
         if (!$this->caserneDAO->find($numCaserne)) {
