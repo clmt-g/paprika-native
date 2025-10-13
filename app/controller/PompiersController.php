@@ -324,14 +324,7 @@ class PompiersController extends BaseController
             return ['valid' => false, 'errors' => $errors, 'data' => null];
         }
 
-        // Nettoyer les données
-        $matricule = htmlspecialchars($matricule, ENT_QUOTES, 'UTF-8');
-        $prenom = htmlspecialchars($prenom, ENT_QUOTES, 'UTF-8');
-        $nom = htmlspecialchars($nom, ENT_QUOTES, 'UTF-8');
-        $chefAgret = htmlspecialchars($chefAgret, ENT_QUOTES, 'UTF-8');
-        $dateNaissance = htmlspecialchars($dateNaissance, ENT_QUOTES, 'UTF-8');
-        $codeGrade = htmlspecialchars($codeGrade, ENT_QUOTES, 'UTF-8');
-        $matriculeRespo = htmlspecialchars($matriculeRespo, ENT_QUOTES, 'UTF-8');
+        // netoyage des données dans le DAOPompier
 
         // Vérification règles métier
         // Age valide (au moins 16 ans)
