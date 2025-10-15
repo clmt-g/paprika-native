@@ -19,7 +19,7 @@ class PasswordValidatorTest extends TestCase
         $this->validator = new PasswordValidator();
     }
 
-    // Tests valides
+    // ============ Tests valides ============
     public function testValidPassword1(): void
     {
         $result = $this->validator->validate('MyPassword123!');
@@ -38,7 +38,7 @@ class PasswordValidatorTest extends TestCase
         $this->assertTrue($result, "Password 'AnotherOne789#' should be valid");
     }
 
-    // Tests invalides
+    // ============ Tests invalides ============
     public function testPasswordTooShort(): void
     {
         $result = $this->validator->validate('123+aze');

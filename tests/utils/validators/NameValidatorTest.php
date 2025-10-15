@@ -84,7 +84,7 @@ class NameValidatorTest extends TestCase
 
     public function testNameTooLong(): void
     {
-        $result = $this->validator->validate('Jean-Pierre-François-Marie-Anne');
+        $result = $this->validator->validate('Jean-Pierre-François-Marie-Anne-Robert');
         $this->assertFalse($result, "Name longer than 32 characters should fail");
     }
 

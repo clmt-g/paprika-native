@@ -16,7 +16,7 @@ class Filtre
      * @return void
      */
     public function addValidator(string $key, InterfaceValidator $validator) : void {
-        $this->validator[$key] = $validator;
+        $this->validators[$key] = $validator;
     }
 
     /** exécute les validateur et stock le resultat (True | false) dans le array $result

@@ -4,9 +4,8 @@ namespace Paprika\utils\validators;
 
 class MailValidator implements InterfaceValidator
 {
-
     public function validate(string $data): bool
     {
-        // TODO: Implement validate() method.
+        return filter_var($data, FILTER_VALIDATE_EMAIL) !== false;
     }
 }

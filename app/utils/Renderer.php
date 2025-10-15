@@ -16,17 +16,17 @@ class Renderer
     {
         $path = __DIR__ . "/../view/$file.php";
         $content = file_get_contents($path);
-        $content = preg_replace('/{{ \s*(.+?)\s*}}/', "<?php echo $1 ?>", $content);
-
-        // @if(condition)
-        $content = preg_replace('/@if\s*\((.+?)\)/', '<?php if ($1): ?>', $content);
-        // @endif
-        $content = preg_replace('/@endif/', '<?php endif; ?>', $content);
-
-        // @foreach(loop
-        $content = preg_replace('/@foreach\s*\((.+?)\)/', '<?php foreach ($1): ?>', $content);
-        // @endforeach
-        $content = preg_replace('/@endforeach/', '<?php endforeach; ?>', $content);
+        $content = preg_replace('/{{\s*(.+?)\s*}}/', "<?php echo htmlspecialchars($1); ?>", $content);
+        //@if
+        $content = preg_replace('/@if\(\s*(.+?)\s*\)/', "<?php if($1) { ?>", $content);
+        $content = preg_replace('/@endif/', "<?php } ?>", $content);
+        $content = preg_replace('/@elseif/', "<?php } else { ?>", $content);
+        //@foreach
+        $content = preg_replace('/@foreach\(\s*(.+?)\s*\)/', "<?php foreach($1) { ?>", $content);
+        $content = preg_replace('/@endforeach/', "<?php } ?>", $content);
+        //@while
+        $content = preg_replace('/@while\(\s*(.+?)\s*\)/', "<?php while($1) { ?>", $content);
+        $content = preg_replace('/@endwhile/', "<?php } ?>", $content);
 
         // save $content in storage/cache directory
         $filepath = __DIR__ . "/../../storage/cache/$file.php";
