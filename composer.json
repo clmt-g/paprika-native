@@ -8,6 +8,11 @@
       "Paprika\\": "app/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "tests\\": "tests/"
+    }
+  },
   "authors": [
     {
       "name": "Clément Guerault",
@@ -23,7 +28,8 @@
   "require-dev": {
     "php" : "^8.3",
     "symfony/var-dumper": "^7.3",
-    "phpdocumentor/shim": "^3.8"
+    "phpdocumentor/shim": "^3.8",
+    "phpunit/phpunit": "^12.4"
   },
   "scripts": {
     "serve": [
