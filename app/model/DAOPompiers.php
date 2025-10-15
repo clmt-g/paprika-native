@@ -261,7 +261,7 @@ class DAOPompiers
      * @return string
      * @throws Exception
      */
-    public function keyGenerator(): string {
+    private function keyGenerator(): string {
         // calcule du matricule
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT MAX(matricule) FROM pompiers;";
@@ -286,7 +286,7 @@ class DAOPompiers
      * @param \Paprika\model\Pompiers $pompier
      * @return \Paprika\model\Pompiers
      */
-    public function cleanPompier(Pompiers $pompier) : Pompiers {
+    private function cleanPompier(Pompiers $pompier) : Pompiers {
         // netoyer les données
         $pompier->setNom(htmlspecialchars($pompier->getNom(), ENT_QUOTES, 'UTF-8'));
         $pompier->setPrenom(htmlspecialchars($pompier->getPrenom(), ENT_QUOTES, 'UTF-8'));

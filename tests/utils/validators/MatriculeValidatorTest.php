@@ -9,6 +9,11 @@ class MatriculeValidatorTest extends TestCase
 {
     private MatriculeValidator $validator;
 
+    public static function setUpBeforeClass(): void
+    {
+        fwrite(STDOUT, __METHOD__ . "\nInitializing NameValidator tests...\n");
+    }
+
     protected function setUp(): void
     {
         $this->validator = new MatriculeValidator();
@@ -124,5 +129,16 @@ class MatriculeValidatorTest extends TestCase
     {
         $result = $this->validator->validate('P@00107');
         $this->assertFalse($result);
+    }
+
+    public function tearDown(): void
+    {
+        fwrite(STDOUT, __METHOD__ . "\nCleaning up after test...\n");
+        parent::tearDown();
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        fwrite(STDOUT, __METHOD__ . "\nDONE!\n");
     }
 }
