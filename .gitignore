@@ -11,3 +11,4 @@ public/template.php
 /.scannerwork/
 /.php-cs-fixer.cache
 phpunit.xml
+.phpunit.cache
