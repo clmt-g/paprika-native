@@ -7,6 +7,8 @@ use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
 use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
+use Paprika\model\DAOGrade;
+use Paprika\model\Grade;
 use DateTime;
 
 /** controller class : used to display the pages in view through the renderer */
@@ -14,12 +16,14 @@ class PompiersController extends BaseController
 {
     private DAOPompiers $pompierDAO;
     private DAOCaserne $caserneDAO;
+    private DAOGrade $gradeDAO;
 
     public function __construct()
     {
         parent::__construct();
         $this->pompierDAO = new DAOPompiers(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
         $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        $this->gradeDAO = new DAOGrade(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
     }
 
     /** display the create page
@@ -35,7 +39,7 @@ class PompiersController extends BaseController
         }
 
         // récuperer les grades pour les afficher dans une balise option
-        $codesGrade = $this->pompierDAO->getAllCodeGrade();
+        $codesGrade = $this->gradeDAO->getAllCodeGrade();
         if (!$codesGrade) {
             echo 'Erreur: aucune grade disponible';
             exit;
@@ -91,7 +95,7 @@ class PompiersController extends BaseController
         // affichage des nom de grade plutot que des numéro
         $nomsGrades = [];
         foreach ($pompiers as $pompier) {
-            $nomsGrades[$pompier->getMatricule()] = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
+            $nomsGrades[$pompier->getMatricule()] = $this->gradeDAO->getCodeGradeNom($pompier->getCodeGrade());
         }
 
         // variable pour nuémroter les lignes du tableau
@@ -124,7 +128,7 @@ class PompiersController extends BaseController
         if (!$caserne) {
             $caserne = 'error';
         }
-        $grade = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
+        $grade = $this->gradeDAO->getCodeGradeNom($pompier->getCodeGrade());
         if (!$grade) {
             $grade = 'error';
         }
@@ -158,7 +162,7 @@ class PompiersController extends BaseController
         }
 
         // récuperer les noms des grades
-        $codesGrade = $this->pompierDAO->getAllCodeGrade();
+        $codesGrade = $this->gradeDAO->getAllCodeGrade();
         if (!$codesGrade) {
             echo 'Erreur: aucune grade disponible';
             exit;
