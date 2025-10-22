@@ -6,8 +6,8 @@ use \Paprika\controller\DefaultController;
 use \Paprika\controller\CaserneController;
 use \Paprika\controller\PompiersController;
 
-if (isset($_SERVER["PATH_INFO"])) {
-    $path = trim($_SERVER["PATH_INFO"], "/");
+if (isset($_SERVER["REQUEST_URI"])) {
+    $path = trim($_SERVER["REQUEST_URI"], "/");
 } else {
     $path = "";
 }

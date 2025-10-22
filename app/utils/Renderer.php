@@ -9,10 +9,10 @@ class Renderer
 {
     /**
      * @param string $file (nom du fichier)
-     * @param $data
-     * @return void
+     * @param null $data
+     * @return string
      */
-    public static function render(string $file, $data = null)
+    public static function render(string $file, $data = null): string
     {
         $path = __DIR__ . "/../view/$file.php";
         $content = file_get_contents($path);
@@ -37,8 +37,6 @@ class Renderer
             extract($data);
         }
         include $filepath;
-        $page = ob_get_clean();
-        ob_end_flush();
-        return $page;
+        return ob_get_clean();
     }
 }

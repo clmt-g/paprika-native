@@ -27,9 +27,9 @@ DROP TABLE IF EXISTS `casernes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `casernes` (
   `NumCaserne` int(11) NOT NULL,
-  `Adresse` varchar(15) DEFAULT NULL,
+  `Adresse` varchar(50) DEFAULT NULL,
   `CP` varchar(5) DEFAULT NULL,
-  `Ville` varchar(20) DEFAULT NULL,
+  `Ville` varchar(50) DEFAULT NULL,
   `CodeTypeC` int(11) DEFAULT NULL,
   PRIMARY KEY (`NumCaserne`),
   KEY `FK_typeC` (`CodeTypeC`),
@@ -166,7 +166,7 @@ DROP TABLE IF EXISTS `pompiers`;
 CREATE TABLE `pompiers` (
   `Matricule` varchar(7) NOT NULL,
   `Prenom` varchar(50) DEFAULT NULL,
-  `Nom` varchar(20) DEFAULT NULL,
+  `Nom` varchar(50) DEFAULT NULL,
   `ChefAgret` varchar(1) DEFAULT NULL,
   `DateNaissance` date DEFAULT NULL,
   `NumCaserne` int(11) DEFAULT NULL,
