@@ -2,7 +2,7 @@
 
 namespace Paprika\utils\validators;
 
-class GradeValidator
+class GradeValidator implements \Paprika\utils\validators\InterfaceValidator
 {
     /**
      * Liste des codes de grades valides (en dur comme autorisé)

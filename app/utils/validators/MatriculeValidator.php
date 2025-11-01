@@ -2,7 +2,7 @@
 
 namespace Paprika\utils\validators;
 
-class MatriculeValidator
+class MatriculeValidator implements \Paprika\utils\validators\InterfaceValidator
 {
     /** ensure that a Matricule has the right format
      * @param string $data
