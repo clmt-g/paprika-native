@@ -2,14 +2,20 @@
 
 namespace Paprika\controller;
 
+use DateMalformedStringException;
 use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
+use Paprika\utils\Filtre;
 use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
 use Paprika\model\DAOGrade;
 use Paprika\model\Grade;
 use DateTime;
+use Paprika\utils\validators\DateNaissanceValidator;
+use Paprika\utils\validators\GradeValidator;
+use Paprika\utils\validators\MatriculeValidator;
+use Paprika\utils\validators\NameValidator;
 
 /** controller class : used to display the pages in view through the renderer */
 class PompiersController extends BaseController
@@ -27,7 +33,7 @@ class PompiersController extends BaseController
     }
 
     /** display the create page
-     * @return string
+     * @return void
      */
     public function create(): void
     {
@@ -50,11 +56,23 @@ class PompiersController extends BaseController
     /** create a pompier
      * @param $data
      * @return void
+     * @throws \DateMalformedStringException
      */
     public function do_create($data): void
     {
         // vérifie la validité des données submit
-        $result = $this->verifyData(isCreate: true);
+        $data = [
+            'matricule' => $_POST['matricule'] ?? '',
+            'prenom' => $_POST['prenom'] ?? '',
+            'nom' => $_POST['nom'] ?? '',
+            'chefAgret' => $_POST['chefAgret'] ?? '',
+            'numCaserne' => $_POST['numCaserne'] ?? 0,
+            'dateNaissance' => $_POST['dateNaissance'] ?? '',
+            'codeGrade' => $_POST['codeGrade'] ?? '',
+            'matriculeRespo' => $_POST['matriculeRespo'] ?? '',
+        ];
+
+        $result = $this->verifyData($data, true);
 
         if (!$result['valid']) {
             echo Renderer::render('pompiers/error',
@@ -178,11 +196,23 @@ class PompiersController extends BaseController
     /** update a pompier
      * @param $data
      * @return void
+     * @throws \DateMalformedStringException
      */
     public function do_update($data): void
     {
-        // vérifier la validité des données
-        $result = $this->verifyData(isCreate: false);
+        // vérifie la validité des données submit
+        $valide_data = [
+            'matricule' => $_POST['matricule'] ?? '',
+            'prenom' => $_POST['prenom'] ?? '',
+            'nom' => $_POST['nom'] ?? '',
+            'chefAgret' => $_POST['chefAgret'] ?? '',
+            'numCaserne' => $_POST['numCaserne'] ?? 0,
+            'dateNaissance' => $_POST['dateNaissance'] ?? '',
+            'codeGrade' => $_POST['codeGrade'] ?? '',
+            'matriculeRespo' => $_POST['matriculeRespo'] ?? '',
+        ];
+
+        $result = $this->verifyData($valide_data, false);
 
         if (!$result['valid']) {
             echo Renderer::render('pompiers/error',
@@ -250,123 +280,89 @@ class PompiersController extends BaseController
         }
     }
 
-    /** verify the data submited when either updating or creating a pompier
-     * @param $isCreate
+    /**
+     * Verify the data submitted when either updating or creating a pompier
+     * @param array $data Les données à valider
+     * @param bool $isCreate
      * @return array
-     * @throws \DateMalformedStringException
      */
-    private function verifyData($isCreate = false): array
+    private function verifyData(array $data, bool $isCreate = false): array
     {
         $errors = [];
 
-        // Récupérer les données du formulaire
-        $matricule = $_POST['matricule'] ?? '';
-        $prenom = $_POST['prenom'] ?? '';
-        $nom = $_POST['nom'] ?? '';
-        $chefAgret = $_POST['chefAgret'] ?? '';
-        $numCaserne = (int) ($_POST['numCaserne'] ?? 0);
-        $dateNaissance = $_POST['dateNaissance'] ?? '';
-        $codeGrade = $_POST['codeGrade'] ?? '';
-        $matriculeRespo = $_POST['matriculeRespo'] ?? '';
+        // --- Configuration du filtre ---
+        $filtre = new Filtre();
 
-        // Vérifier que les champs ne sont pas vides
-        // Pour create : matricule peut être vide (il sera généré)
-        // Pour update : matricule est obligatoire
-        if (!$isCreate && empty($matricule)) {
-            $errors[] = 'Le matricule est requis';
+        // Matricule : optionnel en création, obligatoire en update
+        if (!$isCreate) {
+            $filtre->addValidator('matricule', new MatriculeValidator());
         }
 
-        if (empty($prenom)) {
-            $errors[] = 'Le prénom est requis';
+        $filtre->addValidator('prenom', new NameValidator());
+        $filtre->addValidator('nom', new NameValidator());
+        $filtre->addValidator('dateNaissance', new DateNaissanceValidator());
+        $filtre->addValidator('codeGrade', new GradeValidator());
+        $filtre->addValidator('matriculeRespo', new MatriculeValidator());
+
+        // --- Exécution de la validation ---
+        $result = $filtre->execute($data);
+
+        // --- Collecte des erreurs depuis le filtre ---
+        foreach ($result as $field => $isValid) {
+            if (!$isValid) {
+                $errors[] = $this->getErrorMessage($field);
+            }
         }
 
-        if (empty($nom)) {
-            $errors[] = 'Le nom est requis';
-        }
+        // --- Validations métier supplémentaires ---
+        $numCaserne = (int) ($data['numCaserne'] ?? 0);
+        $chefAgret = $data['chefAgret'] ?? '';
 
-        if (empty($chefAgret)) {
-            $errors[] = 'Le statut chef d\'agrès est requis';
-        }
-
-        if (empty($numCaserne)) {
-            $errors[] = 'Le numéro de caserne est requis';
-        }
-
-        if (empty($dateNaissance)) {
-            $errors[] = 'La date de naissance est requise';
-        }
-
-        if (empty($codeGrade)) {
-            $errors[] = 'Le code grade est requis';
-        }
-
-        if (empty($matriculeRespo)) {
-            $errors[] = 'Le matricule du responsable est requis';
-        }
-
-        // Si des champs sont vides, retourner les erreurs
-        if (!empty($errors)) {
-            return ['valid' => false, 'errors' => $errors, 'data' => null];
-        }
-
-        // Vérifier que le format de la date est bon
-        if (!DateTime::createFromFormat('Y-m-d', $dateNaissance)) {
-            $errors[] = "Le format de la date n'est pas valide (format valide : YYYY-MM-DD)";
-        }
-
-        // Vérifier que le type de données est bien un nombre pour caserne
-        if (!is_int($numCaserne) || $numCaserne <= 0) {
+        if ($numCaserne <= 0) {
             $errors[] = "Le numéro de caserne doit être un nombre valide";
+        } elseif (!$this->caserneDAO->find($numCaserne)) {
+            $errors[] = "La caserne avec le numéro $numCaserne n'existe pas";
         }
 
-        // Vérifier que chefAgret est valide (O ou N)
-        if (!in_array($chefAgret, ['O', 'N'])) {
+        if (!in_array($chefAgret, ['O', 'N'], true)) {
             $errors[] = "Le statut chef d'agrès doit être 'O' ou 'N'";
         }
 
+        // --- Retour ---
         if (!empty($errors)) {
             return ['valid' => false, 'errors' => $errors, 'data' => null];
         }
 
-        // netoyage des données dans le DAOPompier
-
-        // Vérification règles métier
-        // Age valide (au moins 16 ans)
-        $age = (new DateTime())->diff(new DateTime($dateNaissance))->y;
-        if ($age < 16) {
-            $errors[] = "Le pompier doit avoir au moins 16 ans";
-        }
-
-        // Le responsable existe
-        if (!$this->pompierDAO->find($matriculeRespo)) {
-            $errors[] = "Le matricule du responsable n'existe pas";
-        }
-
-        // FIXME : le matricule existe
-
-        // la caserne existe
-        if (!$this->caserneDAO->find($numCaserne)) {
-            $errors[] = "La caserne n'existe pas";
-        }
-
-        if (!empty($errors)) {
-            return ['valid' => false, 'errors' => $errors, 'data' => null];
-        }
-
-        // Retourner les données nettoyées si tout est valide
         return [
             'valid' => true,
             'errors' => [],
             'data' => [
-                'matricule' => $matricule,
-                'prenom' => $prenom,
-                'nom' => $nom,
+                'matricule' => $data['matricule'] ?? '',
+                'prenom' => $data['prenom'] ?? '',
+                'nom' => $data['nom'] ?? '',
                 'chefAgret' => $chefAgret,
                 'numCaserne' => $numCaserne,
-                'dateNaissance' => $dateNaissance,
-                'codeGrade' => $codeGrade,
-                'matriculeRespo' => $matriculeRespo
+                'dateNaissance' => $data['dateNaissance'] ?? '',
+                'codeGrade' => $data['codeGrade'] ?? '',
+                'matriculeRespo' => $data['matriculeRespo'] ?? ''
             ]
         ];
+    }
+
+    /**
+     * Retourne un message d'erreur personnalisé pour chaque champ
+     */
+    private function getErrorMessage(string $field): string
+    {
+        $messages = [
+            'matricule' => 'Le matricule est invalide',
+            'prenom' => 'Le prénom est invalide',
+            'nom' => 'Le nom est invalide',
+            'dateNaissance' => 'La date de naissance est invalide',
+            'codeGrade' => 'Le code grade est invalide',
+            'matriculeRespo' => 'Le matricule du responsable est invalide'
+        ];
+
+        return $messages[$field] ?? "Le champ '$field' est invalide";
     }
 }
