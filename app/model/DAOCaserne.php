@@ -12,15 +12,9 @@ class DAOCaserne {
 
     public function __construct(PDO $pdo) {
         $this->pdo = $pdo;
-        // Active le mode d’erreur PDO en exception
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
-    /**
-     * Nettoie une valeur utilisateur pour prévenir les failles XSS.
-     * @param mixed $value
-     * @return mixed
-     */
     private function sanitize($value) {
         if (is_string($value)) {
             return htmlspecialchars(strip_tags($value), ENT_QUOTES, 'UTF-8');
@@ -39,12 +33,10 @@ class DAOCaserne {
             $stmt->execute(['id' => $id]);
             return $stmt->fetchObject(Caserne::class) ?: null;
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur find caserne: " . $e->getMessage());
-            return null;
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur find caserne: " . $e->getMessage());
+            throw $e; // <-- relance pour affichage sur la page
         }
     }
-
-    //crée methode detail
 
     public function save(Caserne $c): bool {
         try {
@@ -56,9 +48,9 @@ class DAOCaserne {
             $deleted = (int)$c->isDeleted();
 
             $stmt = $this->pdo->prepare("
-            INSERT INTO casernes (NumCaserne, Adresse, CP, Ville, CodeTypeC, deleted)
-            VALUES (:num, :adr, :cp, :ville, :ctc, :deleted)
-        ");
+                INSERT INTO casernes (NumCaserne, Adresse, CP, Ville, CodeTypeC, deleted)
+                VALUES (:num, :adr, :cp, :ville, :ctc, :deleted)
+            ");
             return $stmt->execute([
                 'num' => $num,
                 'adr' => $adr,
@@ -68,11 +60,10 @@ class DAOCaserne {
                 'deleted' => $deleted
             ]);
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur save caserne: " . $e->getMessage());
-            return false;
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur save caserne: " . $e->getMessage());
+            throw $e;
         }
     }
-
 
     public function update(Caserne $c): bool {
         try {
@@ -83,10 +74,10 @@ class DAOCaserne {
             $ctc = $this->sanitize($c->getCodeTypeC());
 
             $stmt = $this->pdo->prepare("
-            UPDATE casernes 
-            SET Adresse=:adr, CP=:cp, Ville=:ville, CodeTypeC=:ctc
-            WHERE NumCaserne=:num AND deleted = 0
-        ");
+                UPDATE casernes 
+                SET Adresse=:adr, CP=:cp, Ville=:ville, CodeTypeC=:ctc
+                WHERE NumCaserne=:num AND deleted = 0
+            ");
             return $stmt->execute([
                 'adr' => $adr,
                 'cp' => $cp,
@@ -95,8 +86,8 @@ class DAOCaserne {
                 'num' => $num
             ]);
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur update caserne: " . $e->getMessage());
-            return false;
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur update caserne: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -108,8 +99,8 @@ class DAOCaserne {
             ");
             return $stmt->execute(['id' => $id]);
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur delete caserne: " . $e->getMessage());
-            return false;
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur delete caserne: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -117,20 +108,20 @@ class DAOCaserne {
         try {
             $max = (int)$this->sanitize($max);
             $stmt = $this->pdo->prepare("
-            SELECT 
-                c.NumCaserne, 
-                c.Adresse, 
-                c.CP AS Cp, 
-                c.Ville, 
-                c.CodeTypeC, 
-                c.deleted,
-                COUNT(p.Matricule) AS nbPompiers
-            FROM casernes c
-            LEFT JOIN pompiers p ON p.NumCaserne = c.NumCaserne AND p.deleted = 0
-            WHERE c.deleted = 0
-            GROUP BY c.NumCaserne
-            LIMIT :max
-        ");
+                SELECT 
+                    c.NumCaserne, 
+                    c.Adresse, 
+                    c.CP AS Cp, 
+                    c.Ville, 
+                    c.CodeTypeC, 
+                    c.deleted,
+                    COUNT(p.Matricule) AS nbPompiers
+                FROM casernes c
+                LEFT JOIN pompiers p ON p.NumCaserne = c.NumCaserne AND p.deleted = 0
+                WHERE c.deleted = 0
+                GROUP BY c.NumCaserne
+                LIMIT :max
+            ");
             $stmt->bindValue('max', $max, PDO::PARAM_INT);
             $stmt->execute();
 
@@ -138,7 +129,7 @@ class DAOCaserne {
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $c = new Caserne();
                 $c->setNumCaserne($row['NumCaserne'])
-                    ->setAdresse($row['Adresse'])   // <-- bien prendre l'adresse
+                    ->setAdresse($row['Adresse'])
                     ->setCp($row['Cp'])
                     ->setVille($row['Ville'])
                     ->setCodeTypeC($row['CodeTypeC'])
@@ -148,8 +139,8 @@ class DAOCaserne {
 
             return $casernes;
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur findAll caserne: " . $e->getMessage());
-            return [];
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur findAll caserne: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -159,8 +150,8 @@ class DAOCaserne {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return $row ? (int)$row['total'] : 0;
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur count caserne: " . $e->getMessage());
-            return 0;
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur count caserne: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -175,8 +166,8 @@ class DAOCaserne {
             $stmt->execute(['ville' => $ville]);
             return $stmt->fetchAll(PDO::FETCH_CLASS, Caserne::class);
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur findByCity caserne: " . $e->getMessage());
-            return [];
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur findByCity caserne: " . $e->getMessage());
+            throw $e;
         }
     }
 
@@ -186,15 +177,11 @@ class DAOCaserne {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             return ($row['maxId'] !== null) ? (int)$row['maxId'] + 1 : 1;
         } catch (\Throwable $e) {
-            SingletonLogger::getInstance()->error("Erreur generateNextId caserne: " . $e->getMessage());
-            return 1;
+            SingletonLogger::getInstance()->getErrorLogger()->error("Erreur generateNextId caserne: " . $e->getMessage());
+            throw $e;
         }
     }
 
-    /** return the Ville field based on the key id (used to display the casernes in pompiers)
-     * @param $id
-     * @return string|null
-     */
     public function findCaserneVille($id) : ?string {
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT Ville FROM casernes WHERE NumCaserne = :id AND deleted = 0";
@@ -203,16 +190,9 @@ class DAOCaserne {
         $preparedStatement->execute();
         $ville = $preparedStatement->fetchColumn();
 
-        if ($ville === false || $ville === null || $ville === "") {
-            return null;
-        }
-
-        return $ville;
+        return $ville ?: null;
     }
 
-    /** return all NumCaserne and Ville fields in the database that are not deleted (used for pompier in update and create)
-     * @return array
-     */
     public function getAllVilles() : array {
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT NumCaserne, Ville FROM casernes WHERE deleted = 0";
@@ -223,9 +203,7 @@ class DAOCaserne {
         while ($row = $preparedStatement->fetch(PDO::FETCH_ASSOC)) {
             $villes[] = $row;
         }
-        if (empty($villes)) {
-            return [];
-        }
+
         return $villes;
     }
 }

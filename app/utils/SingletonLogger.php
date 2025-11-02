@@ -7,7 +7,7 @@ use Monolog\Handler\StreamHandler;
 
 class SingletonLogger
 {
-    private static $instance;
+    private static ?SingletonLogger $instance = null;
 
     private Logger $sqlLogger;
     private Logger $errorLogger;
@@ -16,10 +16,11 @@ class SingletonLogger
     {
         $config = SingletonConfigReader::getInstance();
 
-        //insert
         // Fonction simple pour convertir texte en niveau Monolog
         $getLevel = function(?string $value, int $default): int {
-            if (!$value) { return $default; }
+            if (!$value) {
+                return $default;
+            }
 
             return match (strtoupper($value)) {
                 'DEBUG'     => Logger::DEBUG,
@@ -34,22 +35,22 @@ class SingletonLogger
             };
         };
 
-        //  la config
+        // Récupération des niveaux depuis la config
         $sqlLevel   = $getLevel($config->getValue("sql", "logs"), Logger::WARNING);
         $errorLevel = $getLevel($config->getValue("error", "logs"), Logger::ERROR);
 
-        //  logger SQL
+        // Logger SQL
         $this->sqlLogger = new Logger("sql");
-        $this->sqlLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/sqll.log", $sqlLevel));
+        $this->sqlLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/sql.log", $sqlLevel));
 
-        //  logger Error
+        // Logger Error
         $this->errorLogger = new Logger("error");
-        $this->errorLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/errorr.log", $errorLevel));
+        $this->errorLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/error.log", $errorLevel));
     }
 
     public static function getInstance(): SingletonLogger
     {
-        if (is_null(self::$instance)) {
+        if (self::$instance === null) {
             self::$instance = new SingletonLogger();
         }
         return self::$instance;
