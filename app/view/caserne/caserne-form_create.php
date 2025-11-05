@@ -1,8 +1,9 @@
 <?php
 // caserne-form_create.php
-// Variables attendues par le renderer : $errors (array), $data (array)
+// Variables attendues par le renderer : $errors (array), $data (array), $csrf_token (string)
 $errors = $errors ?? [];
 $data = $data ?? [];
+$csrf_token = $csrf_token ?? '';
 
 // helper pour échapper avant affichage
 function h($v) {
@@ -135,6 +136,9 @@ function h($v) {
 <?php endif; ?>
 
 <form method="POST" action="/caserne/add" novalidate>
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="<?php echo h($csrf_token); ?>">
+
     <label>Adresse :
         <input type="text" name="adresse" value="<?php echo h($data['adresse'] ?? ''); ?>" required>
     </label>

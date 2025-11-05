@@ -1,3 +1,12 @@
+<?php
+// Variables attendues : $caserne (object), $csrf_token (string)
+$csrf_token = $csrf_token ?? '';
+
+// helper pour échapper avant affichage
+function h($v) {
+    return htmlspecialchars((string)$v, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -100,21 +109,24 @@
 </head>
 <body>
 
-<h1>Modifier la Caserne {{ $caserne->getNumCaserne() }}</h1>
+<h1>Modifier la Caserne <?php echo h($caserne->getNumCaserne()); ?></h1>
 
 <form method="POST" action="/caserne/update">
-    <input type="hidden" name="NumCaserne" value="{{ $caserne->getNumCaserne() }}">
+    <!-- CSRF Token -->
+    <input type="hidden" name="csrf_token" value="<?php echo h($csrf_token); ?>">
+
+    <input type="hidden" name="NumCaserne" value="<?php echo h($caserne->getNumCaserne()); ?>">
 
     <label>Adresse :
-        <input type="text" name="adresse" value="{{ $caserne->getAdresse() }}" required>
+        <input type="text" name="adresse" value="<?php echo h($caserne->getAdresse()); ?>" required>
     </label>
 
     <label>Code Postal :
-        <input type="text" name="cp" value="{{ $caserne->getCp() }}" required>
+        <input type="text" name="cp" value="<?php echo h($caserne->getCp()); ?>" required>
     </label>
 
     <label>Ville :
-        <input type="text" name="ville" value="{{ $caserne->getVille() }}" required>
+        <input type="text" name="ville" value="<?php echo h($caserne->getVille()); ?>" required>
     </label>
 
     <div class="accordion mt-3" id="accordionType">
@@ -127,19 +139,19 @@
             <div id="typeCaserne" class="accordion-collapse collapse" data-bs-parent="#accordionType">
                 <div class="accordion-body">
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="codeTypeC" id="type1" value="1" {{ $caserne->getCodeTypeC() == 1 ? 'checked' : '' }}>
+                        <input class="form-check-input" type="radio" name="codeTypeC" id="type1" value="1" <?php echo $caserne->getCodeTypeC() == 1 ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="type1">
                             🚒 Caserne <strong>Professionnelle</strong>
                         </label>
                     </div>
                     <div class="form-check mb-2">
-                        <input class="form-check-input" type="radio" name="codeTypeC" id="type2" value="2" {{ $caserne->getCodeTypeC() == 2 ? 'checked' : '' }}>
+                        <input class="form-check-input" type="radio" name="codeTypeC" id="type2" value="2" <?php echo $caserne->getCodeTypeC() == 2 ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="type2">
                             🧯 Caserne <strong>Mixte</strong>
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="codeTypeC" id="type3" value="3" {{ $caserne->getCodeTypeC() == 3 ? 'checked' : '' }}>
+                        <input class="form-check-input" type="radio" name="codeTypeC" id="type3" value="3" <?php echo $caserne->getCodeTypeC() == 3 ? 'checked' : ''; ?>>
                         <label class="form-check-label" for="type3">
                             👨‍🚒 Caserne <strong>Volontaires</strong>
                         </label>

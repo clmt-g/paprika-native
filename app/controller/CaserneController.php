@@ -3,17 +3,21 @@
 namespace Paprika\controller;
 
 use Paprika\model\DAOCaserne;
+use Paprika\utils\CSRFToken;
+use Paprika\utils\CSRFTokenSession;
 use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
 
 class CaserneController extends BaseController
 {
     private DAOCaserne $daoCaserne;
+    private CSRFTokenSession $csrfToken;
 
     public function __construct()
     {
         parent::__construct();
         $this->daoCaserne = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        $this->csrfToken = new CSRFTokenSession();
     }
 
     /** Liste des casernes */
@@ -38,12 +42,24 @@ class CaserneController extends BaseController
     /** Formulaire création */
     public function create(): void
     {
-        echo Renderer::render('caserne/caserne-form_create');
+        $token = CSRFTokenSession::generateToken();
+        echo Renderer::render('caserne/caserne-form_create', ['csrf_token' => $token]);
     }
 
     /** Création POST */
     public function do_create($data): void
     {
+        // Check CSRF
+        if (!CSRFTokenSession::check($data['csrf_token'] ?? '')) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => ["Token CSRF invalide ou expiré. Veuillez réessayer."],
+                'type' => 'create',
+                'id' => null
+            ]);
+            return;
+        }
+
+        // Validate
         $errors = $this->validateCaserneData($data);
         if (!empty($errors)) {
             echo Renderer::render('caserne/caserne-error', [
@@ -54,6 +70,7 @@ class CaserneController extends BaseController
             return;
         }
 
+        // Sanitize et création
         $caserne = new \Paprika\model\Caserne();
         $caserne->setNumCaserne($this->daoCaserne->generateNextId())
             ->setAdresse($data['adresse'])
@@ -83,12 +100,26 @@ class CaserneController extends BaseController
         $caserne = $this->daoCaserne->find($id);
         if (!$caserne) { echo "Caserne introuvable."; return; }
 
-        echo Renderer::render('caserne/caserne-form_update', ['caserne' => $caserne]);
+        $token = CSRFTokenSession::generateToken();
+        echo Renderer::render('caserne/caserne-form_update', [
+            'caserne' => $caserne,
+            'csrf_token' => $token
+        ]);
     }
 
     /** Update POST */
     public function do_update($data): void
     {
+        // Check CSRF
+        if (!CSRFTokenSession::check($data['csrf_token'] ?? '')) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => ["Token CSRF invalide ou expiré. Veuillez réessayer."],
+                'type' => 'update',
+                'id' => $data['NumCaserne'] ?? null
+            ]);
+            return;
+        }
+
         if (empty($data['NumCaserne']) || !is_numeric($data['NumCaserne'])) {
             echo "ID de la caserne invalide."; return;
         }
@@ -133,6 +164,10 @@ class CaserneController extends BaseController
     /** Suppression POST */
     public function do_delete($id): void
     {
+        // Récupérer les données POST
+        $data = $_POST;
+
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
