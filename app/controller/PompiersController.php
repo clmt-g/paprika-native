@@ -2,7 +2,6 @@
 
 namespace Paprika\controller;
 
-use DateMalformedStringException;
 use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
@@ -56,7 +55,6 @@ class PompiersController extends BaseController
     /** create a pompier
      * @param $data
      * @return void
-     * @throws \DateMalformedStringException
      */
     public function do_create($data): void
     {
@@ -196,7 +194,6 @@ class PompiersController extends BaseController
     /** update a pompier
      * @param $data
      * @return void
-     * @throws \DateMalformedStringException
      */
     public function do_update($data): void
     {
