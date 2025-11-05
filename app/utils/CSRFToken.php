@@ -2,9 +2,9 @@
 
 namespace Paprika\utils;
 
-abstract class CRSFToken
+abstract class CSRFToken
 {
-    private static $token_name = "crsf_token";
+    protected static $token_name = "csrf_token";
 
     /** Generate and return the token, store the token with timestamp
      * @return string

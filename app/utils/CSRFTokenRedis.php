@@ -2,9 +2,10 @@
 
 namespace Paprika\utils;
 
-use Paprika\utils\CRSFToken;
+use Paprika\utils\CSRFToken;
+use Random\RandomException;
 
-class CRSFTokenRedis extends CRSFToken
+class CSRFTokenRedis extends CSRFToken
 {
 
     /**

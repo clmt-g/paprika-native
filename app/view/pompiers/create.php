@@ -100,6 +100,8 @@
 
                     <label for="matriculeRespo">Matricule du responsable</label>
                     <input type="text" id="matriculeRespo" name="matriculeRespo" class="form-control" required>
+
+                    <input type="hidden" id="token" name="token" value="{{ $token }}">
                 </div>
             </div>
 

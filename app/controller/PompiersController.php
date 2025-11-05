@@ -5,16 +5,17 @@ namespace Paprika\controller;
 use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
+use Paprika\utils\CSRFToken;
+use Paprika\utils\CSRFTokenSession;
 use Paprika\utils\Filtre;
 use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
 use Paprika\model\DAOGrade;
-use Paprika\model\Grade;
-use DateTime;
 use Paprika\utils\validators\DateNaissanceValidator;
 use Paprika\utils\validators\GradeValidator;
 use Paprika\utils\validators\MatriculeValidator;
 use Paprika\utils\validators\NameValidator;
+use Random\RandomException;
 
 /** controller class : used to display the pages in view through the renderer */
 class PompiersController extends BaseController
@@ -22,6 +23,7 @@ class PompiersController extends BaseController
     private DAOPompiers $pompierDAO;
     private DAOCaserne $caserneDAO;
     private DAOGrade $gradeDAO;
+    private static CSRFToken $csrftoken;
 
     public function __construct()
     {
@@ -29,27 +31,43 @@ class PompiersController extends BaseController
         $this->pompierDAO = new DAOPompiers(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
         $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
         $this->gradeDAO = new DAOGrade(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        self::$csrftoken = new CSRFTokenSession();
     }
 
     /** display the create page
      * @return void
+     * @throws RandomException
      */
     public function create(): void
     {
+        // générer le cookie pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // recupere les casernesNum et ville pour les afficher dans une balise option
         $casernes = $this->caserneDAO->getAllVilles();
         if (!$casernes) {
-            echo 'Erreur: aucune caserne disponible';
-            exit;
+            echo Renderer::render('pompiers/error',
+                ['errors' => "Erreur : aucune caserne disponible", 'type' => 'create']
+            );
+            return;
         }
 
         // récuperer les grades pour les afficher dans une balise option
         $codesGrade = $this->gradeDAO->getAllCodeGrade();
         if (!$codesGrade) {
-            echo 'Erreur: aucune grade disponible';
-            exit;
+            echo Renderer::render('pompiers/error',
+                ['errors' => "Erreur : aucun grade disponible", 'type' => 'create']
+            );
+            return;
         }
-        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade]);
+        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade, 'token' => $token]);
     }
 
     /** create a pompier
@@ -58,6 +76,15 @@ class PompiersController extends BaseController
      */
     public function do_create($data): void
     {
+        // récupérer le cookie pour vérifier sa validité
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
         // vérifie la validité des données submit
         $data = [
             'matricule' => $_POST['matricule'] ?? '',
@@ -154,9 +181,20 @@ class PompiersController extends BaseController
     /** display the update page
      * @param $id
      * @return void
+     * @throws RandomException
      */
     public function update($id): void
     {
+        // générer un token pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // gestion des erreurs
         if (!$id) {
             header('Location: /pompiers/show');
@@ -187,7 +225,8 @@ class PompiersController extends BaseController
         echo Renderer::render('pompiers/update', [
             'pompier' => $pompier,
             'casernes' => $casernes,
-            'codesGrade' => $codesGrade
+            'codesGrade' => $codesGrade,
+            'token' => $token
         ]);
     }
 
@@ -197,6 +236,16 @@ class PompiersController extends BaseController
      */
     public function do_update($data): void
     {
+        // vérifier la validité du token
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // vérifie la validité des données submit
         $valide_data = [
             'matricule' => $_POST['matricule'] ?? '',
