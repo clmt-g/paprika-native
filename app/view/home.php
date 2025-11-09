@@ -126,7 +126,12 @@
 
 <!-- HEADER -->
 <header class="text-center">
-    <div class="container d-flex flex-column align-items-center">
+    <div class="container d-flex flex-column align-items-center position-relative">
+        <!-- Icône user en haut à droite -->
+        <a href="/users/detail" class="position-absolute top-0 end-0 mt-2 me-3 text-decoration-none" title="Mon profil">
+            <i class="bi bi-person-circle fs-2 text-dark"></i>
+        </a>
+
         <div class="d-flex align-items-center justify-content-center mb-2">
             <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
             <h1>Paprika</h1>
@@ -137,12 +142,12 @@
 
 <div class="container-fluid">
     <div class="row">
-
         <!-- SIDEBAR -->
         <aside class="col-md-2 sidebar">
             <a href="" class="active"><i class="bi bi-house"></i> Accueil</a>
             <a href="/caserne/show"><i class="bi bi-building"></i> Casernes</a>
             <a href="/pompiers/show"><i class="bi bi-people"></i> Pompiers</a>
+            <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
         </aside>
 
         <!-- CONTENU PRINCIPAL -->
