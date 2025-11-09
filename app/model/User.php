@@ -13,27 +13,31 @@ namespace Paprika\model;
 class User
 {
     // propriétés
-    private int $id;
+    private ?int $id;
     private string $nom;
     private string $prenom;
     private string $login;
     private string $passwd;
-    private string $role; // enumération dans la base de données
+    private string $role;
     private bool $deleted;
 
     // constructeur
-    public function __construct(string $nom, string $prenom, string $login, string $passwd, string $role, int $id) {
-        if (!empty($id)) {
-            $this->id = $id;
-        } else {
-            $this->id = ""; // placeholder
-        }
+    public function __construct(
+        string $nom,
+        string $prenom,
+        string $login,
+        string $passwd,
+        string $role = 'default',
+        bool $deleted = false,
+        ?int $id = null
+    ) {
+        $this->id = $id;
         $this->nom = $nom;
         $this->prenom = $prenom;
         $this->login = $login;
         $this->passwd = $passwd;
         $this->role = $role;
-        $this->deleted = false;
+        $this->deleted = $deleted;
     }
 
     // getter / setter
