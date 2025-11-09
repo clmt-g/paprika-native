@@ -2,9 +2,12 @@
 
 namespace Paprika\controller;
 
+// Vérification du rôle de l'utilisateur dans les méthodes
+
 use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
+use Paprika\utils\Auth;
 use Paprika\utils\CSRFToken;
 use Paprika\utils\CSRFTokenSession;
 use Paprika\utils\Filtre;
@@ -40,6 +43,11 @@ class PompiersController extends BaseController
      */
     public function create(): void
     {
+        // sécuriter meme si sécurité sur l'interface graphique
+        if(!Auth::can("pompier_create")) {
+            // TODO : redirect
+        }
+
         // générer le cookie pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
