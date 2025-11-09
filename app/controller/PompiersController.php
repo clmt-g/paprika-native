@@ -43,6 +43,7 @@ class PompiersController extends BaseController
      */
     public function create(): void
     {
+        $errors = [];
         // sécuriter meme si sécurité sur l'interface graphique
         if(!Auth::can("pompier_create")) {
             // TODO : redirect
@@ -84,6 +85,7 @@ class PompiersController extends BaseController
      */
     public function do_create($data): void
     {
+        $errors = [];
         // récupérer le cookie pour vérifier sa validité
         $token = $_POST['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
@@ -193,6 +195,7 @@ class PompiersController extends BaseController
      */
     public function update($id): void
     {
+        $errors = [];
         // générer un token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
@@ -244,6 +247,7 @@ class PompiersController extends BaseController
      */
     public function do_update($data): void
     {
+        $errors = [];
         // vérifier la validité du token
         $token = $_POST['token'] ?? null;
         if (!self::$csrftoken::check($token)) {

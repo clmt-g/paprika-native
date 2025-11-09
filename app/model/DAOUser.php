@@ -31,13 +31,14 @@ class DAOUser
 
             if ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $user = new User(
-                    $row['id'],
                     $row['nom'],
                     $row['prenom'],
                     $row['login'],
                     $row['passwd'],
                     $row['role'],
-                    $row['deleted']
+                    $row['deleted'],
+                    $row['id'],
+
                 );
             } else {
                 return null;
@@ -229,7 +230,7 @@ class DAOUser
     /** generate an id based on the last inserted in the database
      * @return int
      */
-    public function generateId() : int {
+    private function generateId() : int {
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT MAX(id) FROM user";
         $stmt = $pdo->prepare($sql);
