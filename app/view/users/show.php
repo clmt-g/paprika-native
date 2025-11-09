@@ -1,1 +1,274 @@
-<?php
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Liste des utilisateurs - Paprika</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --rouge-paprika: #b22222;
+            --rouge-fonce: #8b1a1a;
+            --gris-fond: #f8f9fa;
+        }
+        body {
+            background-color: var(--gris-fond);
+            overflow-x: hidden;
+        }
+        header {
+            background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        header .logo {
+            width: 181px;
+            height: 40px;
+            object-fit: scale-down;
+            margin-right: -75px;
+            vertical-align: middle;
+        }
+        header h1 {
+            display: inline-block;
+            vertical-align: middle;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin: 0;
+        }
+        .sidebar {
+            background-color: #2b2b2b;
+            min-height: 100vh;
+            padding-top: 1rem;
+            color: white;
+        }
+        .sidebar a {
+            color: #ddd;
+            text-decoration: none;
+            display: block;
+            padding: 10px 20px;
+            transition: background 0.2s, transform 0.2s;
+        }
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: var(--rouge-paprika);
+            color: white;
+            transform: translateX(4px);
+        }
+        main {
+            padding: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        thead {
+            background-color: var(--rouge-paprika);
+            color: white;
+        }
+        tbody tr:hover {
+            background-color: #fff3f3;
+            cursor: pointer;
+        }
+        footer {
+            background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d);
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            margin-top: 3rem;
+        }
+        .btn-danger {
+            background-color: var(--rouge-paprika);
+            border: none;
+            transition: transform 0.2s ease;
+        }
+        .btn-danger:hover {
+            background-color: var(--rouge-fonce);
+            transform: translateY(-2px);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .form-control:focus {
+            border-color: var(--rouge-paprika);
+            box-shadow: 0 0 0 0.2rem rgba(178, 34, 34, 0.25);
+        }
+        .badge-role {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+<header class="text-center">
+    <div class="container d-flex flex-column align-items-center position-relative">
+        <!-- Icône user en haut à droite -->
+        <a href="/users/detail" class="position-absolute top-0 end-0 mt-2 me-3 text-decoration-none" title="Mon profil">
+            <i class="bi bi-person-circle fs-2 text-white"></i>
+        </a>
+
+        <div class="d-flex align-items-center justify-content-center mb-2">
+            <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
+            <h1>Paprika</h1>
+        </div>
+        <p class="lead mb-0">Gestion des casernes & des pompiers</p>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <aside class="col-md-2 sidebar">
+            <a href="/" class="">
+                <i class="bi bi-speedometer2"></i> Tableau de bord
+            </a>
+            <a href="/caserne/show">
+                <i class="bi bi-building"></i> Casernes
+            </a>
+            <a href="/pompiers/show">
+                <i class="bi bi-people"></i> Pompiers
+            </a>
+            <a href="/users/show" class="active">
+                <i class="bi bi-person-badge"></i> Users
+            </a>
+        </aside>
+
+        <!-- Contenu principal -->
+        <main class="col-md-10 fade-in">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-person-badge text-danger"></i> Liste des utilisateurs</h2>
+                <a href="/users/create" class="btn btn-danger">
+                    <i class="bi bi-plus-circle"></i> Ajouter un utilisateur
+                </a>
+            </div>
+
+            <div class="input-group mb-3 w-50">
+                <span class="input-group-text bg-danger text-white"><i class="bi bi-search"></i></span>
+                <input type="text" id="searchUsers" class="form-control" placeholder="Rechercher un utilisateur...">
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Id</th>
+                            <th>Login</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Rôle</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="tableUsers">
+                        @foreach($users as $user)
+                        <tr>
+                            <td><span class="badge bg-secondary">{{ $compteur++ }}</span></td>
+                            <td>{{ $user->getId() }}</td>
+                            <td><strong>{{ $user->getLogin() }}</strong></td>
+                            <td>{{ $user->getNom() }}</td>
+                            <td>{{ $user->getPrenom() }}</td>
+                            <td>
+                                <span class="badge badge-role">{{ $user->getRole() }}</span>
+                            </td>
+
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a href="/users/show/detail/{{ $user->getId() }}" class="btn btn-outline-primary" title="Détails">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="/users/update/{{ $user->getId() }}" class="btn btn-outline-warning" title="Modifier">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a href="#" class="btn btn-outline-danger" title="Supprimer" onclick="loadDeleteModal('/users/delete/{{ $user->getId() }}')">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2025 Paprika – Gestion des casernes et pompiers. Créé avec ❤️ par Clément.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    const search = document.getElementById('searchUsers');
+    const rows = document.querySelectorAll('#tableUsers tr');
+
+    search.addEventListener('keyup', () => {
+        const val = search.value.toLowerCase();
+        rows.forEach(r => {
+            r.style.display = r.textContent.toLowerCase().includes(val) ? '' : 'none';
+        });
+    });
+
+    function loadDeleteModal(url) {
+        // Change l'URL sans recharger la page
+        window.history.pushState({}, '', url);
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                let container = document.createElement('div');
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                let modal = new bootstrap.Modal(document.querySelector('.modal'));
+                modal.show();
+
+                // Quand on ferme la modale, revenir à l'URL précédente
+                document.querySelector('.modal').addEventListener('hidden.bs.modal', function() {
+                    window.history.back();
+                    this.parentElement.remove();
+                });
+            });
+    }
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".badge-role").forEach(span => {
+            const role = span.textContent.trim().toLowerCase();
+
+            // Supprime les classes de couleur existantes
+            span.classList.remove("bg-success", "bg-primary", "bg-danger", "bg-secondary");
+
+            // Ajoute la bonne classe selon le rôle
+            switch (role) {
+                case "default":
+                    span.classList.add("bg-success");
+                    break;
+                case "secretaire":
+                case "secrétaire":
+                    span.classList.add("bg-primary");
+                    break;
+                case "admin":
+                    span.classList.add("bg-danger");
+                    break;
+                default:
+                    span.classList.add("bg-secondary");
+                    break;
+            }
+        });
+    });
+</script>
+</body>
+</html>

@@ -38,6 +38,15 @@ switch ($control) {
         }
         break;
 
+    case "users":
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            userRoutes_get($fragments);
+        }
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            userRoutes_post($fragments);
+        }
+        break;
+
     default:
         header('Location: /error404.php');
         break;
@@ -150,6 +159,63 @@ function pompierRoutes_post($fragments)
             break;
         case "create" :
             call_user_func_array([new PompiersController(), "do_create"], [null]);
+            break;
+        default:
+            echo "Action '$action' non defini <hr>";
+            break;
+    }
+}
+
+function userRoutes_get($fragments)
+{
+    $action = array_shift($fragments);
+    //var_dump($action);
+
+    switch ($action) {
+        case "show":
+            // Vérifie si on a "detail" après show
+            if (isset($fragments[0]) && $fragments[0] === "detail" && isset($fragments[1])) {
+                $id = $fragments[1];
+                echo call_user_func_array([new \Paprika\controller\UserController(), "detail"], [$id]);
+            } else {
+                // Sinon, affiche la liste
+                echo call_user_func_array([new \Paprika\controller\UserController(), "show"], $fragments);
+            }
+            break;
+        case "update" :
+        {
+            call_user_func_array([new \Paprika\controller\UserController(), "update"], $fragments);
+            break;
+        }
+        case "create" :
+        {
+            call_user_func_array([new \Paprika\controller\UserController(), "create"], $fragments);
+            break;
+        }
+        case "delete" :
+            {
+                call_user_func_array([new \Paprika\controller\UserController(), "delete"], $fragments);
+                break;
+            }
+            {
+                echo "Action '$action' non defini <hr>";
+            }
+    }
+}
+
+function userRoutes_post($fragments)
+{
+    $action = array_shift($fragments);
+    switch ($action) {
+        case "delete":
+            //Access permission can be checked here too
+            call_user_func_array([new \Paprika\controller\UserController(), "do_delete"], $fragments);
+            break;
+        case "update" :
+            call_user_func_array([new \Paprika\controller\UserController(), "do_update"], $fragments);
+            break;
+        case "create" :
+            call_user_func_array([new \Paprika\controller\UserController(), "do_create"], [null]);
             break;
         default:
             echo "Action '$action' non defini <hr>";
