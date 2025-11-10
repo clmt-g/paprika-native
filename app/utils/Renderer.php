@@ -1,15 +1,17 @@
 <?php
-
 namespace Paprika\utils;
 
 class Renderer
 {
     /**
-     * @param string $file Nom du fichier
-     * @param array|null $data Données à injecter
+     * Render une vue avec données
+     *
+     * @param string $file Nom du fichier de vue (ex : 'auth/login')
+     * @param array|null $data Variables à injecter
      * @return string
+     * @throws \Exception
      */
-    public static function render(string $file, $data = null)
+    public static function render(string $file, ?array $data = null)
     {
         $path = __DIR__ . "/../view/$file.php";
 
@@ -19,8 +21,8 @@ class Renderer
 
         $content = file_get_contents($path);
 
-        // Opérateur moustache {{ ... }}
-        $content = preg_replace('/{{\s*(.+?)\s*}}/', "<?php echo $1; ?>", $content);
+        // Remplace {{ var }} par PHP
+        $content = preg_replace('/{{\s*(.+?)\s*}}/', "<?php echo \$1; ?>", $content);
 
         // @if / @elseif / @endif
         $content = preg_replace('/@if\s*\((.+?)\)/', "<?php if ($1) { ?>", $content);
@@ -35,11 +37,16 @@ class Renderer
         $content = preg_replace('/@while\s*\((.+?)\)/', "<?php while ($1) { ?>", $content);
         $content = preg_replace('/@endwhile/', "<?php } ?>", $content);
 
-        // Sauvegarde du contenu pré-parsé dans le cache
+        // Crée automatiquement le dossier cache si nécessaire
         $filepath = __DIR__ . "/../../storage/cache/$file.php";
+        $dir = dirname($filepath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
         file_put_contents($filepath, $content);
 
-        // Rendu avec extraction des variables
+        // Inclut la vue avec extraction des variables
         ob_start();
         if ($data !== null) {
             extract($data, EXTR_SKIP);

@@ -13,134 +13,30 @@
             --gris-fond: #f8f9fa;
         }
 
-        body {
-            background-color: var(--gris-fond);
-            overflow-x: hidden;
-            font-family: "Segoe UI", sans-serif;
-        }
-
-        header {
-            background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d);
-            color: white;
-            padding: 1rem 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        }
-        header .logo {
-            width: 181px;
-            height: 40px;
-            object-fit: scale-down;
-            margin-right: -75px;
-            vertical-align: middle;
-        }
-        header h1 {
-            display: inline-block;
-            vertical-align: middle;
-            font-weight: 700;
-            font-size: 1.8rem;
-            margin: 0;
-        }
-
-        .sidebar {
-            background-color: #2b2b2b;
-            min-height: 100vh;
-            padding-top: 1rem;
-            color: white;
-        }
-        .sidebar a {
-            color: #ddd;
-            text-decoration: none;
-            display: block;
-            padding: 10px 20px;
-            transition: background 0.2s, transform 0.2s;
-        }
-        .sidebar a:hover,
-        .sidebar a.active {
-            background-color: var(--rouge-paprika);
-            color: white;
-            transform: translateX(4px);
-        }
-
-        main {
-            padding: 2rem;
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
-        table {
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        thead {
-            background-color: var(--rouge-paprika);
-            color: white;
-        }
-        tbody tr:hover {
-            background-color: #fff3f3;
-            cursor: pointer;
-        }
-
-        footer {
-            background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d);
-            color: #fff;
-            text-align: center;
-            padding: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .form-control:focus {
-            border-color: var(--rouge-paprika);
-            box-shadow: 0 0 0 0.2rem rgba(178, 34, 34, 0.25);
-        }
-
-        .btn-danger,
-        .btn-outline-warning,
-        .btn-outline-primary,
-        .btn-outline-danger {
-            transition: all 0.25s ease, box-shadow 0.25s ease;
-        }
-        .btn-danger {
-            background-color: var(--rouge-paprika);
-            border: none;
-        }
-        .btn-danger:hover {
-            background-color: var(--rouge-fonce);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(178,34,34,0.3);
-        }
-        .btn-outline-danger {
-            color: #b22222;
-            border: 1px solid #b22222;
-            background-color: transparent;
-            position: relative;
-        }
-        .btn-outline-danger i {
-            transition: transform 0.25s ease;
-        }
-        .btn-outline-danger:hover {
-            color: #fff;
-            background-color: #b22222;
-            border-color: #8b1a1a;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(178, 34, 34, 0.3);
-        }
-        .btn-outline-danger:hover i {
-            transform: rotate(-15deg) scale(1.2);
-        }
+        body { background-color: var(--gris-fond); overflow-x: hidden; font-family: "Segoe UI", sans-serif; }
+        header { background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d); color: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        header .logo { width: 181px; height: 40px; object-fit: scale-down; margin-right: -75px; vertical-align: middle; }
+        header h1 { display: inline-block; vertical-align: middle; font-weight: 700; font-size: 1.8rem; margin: 0; }
+        .sidebar { background-color: #2b2b2b; min-height: 100vh; padding-top: 1rem; color: white; }
+        .sidebar a { color: #ddd; text-decoration: none; display: block; padding: 10px 20px; transition: background 0.2s, transform 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background-color: var(--rouge-paprika); color: white; transform: translateX(4px); }
+        main { padding: 2rem; }
+        .card { border: none; border-radius: 15px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        table { border-radius: 10px; overflow: hidden; }
+        thead { background-color: var(--rouge-paprika); color: white; }
+        tbody tr:hover { background-color: #fff3f3; cursor: pointer; }
+        footer { background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d); color: #fff; text-align: center; padding: 1rem; font-size: 0.9rem; }
+        .fade-in { animation: fadeIn 0.5s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .form-control:focus { border-color: var(--rouge-paprika); box-shadow: 0 0 0 0.2rem rgba(178, 34, 34, 0.25); }
+        .btn-danger, .btn-outline-warning, .btn-outline-primary, .btn-outline-danger { transition: all 0.25s ease, box-shadow 0.25s ease; }
+        .btn-danger { background-color: var(--rouge-paprika); border: none; }
+        .btn-danger:hover { background-color: var(--rouge-fonce); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(178,34,34,0.3); }
+        .btn-outline-danger { color: #b22222; border: 1px solid #b22222; background-color: transparent; position: relative; }
+        .btn-outline-danger i { transition: transform 0.25s ease; }
+        .btn-outline-danger:hover { color: #fff; background-color: #b22222; border-color: #8b1a1a; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(178, 34, 34, 0.3); }
+        .btn-outline-danger:hover i { transform: rotate(-15deg) scale(1.2); }
     </style>
 </head>
 <body>
@@ -158,23 +54,15 @@
 <div class="container-fluid">
     <div class="row">
         <aside class="col-md-2 sidebar">
-            <a href="/" class="">
-                <i class="bi bi-speedometer2"></i> Tableau de bord
-            </a>
-            <a href="/caserne/show" class="active">
-                <i class="bi bi-building"></i> Casernes
-            </a>
-            <a href="/pompiers/show">
-                <i class="bi bi-people"></i> Pompiers
-            </a>
+            <a href="/" class=""><i class="bi bi-speedometer2"></i> Tableau de bord</a>
+            <a href="/caserne/show" class="active"><i class="bi bi-building"></i> Casernes</a>
+            <a href="/pompiers/show"><i class="bi bi-people"></i> Pompiers</a>
         </aside>
 
         <main class="col-md-10 fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-building"></i> Liste des casernes</h2>
-                <a href="/caserne/add" class="btn btn-danger">
-                    <i class="bi bi-plus-circle"></i> Ajouter une caserne
-                </a>
+                <a href="/caserne/add" class="btn btn-danger"><i class="bi bi-plus-circle"></i> Ajouter une caserne</a>
             </div>
 
             <div class="input-group mb-3 w-50">
@@ -197,38 +85,29 @@
                         </tr>
                         </thead>
                         <tbody id="tableCasernes">
-                        @foreach($casernes as $c)
-                        <tr>
-                            <td><span class="badge bg-secondary">{{ $c->getNumCaserne() }}</span></td>
-                            <td>{{ $c->getAdresse() }}</td>
-                            <td>{{ $c->getCp() }}</td>
-                            <td><i class="bi bi-geo-alt text-danger"></i> {{ $c->getVille() }}</td>
-                            <td><span class="badge bg-info">{{ $c->getTypeTexte() }}</span></td>
-                            <td class="text-center">
-                                <span class="badge bg-dark">{{ $c->getNbPompiers() }}</span>
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm" role="group">
-                                    <a href="/caserne/show/detail/{{ $c->getNumCaserne() }}"
-                                       class="btn btn-outline-primary"
-                                       title="Détails">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                                    <a href="/caserne/update/{{ $c->getNumCaserne() }}"
-                                       class="btn btn-outline-warning"
-                                       title="Modifier">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
-                                    <a href="#"
-                                       class="btn btn-outline-danger"
-                                       title="Supprimer"
-                                       onclick="loadDeleteModal('{{ $c->getNumCaserne() }}')">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
+                        <?php foreach($casernes as $c): ?>
+                            <tr>
+                                <td><span class="badge bg-secondary"><?= $c->getNumCaserne() ?></span></td>
+                                <td><?= $c->getAdresse() ?></td>
+                                <td><?= $c->getCp() ?></td>
+                                <td><i class="bi bi-geo-alt text-danger"></i> <?= $c->getVille() ?></td>
+                                <td><span class="badge bg-info"><?= $c->getTypeTexte() ?></span></td>
+                                <td class="text-center"><span class="badge bg-dark"><?= $c->getNbPompiers() ?></span></td>
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="/caserne/show/detail/<?= $c->getNumCaserne() ?>" class="btn btn-outline-primary" title="Détails">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <a href="/caserne/update/<?= $c->getNumCaserne() ?>" class="btn btn-outline-warning" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-outline-danger" title="Supprimer" onclick="loadDeleteModal('<?= $c->getNumCaserne() ?>')">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

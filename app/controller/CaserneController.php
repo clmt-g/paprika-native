@@ -3,6 +3,7 @@
 namespace Paprika\controller;
 
 use Paprika\model\DAOCaserne;
+use Paprika\utils\Auth;
 use Paprika\utils\CSRFToken;
 use Paprika\utils\CSRFTokenSession;
 use Paprika\utils\SingletonDataBaseMariaDB;
@@ -42,6 +43,9 @@ class CaserneController extends BaseController
     /** Formulaire création */
     public function create(): void
     {
+        if(!Auth::can("casenre_creat"))
+
+            //FIXME: REdirect ? message?
         $token = CSRFTokenSession::generateToken();
         echo Renderer::render('caserne/caserne-form_create', ['csrf_token' => $token]);
     }

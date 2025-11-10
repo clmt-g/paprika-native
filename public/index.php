@@ -5,154 +5,154 @@ require_once '../vendor/autoload.php';
 use \Paprika\controller\DefaultController;
 use \Paprika\controller\CaserneController;
 use \Paprika\controller\PompiersController;
+use Paprika\controller\AuthController;
+use \Paprika\controller\UserController;
 
-if (isset($_SERVER["PATH_INFO"])) {
-    $path = trim($_SERVER["PATH_INFO"], "/");
-} else {
-    $path = "";
-}
-
+// Récupère le path
+$path = $_SERVER["PATH_INFO"] ?? "";
+$path = trim($path, "/");
 $fragments = explode("/", $path);
 $control = array_shift($fragments);
 
+// Switch principal
 switch ($control) {
     case '':
         defaultRoutes_get($fragments);
         break;
 
-    case "pompiers":
-        if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            pompierRoutes_get($fragments);
-        }
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            pompierRoutes_post($fragments);
-        }
-        break;
-
+    /* --- ROUTES CASERNE --- */
     case "caserne":
-        if ($_SERVER["REQUEST_METHOD"] == "GET") {
-            caserneRoutes_get($fragments);
+        if ($_SERVER["REQUEST_METHOD"] === "GET") caserneRoutes_get($fragments);
+        if ($_SERVER["REQUEST_METHOD"] === "POST") caserneRoutes_post($fragments);
+        break;
+
+    /* --- ROUTES POMPIERS --- */
+    case "pompiers":
+        if ($_SERVER["REQUEST_METHOD"] === "GET") pompierRoutes_get($fragments);
+        if ($_SERVER["REQUEST_METHOD"] === "POST") pompierRoutes_post($fragments);
+        break;
+
+    /* --- ROUTES AUTH --- */
+    case "login":
+        $authController = new AuthController();
+        if ($_SERVER["REQUEST_METHOD"] === "GET") $authController->loginForm();
+        if ($_SERVER["REQUEST_METHOD"] === "POST") $authController->login();
+        break;
+
+    case "logout":
+        $authController = new AuthController();
+        $authController->logout();
+        break;
+
+    /* --- ROUTES USERS --- */
+    case "users":
+        $userController = new UserController();
+        $action = array_shift($fragments) ?? "";
+
+        if ($_SERVER["REQUEST_METHOD"] === "GET") {
+            switch ($action) {
+                case "list": $userController->list(); break;
+                case "add": $userController->addForm(); break;
+                case "edit":
+                    $id = $fragments[0] ?? null;
+                    $userController->editForm($id);
+                    break;
+                default: echo "Action '$action' non définie"; break;
+            }
         }
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            caserneRoutes_post($fragments);
+
+        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+            switch ($action) {
+                case "add": $userController->add(); break;
+                case "edit":
+                    $id = $fragments[0] ?? null;
+                    $userController->edit($id);
+                    break;
+                case "delete":
+                    $id = $fragments[0] ?? null;
+                    $userController->delete($id);
+                    break;
+                default: echo "Action '$action' non définie"; break;
+            }
         }
         break;
 
+    /* --- ROUTES PAR DÉFAUT --- */
     default:
         header('Location: /error404.php');
         break;
 }
 
-function defaultRoutes_get($fragments)
-{
-    call_user_func_array([new DefaultController(), "index"], $fragments);
-}
-
-/* --- ROUTES CASERNE --- */
+/* --- Fonctions Caserne --- */
 function caserneRoutes_get($fragments)
 {
     $action = array_shift($fragments);
+    $ctrl = new CaserneController();
+
     switch ($action) {
         case "show":
-            // Vérifie si on a "detail" après show
-            if (isset($fragments[0]) && $fragments[0] === "detail" && isset($fragments[1])) {
-                $id = (int)$fragments[1];
-                echo call_user_func_array([new \Paprika\controller\CaserneController(), "detail"], [$id]);
+            if (isset($fragments[0]) && $fragments[0]==="detail" && isset($fragments[1])) {
+                $ctrl->detail((int)$fragments[1]);
             } else {
-                // Sinon, affiche la liste
-                echo call_user_func_array([new \Paprika\controller\CaserneController(), "show"], $fragments);
+                $ctrl->show($fragments);
             }
             break;
-        case "add":
-            echo call_user_func_array([new \Paprika\controller\CaserneController(), "create"], $fragments);
-            break;
-        case "update":
-            echo call_user_func_array([new \Paprika\controller\CaserneController(), "update"], $fragments);
-            break;
-        case "delete":
-            echo call_user_func_array([new \Paprika\controller\CaserneController(), "delete"], $fragments);
-            break;
-        default:
-            echo "Action '$action' non définie <hr>";
-            break;
+        case "add": $ctrl->create($fragments); break;
+        case "update": $ctrl->update($fragments); break;
+        case "delete": $ctrl->delete($fragments); break;
+        default: echo "Action '$action' non définie"; break;
     }
 }
 
 function caserneRoutes_post($fragments)
 {
     $action = array_shift($fragments);
+    $ctrl = new CaserneController();
+
     switch ($action) {
-        case "add":
-            echo call_user_func_array([new CaserneController(), "do_create"], [$_POST]);
-            break;
-
-        case "update":
-            echo call_user_func_array([new CaserneController(), "do_update"], [$_POST]);
-            break;
-
-        case "delete":
-            echo call_user_func_array([new CaserneController(), "do_delete"], [$_POST['id'] ?? null]);
-            break;
-
-        default:
-            echo "Action '$action' non définie <hr>";
-            break;
+        case "add": $ctrl->do_create($_POST); break;
+        case "update": $ctrl->do_update($_POST); break;
+        case "delete": $ctrl->do_delete($_POST['id'] ?? null); break;
+        default: echo "Action '$action' non définie"; break;
     }
 }
 
+/* --- Fonctions Pompiers --- */
 function pompierRoutes_get($fragments)
 {
     $action = array_shift($fragments);
-    //var_dump($action);
+    $ctrl = new PompiersController();
 
     switch ($action) {
         case "show":
-            // Vérifie si on a "detail" après show
-            if (isset($fragments[0]) && $fragments[0] === "detail" && isset($fragments[1])) {
-                $id = $fragments[1];
-                echo call_user_func_array([new \Paprika\controller\PompiersController(), "detail"], [$id]);
+            if (isset($fragments[0]) && $fragments[0]==="detail" && isset($fragments[1])) {
+                $ctrl->detail($fragments[1]);
             } else {
-                // Sinon, affiche la liste
-                echo call_user_func_array([new \Paprika\controller\PompiersController(), "show"], $fragments);
+                $ctrl->show($fragments);
             }
             break;
-        case "update" :
-        {
-            call_user_func_array([new PompiersController(), "update"], $fragments);
-            break;
-        }
-        case "create" :
-        {
-            call_user_func_array([new PompiersController(), "create"], $fragments);
-            break;
-        }
-        case "delete" :
-        {
-            call_user_func_array([new PompiersController(), "delete"], $fragments);
-            break;
-        }
-        {
-            echo "Action '$action' non defini <hr>";
-        }
+        case "update": $ctrl->update($fragments); break;
+        case "create": $ctrl->create($fragments); break;
+        case "delete": $ctrl->delete($fragments); break;
+        default: echo "Action '$action' non définie"; break;
     }
 }
 
 function pompierRoutes_post($fragments)
 {
     $action = array_shift($fragments);
+    $ctrl = new PompiersController();
+
     switch ($action) {
-        case "delete":
-            //Access permission can be checked here too
-            call_user_func_array([new PompiersController(), "do_delete"], $fragments);
-            break;
-        case "update" :
-            call_user_func_array([new PompiersController(), "do_update"], $fragments);
-            break;
-        case "create" :
-            call_user_func_array([new PompiersController(), "do_create"], [null]);
-            break;
-        default:
-            echo "Action '$action' non defini <hr>";
-            break;
+        case "delete": $ctrl->do_delete($fragments); break;
+        case "update": $ctrl->do_update($fragments); break;
+        case "create": $ctrl->do_create([null]); break;
+        default: echo "Action '$action' non définie"; break;
     }
+}
+
+/* --- Default routes --- */
+function defaultRoutes_get($fragments)
+{
+    call_user_func_array([new DefaultController(), "index"], $fragments);
 }
