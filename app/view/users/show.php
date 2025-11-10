@@ -111,6 +111,13 @@
 </head>
 <body>
 
+@if($showSuccessMessage)
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ $successMessage }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <header class="text-center">
     <div class="container d-flex flex-column align-items-center position-relative">
         <!-- Icône user en haut à droite -->

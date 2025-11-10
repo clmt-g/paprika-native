@@ -6,6 +6,10 @@ use \Paprika\controller\DefaultController;
 use \Paprika\controller\CaserneController;
 use \Paprika\controller\PompiersController;
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 if (isset($_SERVER["REQUEST_URI"])) {
     $path = trim($_SERVER["REQUEST_URI"], "/");
 } else {
@@ -192,6 +196,11 @@ function userRoutes_get($fragments)
             call_user_func_array([new \Paprika\controller\UserController(), "create"], $fragments);
             break;
         }
+        case "update-password":
+        {
+            call_user_func_array([new \Paprika\controller\UserController(), "updatePasswd"], $fragments);
+            break;
+        }
         case "delete" :
             {
                 call_user_func_array([new \Paprika\controller\UserController(), "delete"], $fragments);
@@ -217,6 +226,11 @@ function userRoutes_post($fragments)
         case "create" :
             call_user_func_array([new \Paprika\controller\UserController(), "do_create"], [null]);
             break;
+        case "update-password":
+        {
+            call_user_func_array([new \Paprika\controller\UserController(), "do_updatePasswd"], $fragments);
+            break;
+        }
         default:
             echo "Action '$action' non defini <hr>";
             break;

@@ -37,8 +37,7 @@ class DAOUser
                     $row['passwd'],
                     $row['role'],
                     $row['deleted'],
-                    $row['id'],
-
+                    $row['id']
                 );
             } else {
                 return null;
@@ -204,7 +203,7 @@ class DAOUser
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(":login", $login, \PDO::PARAM_STR);
             $stmt->bindValue(":passwd", $hashedPassword, \PDO::PARAM_STR);
-            $stmt->execute(); // ← N'oubliez pas !
+            $stmt->execute();
 
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
@@ -251,4 +250,22 @@ class DAOUser
         return $user;
     }
 
+    /** update a user password
+     * @param int $id
+     * @param string $password
+     * @return bool
+     */
+    public function updatePassword(int $id, string $password) : bool {
+        try {
+            $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
+            $sql = "UPDATE user SET passwd = :passwd WHERE id = :id AND deleted = 0";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindValue(':passwd', $password, \PDO::PARAM_STR);
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\Exception $e) {
+            error_log("Erreur resetPassword: " . $e->getMessage());
+            return false;
+        }
+    }
 }
