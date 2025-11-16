@@ -177,15 +177,19 @@
             <a href="/pompiers/show">
                 <i class="bi bi-people"></i> Pompiers
             </a>
-            <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @if(Auth::can('user_show'))
+                <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @endif
         </aside>
 
         <main class="col-md-10 fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-building"></i> Liste des casernes</h2>
+                @if(Auth::can('caserne_save'))
                 <a href="/caserne/add" class="btn btn-danger">
                     <i class="bi bi-plus-circle"></i> Ajouter une caserne
                 </a>
+                @endif
             </div>
 
             <div class="input-group mb-3 w-50">
@@ -225,17 +229,21 @@
                                        title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
+                                    @if(Auth::can('caserne_update'))
                                     <a href="/caserne/update/{{ $c->getNumCaserne() }}"
                                        class="btn btn-outline-warning"
                                        title="Modifier">
                                         <i class="bi bi-pencil"></i>
                                     </a>
+                                    @endif
+                                    @if(Auth::can('caserne_delete'))
                                     <a href="#"
                                        class="btn btn-outline-danger"
                                        title="Supprimer"
                                        onclick="loadDeleteModal('{{ $c->getNumCaserne() }}')">
                                         <i class="bi bi-trash"></i>
                                     </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

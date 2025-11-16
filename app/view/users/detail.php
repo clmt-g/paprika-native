@@ -89,12 +89,21 @@
             </div>
 
             <div class="text-center mt-4">
+                @if(Auth::can('user_show'))
                 <a href="/users/show/" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
+                @else
+                <a href="/" class="btn btn-secondary me-2">
+                    <i class="bi bi-arrow-left"></i> Retour à la liste
+                </a>
+                @endif
+                @if(Auth::can('user_update'))
                 <a href="/users/update/{{ $user->getId() }}" class="btn btn-danger me-2">
                     <i class="bi bi-pencil"></i> Modifier l'utilisateur
                 </a>
+                @endif
+                <!-- access control : déjà gérer dans le routeur et les controlleur -->
                 <a href="/users/update-password/{{ $user->getId() }}" class="btn btn-warning">
                     <i class="bi bi-key"></i> Modifier le mot de passe
                 </a>

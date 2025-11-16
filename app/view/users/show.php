@@ -151,9 +151,9 @@
             <a href="/pompiers/show">
                 <i class="bi bi-people"></i> Pompiers
             </a>
-            <a href="/users/show" class="active">
-                <i class="bi bi-person-badge"></i> Users
-            </a>
+            @if(Auth::can('user_show'))
+                <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @endif
         </aside>
 
         <!-- Contenu principal -->

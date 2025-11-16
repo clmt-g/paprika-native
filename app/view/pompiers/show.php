@@ -140,14 +140,16 @@
             <a href="/pompiers/show" class="active">
                 <i class="bi bi-people"></i> Pompiers
             </a>
-            <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @if(Auth::can('user_show'))
+                <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @endif
         </aside>
 
         <!-- Contenu principal -->
         <main class="col-md-10 fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-fire text-danger"></i> Liste des pompiers</h2>
-                @if(Auth::can("caserne_update"))
+                @if(Auth::can("pompier_save"))
                 <a href="/pompiers/create" class="btn btn-danger">
                     <i class="bi bi-plus-circle"></i> Ajouter un pompier
                 </a>
@@ -198,12 +200,16 @@
                                     <a href="/pompiers/show/detail/{{ $pompier->getMatricule() }}" class="btn btn-outline-primary" title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                                    @if(Auth::can('pompier_update'))
+                                        <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endif
+                                    @if(Auth::can('pompier_delete'))
                                     <a href="#" class="btn btn-outline-danger" title="Supprimer" onclick="loadDeleteModal('/pompiers/delete/{{ $pompier->getMatricule() }}')">
                                         <i class="bi bi-trash"></i>
                                     </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>

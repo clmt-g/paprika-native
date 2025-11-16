@@ -62,7 +62,7 @@ class UserController extends BaseController
     {
         $currentUserId = $_SESSION['auth']['id'] ?? null;
         // controlle d'accès : Autoriser si admin OU si c'est son propre profil
-        if (!Auth::can('user_show') && $id !== $currentUserId) {
+        if (!Auth::can('user_show') && (int)$id !== $currentUserId) {
             header('Location: /error403.php');
             exit;
         }
@@ -81,7 +81,7 @@ class UserController extends BaseController
     public function create(): void
     {
         // controlle d'accès
-        if(!Auth::can("user_create")) {
+        if(!Auth::can("user_save")) {
             header('Location: /error403.php');
             exit;
         }
@@ -106,7 +106,7 @@ class UserController extends BaseController
     public function do_create($data): void
     {
         // controlle d'accès
-        if(!Auth::can("user_create")) {
+        if(!Auth::can("user_save")) {
             header('Location: /error403.php');
             exit;
         }
@@ -312,7 +312,7 @@ class UserController extends BaseController
     public function updatePasswd($id): void {
         $currentUserId = $_SESSION['auth']['id'] ?? null;
         // controlle d'accès : Autoriser si admin OU si c'est son propre profil
-        if (!Auth::can('user_update') && $id !== $currentUserId) {
+        if (!Auth::can('user_update') && (int)$id !== $currentUserId) {
             header('Location: /error403.php');
             exit;
         }
@@ -344,7 +344,7 @@ class UserController extends BaseController
     public function do_updatePasswd($id): void {
         $currentUserId = $_SESSION['auth']['id'] ?? null;
         // controlle d'accès : Autoriser si admin OU si c'est son propre profil
-        if (!Auth::can('user_update') && $id !== $currentUserId) {
+        if (!Auth::can('user_update') && (int)$id !== $currentUserId) {
             header('Location: /error403.php');
             exit;
         }
