@@ -10,9 +10,10 @@ class DAOUser
 {
 
     private \PDO $pdo;
-    private string $user = "clement";
+    private string $user;
 
     public function __construct(\PDO $pdo) {
+        $this->user = $_SESSION['auth']['login'] ?? 'anonyme';
         $this->pdo = $pdo;
     }
 

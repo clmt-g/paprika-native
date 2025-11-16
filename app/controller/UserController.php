@@ -16,6 +16,7 @@ use Paprika\utils\validators\NameValidator;
 use Paprika\utils\validators\PasswordValidator;
 use Paprika\utils\validators\RoleValidator;
 use Random\RandomException;
+use Paprika\utils\Auth;
 
 class UserController extends BaseController
 {
@@ -23,6 +24,7 @@ class UserController extends BaseController
     private static CSRFToken $csrftoken;
 
     public function __construct() {
+        parent::__construct();
         $this->userDAO = new DAOUser(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
         self::$csrftoken = new CSRFTokenSession();
     }
@@ -32,6 +34,11 @@ class UserController extends BaseController
      */
     public function show(): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_show")) {
+            header('Location: /error403.php');
+            exit;
+        }
         // récupérer le message flash s'il existe (en cas de modification du mot de passe)
         $successMessage = $_SESSION['success_message'] ?? null;
         $showSuccessMessage = !empty($successMessage); // vrai si message existant
@@ -39,7 +46,7 @@ class UserController extends BaseController
 
         $users = $this->userDAO->findAll();
         if (!$users) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
         }
         $compteur = 1;
@@ -53,9 +60,16 @@ class UserController extends BaseController
      */
     public function detail($id): void
     {
+        $currentUserId = $_SESSION['auth']['id'] ?? null;
+        // controlle d'accès : Autoriser si admin OU si c'est son propre profil
+        if (!Auth::can('user_show') && $id !== $currentUserId) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $user = $this->userDAO->find($id);
         if (!$user) {
-            header("location: /404.php");
+            header("location: /error404.php");
         }
         echo Renderer::render('users/detail', ['user' => $user]);
     }
@@ -66,6 +80,12 @@ class UserController extends BaseController
      */
     public function create(): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_create")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
@@ -85,6 +105,12 @@ class UserController extends BaseController
      */
     public function do_create($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_create")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $errors = [];
 
         // récupérer le token pour vérifier sa validité
@@ -135,6 +161,12 @@ class UserController extends BaseController
      */
     public function update($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
@@ -161,6 +193,12 @@ class UserController extends BaseController
      */
     public function do_update($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // récupérer le token et vérifier si il est valide
         $errors = [];
 
@@ -220,6 +258,12 @@ class UserController extends BaseController
      */
     public function delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $user = $this->userDAO->find($id);
         if (!$user) {
             header("location: /404.php");
@@ -235,6 +279,12 @@ class UserController extends BaseController
      */
     public function do_delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("user_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $errors = [];
 
         // vérifier que l'utilisateur existe
@@ -260,6 +310,13 @@ class UserController extends BaseController
      * @throws \Exception
      */
     public function updatePasswd($id): void {
+        $currentUserId = $_SESSION['auth']['id'] ?? null;
+        // controlle d'accès : Autoriser si admin OU si c'est son propre profil
+        if (!Auth::can('user_update') && $id !== $currentUserId) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
@@ -285,6 +342,13 @@ class UserController extends BaseController
      * @throws \Exception
      */
     public function do_updatePasswd($id): void {
+        $currentUserId = $_SESSION['auth']['id'] ?? null;
+        // controlle d'accès : Autoriser si admin OU si c'est son propre profil
+        if (!Auth::can('user_update') && $id !== $currentUserId) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $errors = [];
 
         // récupérer le token et vérifier si il est valide

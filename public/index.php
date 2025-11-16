@@ -115,13 +115,28 @@ function caserneRoutes_get($fragments)
             }
             break;
         case "add":
-            echo call_user_func_array([new \Paprika\controller\CaserneController(), "create"], $fragments);
+            if (Auth::can('caserne_save')) {
+                echo call_user_func_array([new \Paprika\controller\CaserneController(), "create"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "update":
-            echo call_user_func_array([new \Paprika\controller\CaserneController(), "update"], $fragments);
+            if (Auth::can('caserne_update')) {
+                echo call_user_func_array([new \Paprika\controller\CaserneController(), "update"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "delete":
-            echo call_user_func_array([new \Paprika\controller\CaserneController(), "delete"], $fragments);
+            if (Auth::can('caserne_delete')) {
+                echo call_user_func_array([new \Paprika\controller\CaserneController(), "delete"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         default:
             echo "Action '$action' non définie <hr>";
@@ -134,15 +149,30 @@ function caserneRoutes_post($fragments)
     $action = array_shift($fragments);
     switch ($action) {
         case "add":
-            echo call_user_func_array([new CaserneController(), "do_create"], [$_POST]);
+            if (Auth::can('caserne_save')) {
+                echo call_user_func_array([new CaserneController(), "do_create"], [$_POST]);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
 
         case "update":
-            echo call_user_func_array([new CaserneController(), "do_update"], [$_POST]);
+            if (Auth::can('caserne_update')) {
+                echo call_user_func_array([new CaserneController(), "do_update"], [$_POST]);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
 
         case "delete":
-            echo call_user_func_array([new CaserneController(), "do_delete"], [$_POST['id'] ?? null]);
+            if (Auth::can('caserne_delete')) {
+                echo call_user_func_array([new CaserneController(), "do_delete"], [$_POST['id'] ?? null]);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
 
         default:
@@ -168,17 +198,32 @@ function pompierRoutes_get($fragments)
             break;
         case "update" :
         {
-            call_user_func_array([new PompiersController(), "update"], $fragments);
+            if (Auth::can('pompier_update')) {
+                call_user_func_array([new PompiersController(), "update"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         }
         case "create" :
         {
-            call_user_func_array([new PompiersController(), "create"], $fragments);
+            if (Auth::can('pompier_save')) {
+                call_user_func_array([new PompiersController(), "create"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         }
         case "delete" :
         {
-            call_user_func_array([new PompiersController(), "delete"], $fragments);
+            if (Auth::can('pompier_delete')) {
+                call_user_func_array([new PompiersController(), "delete"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         }
         default:
@@ -193,13 +238,28 @@ function pompierRoutes_post($fragments)
     $action = array_shift($fragments);
     switch ($action) {
         case "delete":
-            call_user_func_array([new PompiersController(), "do_delete"], $fragments);
+            if (Auth::can('pompier_delete')) {
+                call_user_func_array([new PompiersController(), "do_delete"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "update" :
-            call_user_func_array([new PompiersController(), "do_update"], $fragments);
+            if (Auth::can('pompier_update')) {
+                call_user_func_array([new PompiersController(), "do_update"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "create" :
-            call_user_func_array([new PompiersController(), "do_create"], [null]);
+            if (Auth::can('pompier_save')) {
+                call_user_func_array([new PompiersController(), "do_create"], [null]);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         default:
             echo "Action '$action' non defini <hr>";
@@ -215,31 +275,69 @@ function userRoutes_get($fragments)
         case "show":
             // Vérifie si on a "detail" après show
             if (isset($fragments[0]) && $fragments[0] === "detail" && isset($fragments[1])) {
-                $id = $fragments[1];
-                echo call_user_func_array([new \Paprika\controller\UserController(), "detail"], [$id]);
+                $id = (int)$fragments[1];
+                $currentUserId = $_SESSION['auth']['id'] ?? null;
+
+                // Autoriser si admin OU si c'est son propre profil
+                if (Auth::can('user_show') || $id === $currentUserId) {
+                    echo call_user_func_array([new \Paprika\controller\UserController(), "detail"], [$id]);
+                } else {
+                    header('Location: /error403.php');
+                    exit;
+                }
             } else {
-                // Sinon, affiche la liste
-                echo call_user_func_array([new \Paprika\controller\UserController(), "show"], $fragments);
+                // Liste des users : uniquement admin
+                if (Auth::can('user_show')) {
+                    echo call_user_func_array([new \Paprika\controller\UserController(), "show"], $fragments);
+                } else {
+                    header('Location: /error403.php');
+                    exit;
+                }
             }
             break;
         case "update" :
         {
-            call_user_func_array([new \Paprika\controller\UserController(), "update"], $fragments);
+            if (Auth::can('user_update')) {
+                call_user_func_array([new \Paprika\controller\UserController(), "update"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         }
         case "create" :
         {
-            call_user_func_array([new \Paprika\controller\UserController(), "create"], $fragments);
+            if (Auth::can('user_save')) {
+                call_user_func_array([new \Paprika\controller\UserController(), "create"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         }
         case "update-password":
         {
-            call_user_func_array([new \Paprika\controller\UserController(), "updatePasswd"], $fragments);
+            // Récupérer l'ID depuis les fragments
+            $userId = isset($fragments[0]) ? (int)$fragments[0] : null;
+            $currentUserId = $_SESSION['auth']['id'] ?? null;
+
+            // Autoriser si admin OU si c'est son propre mot de passe
+            if (Auth::can('user_update') || $userId === $currentUserId) {
+                call_user_func_array([new \Paprika\controller\UserController(), "updatePasswd"], $fragments);
+            } else {
+                header('Location: /error403.php');
+                exit;
+            }
             break;
         }
         case "delete" :
         {
-            call_user_func_array([new \Paprika\controller\UserController(), "delete"], $fragments);
+            if (Auth::can('user_delete')) {
+                call_user_func_array([new \Paprika\controller\UserController(), "delete"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         }
         default:
@@ -254,17 +352,42 @@ function userRoutes_post($fragments)
     $action = array_shift($fragments);
     switch ($action) {
         case "delete":
-            call_user_func_array([new \Paprika\controller\UserController(), "do_delete"], $fragments);
+            if (Auth::can('user_delete')) {
+                call_user_func_array([new \Paprika\controller\UserController(), "do_delete"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "update" :
-            call_user_func_array([new \Paprika\controller\UserController(), "do_update"], $fragments);
+            if (Auth::can('user_update')) {
+                call_user_func_array([new \Paprika\controller\UserController(), "do_update"], $fragments);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "create" :
-            call_user_func_array([new \Paprika\controller\UserController(), "do_create"], [null]);
+            if (Auth::can('user_save')) {
+                call_user_func_array([new \Paprika\controller\UserController(), "do_create"], [null]);
+            } else {
+                header ('Location: /error403.php');
+                exit;
+            }
             break;
         case "update-password":
         {
-            call_user_func_array([new \Paprika\controller\UserController(), "do_updatePasswd"], $fragments);
+            // Récupérer l'ID depuis POST ou fragments
+            $userId = isset($_POST['id']) ? (int)$_POST['id'] : (isset($fragments[0]) ? (int)$fragments[0] : null);
+            $currentUserId = $_SESSION['auth']['id'] ?? null;
+
+            // Autoriser si admin OU si c'est son propre mot de passe
+            if (Auth::can('user_update') || $userId === $currentUserId) {
+                call_user_func_array([new \Paprika\controller\UserController(), "do_updatePasswd"], $fragments);
+            } else {
+                header('Location: /error/403');
+                exit;
+            }
             break;
         }
         default:

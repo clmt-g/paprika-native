@@ -13,6 +13,7 @@ class AuthController extends BaseController
     private static CSRFToken $csrftoken;
 
     public function __construct() {
+        parent::__construct();
         $this->auth = new Auth();
         self::$csrftoken = new CSRFTokenSession();
     }

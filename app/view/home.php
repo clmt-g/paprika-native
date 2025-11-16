@@ -149,10 +149,12 @@
     <div class="row">
         <!-- SIDEBAR -->
         <aside class="col-md-2 sidebar">
-            <a href="" class="active"><i class="bi bi-house"></i> Accueil</a>
+            <a href="/" class=""><i class="bi bi-speedometer2"></i> Tableau de bord</a>
             <a href="/caserne/show"><i class="bi bi-building"></i> Casernes</a>
             <a href="/pompiers/show"><i class="bi bi-people"></i> Pompiers</a>
-            <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @if(Auth::can('user_show'))
+                <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @endif
         </aside>
 
         <!-- CONTENU PRINCIPAL -->

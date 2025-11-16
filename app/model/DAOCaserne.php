@@ -8,9 +8,11 @@ use Paprika\utils\SingletonLogger;
 
 class DAOCaserne {
     private PDO $pdo;
-    private string $user = "selim"; // user pour le logging
+    private string $user;
 
     public function __construct(PDO $pdo) {
+        $this->user = $_SESSION['auth']['login'] ?? 'anonyme';
+
         $this->pdo = $pdo;
     }
 

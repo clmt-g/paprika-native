@@ -2,8 +2,6 @@
 
 namespace Paprika\controller;
 
-// Vérification du rôle de l'utilisateur dans les méthodes
-
 use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
@@ -44,9 +42,11 @@ class PompiersController extends BaseController
     public function create(): void
     {
         $errors = [];
-        // sécuriter meme si sécurité sur l'interface graphique
-        if(!Auth::can("pompier_create")) {
-            // TODO : redirect
+
+        // controlle d'accès
+        if(!Auth::can("pompier_save")) {
+            header('Location: /error403.php');
+            exit;
         }
 
         // générer le cookie pour le passer à la vue
@@ -86,6 +86,13 @@ class PompiersController extends BaseController
     public function do_create($data): void
     {
         $errors = [];
+
+        // controlle d'accès
+        if(!Auth::can("pompier_save")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // récupérer le cookie pour vérifier sa validité
         $token = $_POST['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
@@ -132,10 +139,12 @@ class PompiersController extends BaseController
      */
     public function show(): void
     {
+        // pas de controlle d'accès : tout le monde peut accéder à /pompiers/show
+
         // gestion des erreurs
         $pompiers = $this->pompierDAO->findAll(100000);
         if (!$pompiers) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
         }
 
@@ -163,6 +172,8 @@ class PompiersController extends BaseController
      */
     public function detail($id): void
     {
+        // pas de controlle d'accès : tout le monde peut accèder a /pompiers/show/detail
+
         // gestion des erreurs
         if (!$id) {
             header('Location: /pompiers/show');
@@ -172,7 +183,7 @@ class PompiersController extends BaseController
         // affichage du pompier par l'id et gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
         }
 
@@ -195,6 +206,12 @@ class PompiersController extends BaseController
      */
     public function update($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $errors = [];
         // générer un token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
@@ -215,7 +232,7 @@ class PompiersController extends BaseController
         // affichage en fonction du pompier + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
         }
 
@@ -247,6 +264,12 @@ class PompiersController extends BaseController
      */
     public function do_update($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $errors = [];
         // vérifier la validité du token
         $token = $_POST['token'] ?? null;
@@ -312,6 +335,11 @@ class PompiersController extends BaseController
      */
     public function delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
         // affichage du pompier en fonction de l'id + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
@@ -328,6 +356,11 @@ class PompiersController extends BaseController
      */
     public function do_delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
         // appel de la méthode delete pour le pompier + gestion d'erreur
         $pompier = $this->pompierDAO->find($id);
         if ($this->pompierDAO->delete($pompier)) {
