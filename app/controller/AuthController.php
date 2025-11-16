@@ -2,8 +2,6 @@
 
 namespace Paprika\controller;
 
-// faire un RBAC
-
 use Paprika\utils\Renderer;
 use Paprika\utils\CSRFToken;
 use Paprika\utils\CSRFTokenSession;
@@ -72,10 +70,21 @@ class AuthController extends BaseController
     }
 
     public function do_logout() {
+        $errors = [];
 
+        // récupérer le token pour vérifier sa validité
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('users/error',
+                ['errors' => $errors]
+            );
+            return;
+        }
+        $this->auth->logout();
     }
 
-    // méthodes hérité a ne pas implémenter
+    // méthodes héritées a ne pas implémenter
     public function show(): void
     {}
 

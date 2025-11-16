@@ -92,7 +92,7 @@ class Auth
         unset($_SESSION['auth']);
 
         // Rediriger vers la page de login
-        header('Location: /login');
+        header('Location: /auth/login');
         exit;
     }
 
