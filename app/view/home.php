@@ -127,10 +127,15 @@
 <!-- HEADER -->
 <header class="text-center">
     <div class="container d-flex flex-column align-items-center position-relative">
-        <!-- Icône user en haut à droite -->
-        <a href="/users/show/detail/{{ $_SESSION['auth']['id'] }}" class="position-absolute top-0 end-0 mt-2 me-3 text-decoration-none" title="Mon profil">
-            <i class="bi bi-person-circle fs-2 text-dark"></i>
-        </a>
+        <!-- Icônes en haut à droite -->
+        <div class="position-absolute top-0 end-0 mt-2 me-3 d-flex gap-3">
+            <a href="/users/show/detail/{{ $_SESSION['auth']['id'] }}" class="text-decoration-none text-dark" title="Mon profil">
+                <i class="bi bi-person-circle fs-2"></i>
+            </a>
+            <a href="#" class="text-decoration-none text-dark" title="Se déconnecter" onclick="loadLogoutModal(); return false;">
+                <i class="bi bi-box-arrow-right fs-2"></i>
+            </a>
+        </div>
 
         <div class="d-flex align-items-center justify-content-center mb-2">
             <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
@@ -204,6 +209,7 @@
     <p>&copy; 2025 Paprika — Gestion des casernes et pompiers. Créé avec ❤️ par Clément.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Animation d'apparition
     document.addEventListener("DOMContentLoaded", () => {
@@ -221,6 +227,26 @@
             msg.style.color = "green";
         }, 1500);
     });
+    // modal de logout
+    function loadLogoutModal() {
+        fetch('/auth/logout')
+            .then(response => response.text())
+            .then(html => {
+                let container = document.createElement('div');
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                let modal = new bootstrap.Modal(document.querySelector('#logoutModal'));
+                modal.show();
+
+                document.querySelector('#logoutModal').addEventListener('hidden.bs.modal', function() {
+                    this.parentElement.remove();
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement du modal:', error);
+            });
+    }
 </script>
 
 </body>

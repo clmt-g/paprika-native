@@ -59,7 +59,16 @@ class AuthController extends BaseController
     }
 
     public function logout() {
-
+        // token csrf
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors]
+            );
+            return;
+        }
+        echo Renderer::render('auth/logout', ['token' => $token]);
     }
 
     public function do_logout() {
