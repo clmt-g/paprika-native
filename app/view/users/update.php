@@ -101,7 +101,7 @@
             <div class="alert alert-info mt-3" role="alert">
                 <i class="bi bi-info-circle"></i>
                 <strong>Note :</strong> Le mot de passe ne peut pas être modifié via ce formulaire.
-                Utilisez la fonction <a href="/users/update-password/{{ $user->getId() }}">"Réinitialiser le mot de passe"</a> si nécessaire.
+                Utilisez la fonction <a href="/users/update-password/{{ $user->getId() }}">"Modifier le mot de passe"</a> si nécessaire.
             </div>
 
             <div class="text-center mt-4">

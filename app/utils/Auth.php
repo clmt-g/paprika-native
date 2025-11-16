@@ -1,13 +1,14 @@
 <?php
-
 namespace Paprika\utils;
 
 use Paprika\model\User;
+use Paprika\model\DAOUser;
 
 class Auth
 {
+    private DAOUser $DAOUser;
 
-    private array $link = [
+    private static array $rights = [
         'default' => [
             'pompier_show', 'caserne_show'
         ],
@@ -28,46 +29,119 @@ class Auth
             'user_update'
         ]
     ];
-    // ...
 
-    /** check if user exist in DB, and login
-     * @param string $log
-     * @param string $password
-     * @return User|null
-     */
-    public static function login(string $log, string $password): ?User
+    public function __construct()
     {
-        // TODO : check user exist with DAO
-        // TODO : create session and store defined data in seesion
-        $_SESSION = [
-            'auth' => [
-                'id' => $id,
-                'nom' => $nom,
-                'prenom' => $prenom,
-                'role' => $role
-            ]
+        $this->DAOUser = new DAOUser(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        // Démarrer la session si pas déjà fait
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+    }
+
+    /**
+     * Tente de connecter un utilisateur
+     * @param string $log Le login
+     * @param string $password Le mot de passe en clair
+     * @return User|null L'utilisateur connecté ou null si échec
+     */
+    public function login(string $log, string $password): ?User
+    {
+        // Récupérer l'utilisateur par login
+        $user = $this->DAOUser->checkUserExist($log, $password);
+
+        // Vérifier si l'utilisateur existe
+        if (!$user) {
+            return null;
+        }
+
+        // Créer la session
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $_SESSION['auth'] = [
+            'id' => $user->getId(),
+            'nom' => $user->getNom(),
+            'prenom' => $user->getPrenom(),
+            'login' => $user->getLogin(),
+            'role' => $user->getRole()
         ];
-        // TODO : log actions to log file...
+
+        // Logger l'action (optionnel) FIXME
+        error_log("User {$user->getLogin()} logged in successfully");
+
+        return $user;
     }
 
-    public static function logout() : void {
-        // TODO : delete 'auth' in $_SESSION and redirect to login page
+    /**
+     * Déconnecte l'utilisateur actuel
+     */
+    public static function logout(): void
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        // Logger avant de déconnecter FIXME
+        if (isset($_SESSION['auth']['login'])) {
+            error_log("User {$_SESSION['auth']['login']} logged out");
+        }
+
+        // Supprimer les données d'authentification
+        unset($_SESSION['auth']);
+
+        // Rediriger vers la page de login
+        header('Location: /login');
+        exit;
     }
 
-    /** check if a user is already logged
+    /**
+     * Vérifie si un utilisateur est connecté
      * @return bool
      */
-    public static function isLogged(): bool {
-        // TODO : check if 'auth' is defined in $_SESSION
+    public static function isLogged(): bool
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        return isset($_SESSION['auth']) && !empty($_SESSION['auth']['id']);
     }
 
-    public static function has(string $role) : bool {
-        // renvoie si l'utilisateur à le bon role en vérifiant en session
+    /**
+     * Vérifie si l'utilisateur connecté a un rôle spécifique
+     * @param string $role Le rôle à vérifier (default, secretaire, admin)
+     * @return bool
+     */
+    public static function has(string $role): bool
+    {
+        if (!self::isLogged()) {
+            return false;
+        }
+
+        return $_SESSION['auth']['role'] === $role;
     }
 
-    public static function can(string $perm) : bool {
-        // dit si un user à les droits de faire une action (coder en dure)
-        // recupère le rôle dans la session et vérifie qu'il à le droit
-    }
+    /**
+     * Vérifie si l'utilisateur connecté a la permission pour une action
+     * @param string $perm La permission à vérifier (ex: 'pompier_save')
+     * @return bool
+     */
+    public static function can(string $perm): bool
+    {
+        if (!self::isLogged()) {
+            return false;
+        }
 
+        $userRole = $_SESSION['auth']['role'];
+
+        // Vérifier si le rôle existe dans les droits
+        if (!isset(self::$rights[$userRole])) {
+            return false;
+        }
+
+        // Vérifier si la permission est dans la liste des droits du rôle
+        return in_array($perm, self::$rights[$userRole]);
+    }
 }

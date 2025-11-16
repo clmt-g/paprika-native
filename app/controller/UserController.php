@@ -66,12 +66,12 @@ class UserController extends BaseController
      */
     public function create(): void
     {
-        // générer le cookie pour le passer à la vue
+        // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
             $errors[] = "Erreur lors de la génération du token";
             echo Renderer::render('pompiers/error',
-                ['errors' => $errors, 'type' => 'create']
+                ['errors' => $errors]
             );
             return;
         }

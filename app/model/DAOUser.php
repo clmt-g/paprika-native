@@ -196,30 +196,35 @@ class DAOUser
      * @param string $hashedPassword
      * @return User|null
      */
-    public function checkUserExist(string $login, string $hashedPassword): ?User {
+    public function checkUserExist(string $login, string $password): ?User {
         try {
             $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
-            $sql = "SELECT * FROM user WHERE login = :login AND passwd = :passwd AND deleted = 0";
+            $sql = "SELECT * FROM user WHERE login = :login AND deleted = 0";
             $stmt = $pdo->prepare($sql);
             $stmt->bindValue(":login", $login, \PDO::PARAM_STR);
-            $stmt->bindValue(":passwd", $hashedPassword, \PDO::PARAM_STR);
             $stmt->execute();
 
             $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            if ($row) {
-                return new User(
-                    $row['nom'],
-                    $row['prenom'],
-                    $row['login'],
-                    $row['passwd'],
-                    $row['role'],
-                    (bool)$row['deleted'],
-                    (int)$row['id']
-                );
+            if (!$row) {
+                return null;
             }
 
-            return null;
+            // on ne compare pas $password avec passwd (car haché vs clair)
+            // on doit donc utiliser password_verify
+            if (!password_verify($password, $row['passwd'])) {
+                return null; // Mauvais mot de passe
+            }
+
+            return new User(
+                $row['nom'],
+                $row['prenom'],
+                $row['login'],
+                $row['passwd'],
+                $row['role'],
+                (bool)$row['deleted'],
+                (int)$row['id']
+            );
         } catch (\PDOException $e) {
             error_log("Erreur checkUserExist: " . $e->getMessage());
             return null;

@@ -113,7 +113,7 @@
 <main>
     <div class="card">
         <div class="text-center mb-3">
-            <h2 class="fw-bold text-danger mb-0">Réinitialiser le mot de passe</h2>
+            <h2 class="fw-bold text-danger mb-0">Modification du mot de passe</h2>
             <hr>
         </div>
 

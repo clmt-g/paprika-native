@@ -148,7 +148,7 @@
 <header class="text-center">
     <div class="container d-flex flex-column align-items-center position-relative">
         <!-- Icône user en haut à droite -->
-        <a href="/users/detail" class="position-absolute top-0 end-0 mt-2 me-3 text-decoration-none" title="Mon profil">
+        <a href="/users/show/detail/{{ $_SESSION['auth']['id'] }}" class="position-absolute top-0 end-0 mt-2 me-3 text-decoration-none" title="Mon profil">
             <i class="bi bi-person-circle fs-2 text-dark"></i>
         </a>
 

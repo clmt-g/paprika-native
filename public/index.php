@@ -5,7 +5,11 @@ require_once '../vendor/autoload.php';
 use \Paprika\controller\DefaultController;
 use \Paprika\controller\CaserneController;
 use \Paprika\controller\PompiersController;
+use Paprika\controller\UserController;
+use Paprika\controller\AuthController;
+use Paprika\utils\Auth;
 
+// ouvrir la session si besoin
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -21,10 +25,22 @@ $control = array_shift($fragments);
 
 switch ($control) {
     case '':
+        // Si pas connecté, rediriger vers login
+        if (!Auth::isLogged()) {
+            header('Location: /auth/login');
+            exit;
+        }
+        // Si connecté, afficher la page d'accueil
         defaultRoutes_get($fragments);
         break;
 
     case "pompiers":
+        // Vérifier si connecté avant d'accéder aux pompiers
+        if (!Auth::isLogged()) {
+            header('Location: /auth/login');
+            exit;
+        }
+
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             pompierRoutes_get($fragments);
         }
@@ -34,6 +50,12 @@ switch ($control) {
         break;
 
     case "caserne":
+        // Vérifier si connecté avant d'accéder aux casernes
+        if (!Auth::isLogged()) {
+            header('Location: /auth/login');
+            exit;
+        }
+
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             caserneRoutes_get($fragments);
         }
@@ -43,11 +65,27 @@ switch ($control) {
         break;
 
     case "users":
+        // Vérifier si connecté avant d'accéder aux users
+        if (!Auth::isLogged()) {
+            header('Location: /auth/login');
+            exit;
+        }
+
         if ($_SERVER["REQUEST_METHOD"] == "GET") {
             userRoutes_get($fragments);
         }
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             userRoutes_post($fragments);
+        }
+        break;
+
+    case "auth":
+        // Les routes auth sont accessibles sans connexion
+        if ($_SERVER["REQUEST_METHOD"] == "GET") {
+            authRoutes_get($fragments);
+        }
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            authRoutes_post($fragments);
         }
         break;
 
@@ -116,7 +154,6 @@ function caserneRoutes_post($fragments)
 function pompierRoutes_get($fragments)
 {
     $action = array_shift($fragments);
-    //var_dump($action);
 
     switch ($action) {
         case "show":
@@ -144,6 +181,7 @@ function pompierRoutes_get($fragments)
             call_user_func_array([new PompiersController(), "delete"], $fragments);
             break;
         }
+        default:
         {
             echo "Action '$action' non defini <hr>";
         }
@@ -155,7 +193,6 @@ function pompierRoutes_post($fragments)
     $action = array_shift($fragments);
     switch ($action) {
         case "delete":
-            //Access permission can be checked here too
             call_user_func_array([new PompiersController(), "do_delete"], $fragments);
             break;
         case "update" :
@@ -173,7 +210,6 @@ function pompierRoutes_post($fragments)
 function userRoutes_get($fragments)
 {
     $action = array_shift($fragments);
-    //var_dump($action);
 
     switch ($action) {
         case "show":
@@ -202,13 +238,14 @@ function userRoutes_get($fragments)
             break;
         }
         case "delete" :
-            {
-                call_user_func_array([new \Paprika\controller\UserController(), "delete"], $fragments);
-                break;
-            }
-            {
-                echo "Action '$action' non defini <hr>";
-            }
+        {
+            call_user_func_array([new \Paprika\controller\UserController(), "delete"], $fragments);
+            break;
+        }
+        default:
+        {
+            echo "Action '$action' non defini <hr>";
+        }
     }
 }
 
@@ -217,7 +254,6 @@ function userRoutes_post($fragments)
     $action = array_shift($fragments);
     switch ($action) {
         case "delete":
-            //Access permission can be checked here too
             call_user_func_array([new \Paprika\controller\UserController(), "do_delete"], $fragments);
             break;
         case "update" :
@@ -231,6 +267,47 @@ function userRoutes_post($fragments)
             call_user_func_array([new \Paprika\controller\UserController(), "do_updatePasswd"], $fragments);
             break;
         }
+        default:
+            echo "Action '$action' non defini <hr>";
+            break;
+    }
+}
+
+function authRoutes_get($fragments) {
+    $action = array_shift($fragments);
+
+    // Si l'action est vide et qu'on est sur /auth, rediriger vers /auth/login
+    if (empty($action)) {
+        $action = "login";
+    }
+
+    switch ($action) {
+        case "login":
+            // Si déjà connecté, rediriger vers l'accueil
+            if (Auth::isLogged()) {
+                header('Location: /');
+                exit;
+            }
+            call_user_func_array([new \Paprika\controller\AuthController(), "login"], $fragments);
+            break;
+        case "logout":
+            call_user_func_array([new \Paprika\controller\AuthController(), "logout"], $fragments);
+            break;
+        default:
+            echo "Action '$action' non defini <hr>";
+            break;
+    }
+}
+
+function authRoutes_post($fragments) {
+    $action = array_shift($fragments);
+    switch ($action) {
+        case "login":
+            call_user_func_array([new \Paprika\controller\AuthController(), "do_login"], $fragments);
+            break;
+        case "logout":
+            call_user_func_array([new \Paprika\controller\AuthController(), "do_logout"], $fragments);
+            break;
         default:
             echo "Action '$action' non defini <hr>";
             break;
