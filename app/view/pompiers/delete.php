@@ -99,6 +99,7 @@
                     <i class="bi bi-x-circle me-2"></i>Annuler
                 </a>
                 <form method="POST" action="/pompiers/delete/{{ $pompier->getMatricule() }}" style="display:inline;">
+                    <input type="hidden" name="token" value="{{ $token }}">
                     <button type="submit" class="btn btn-danger">
                         <i class="bi bi-trash me-2"></i>Oui, supprimer
                     </button>

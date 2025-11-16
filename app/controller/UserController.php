@@ -86,6 +86,7 @@ class UserController extends BaseController
             exit;
         }
 
+        $errors = [];
         // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
@@ -112,7 +113,6 @@ class UserController extends BaseController
         }
 
         $errors = [];
-
         // récupérer le token pour vérifier sa validité
         $token = $_POST['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
@@ -167,6 +167,7 @@ class UserController extends BaseController
             exit;
         }
 
+        $errors = [];
         // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
@@ -201,7 +202,6 @@ class UserController extends BaseController
 
         // récupérer le token et vérifier si il est valide
         $errors = [];
-
         $token = $_POST['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
             $errors[] = "Le token est expiré ou invalide";
@@ -264,12 +264,23 @@ class UserController extends BaseController
             exit;
         }
 
+        $errors = [];
+        // générer le token pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors]
+            );
+            return;
+        }
+
         $user = $this->userDAO->find($id);
         if (!$user) {
             header("location: /404.php");
             exit;
         }
-        echo Renderer::render('users/delete', ['user' => $user]);
+        echo Renderer::render('users/delete', ['user' => $user, 'token' => $token]);
     }
 
     /** delete a user
@@ -286,6 +297,15 @@ class UserController extends BaseController
         }
 
         $errors = [];
+        // récupérer le token et vérifier si il est valide
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('users/error',
+                ['errors' => $errors]
+            );
+            return;
+        }
 
         // vérifier que l'utilisateur existe
         $user = $this->userDAO->find($id);
@@ -317,6 +337,7 @@ class UserController extends BaseController
             exit;
         }
 
+        $errors = [];
         // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {

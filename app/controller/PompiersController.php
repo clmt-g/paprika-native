@@ -49,7 +49,7 @@ class PompiersController extends BaseController
             exit;
         }
 
-        // générer le cookie pour le passer à la vue
+        // générer le token pour le passer à la vue
         $token = self::$csrftoken::generateToken();
         if (!$token) {
             $errors[] = "Erreur lors de la génération du token";
@@ -93,7 +93,7 @@ class PompiersController extends BaseController
             exit;
         }
 
-        // récupérer le cookie pour vérifier sa validité
+        // récupérer le token pour vérifier sa validité
         $token = $_POST['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
             $errors[] = "Le token est expiré ou invalide";
@@ -340,6 +340,17 @@ class PompiersController extends BaseController
             header('Location: /error403.php');
             exit;
         }
+
+        // générer le token pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // affichage du pompier en fonction de l'id + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
@@ -347,7 +358,7 @@ class PompiersController extends BaseController
             return;
         }
         // affichage du modal de suppresion
-        echo Renderer::render('pompiers/delete', ['pompier' => $pompier]);
+        echo Renderer::render('pompiers/delete', ['pompier' => $pompier, 'token' => $token]);
     }
 
     /** delete a pompier
@@ -361,6 +372,18 @@ class PompiersController extends BaseController
             header('Location: /error403.php');
             exit;
         }
+
+        $errors = [];
+        // vérifier la validité du token
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // appel de la méthode delete pour le pompier + gestion d'erreur
         $pompier = $this->pompierDAO->find($id);
         if ($this->pompierDAO->delete($pompier)) {
