@@ -5,42 +5,86 @@ namespace Paprika\controller;
 use Paprika\model\DAOCaserne;
 use Paprika\model\DAOPompiers;
 use Paprika\model\Pompiers;
+use Paprika\utils\Auth;
+use Paprika\utils\CSRFToken;
+use Paprika\utils\CSRFTokenSession;
+use Paprika\utils\Filtre;
 use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
-use DateTime;
+use Paprika\model\DAOGrade;
+use Paprika\utils\validators\DateNaissanceValidator;
+use Paprika\utils\validators\GradeValidator;
+use Paprika\utils\validators\MatriculeValidator;
+use Paprika\utils\validators\NameValidator;
+use Random\RandomException;
 
 /** controller class : used to display the pages in view through the renderer */
 class PompiersController extends BaseController
 {
     private DAOPompiers $pompierDAO;
     private DAOCaserne $caserneDAO;
+    private DAOGrade $gradeDAO;
+    private static CSRFToken $csrftoken;
 
     public function __construct()
     {
         parent::__construct();
         $this->pompierDAO = new DAOPompiers(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
         $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        $this->gradeDAO = new DAOGrade(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        self::$csrftoken = new CSRFTokenSession();
     }
 
     /** display the create page
-     * @return string
+     * @return void
+     * @throws RandomException
      */
     public function create(): void
     {
-        // recupere les casernesNum et ville pour les afficher dans une balise option
-        $casernes = $this->caserneDAO->getAllVilles();
-        if (!$casernes) {
-            echo 'Erreur: aucune caserne disponible';
+        $errors = [];
+
+        // controlle d'accès
+        if(!Auth::can("pompier_save")) {
+            header('Location: /error403.php');
             exit;
         }
 
-        // récuperer les grades pour les afficher dans une balise option
-        $codesGrade = $this->pompierDAO->getAllCodeGrade();
-        if (!$codesGrade) {
-            echo 'Erreur: aucune grade disponible';
-            exit;
+        // générer le token pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
         }
-        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade]);
+
+        // récupérer les responsables
+        $pompiers = $this->pompierDAO->findAll();
+
+        $responsables = [];
+        foreach ($pompiers as $pompier) {
+            $responsables[$pompier->getMatricule()] = $pompier->getPrenom() . ' ' . $pompier->getNom();
+        }
+
+        // recupere les casernesNum et ville pour les afficher dans une balise option
+        $casernes = $this->caserneDAO->getAllVilles();
+        if (!$casernes) {
+            echo Renderer::render('pompiers/error',
+                ['errors' => "Erreur : aucune caserne disponible", 'type' => 'create']
+            );
+            return;
+        }
+
+        // récuperer les grades pour les afficher dans une balise option
+        $codesGrade = $this->gradeDAO->getAllCodeGrade();
+        if (!$codesGrade) {
+            echo Renderer::render('pompiers/error',
+                ['errors' => "Erreur : aucun grade disponible", 'type' => 'create']
+            );
+            return;
+        }
+        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade, 'token' => $token, 'responsables' => $responsables]);
     }
 
     /** create a pompier
@@ -49,8 +93,36 @@ class PompiersController extends BaseController
      */
     public function do_create($data): void
     {
+        $errors = [];
+
+        // controlle d'accès
+        if(!Auth::can("pompier_save")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        // récupérer le token pour vérifier sa validité
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
         // vérifie la validité des données submit
-        $result = $this->verifyData(isCreate: true);
+        $data = [
+            'matricule' => $_POST['matricule'] ?? '',
+            'prenom' => $_POST['prenom'] ?? '',
+            'nom' => $_POST['nom'] ?? '',
+            'chefAgret' => $_POST['chefAgret'] ?? '',
+            'numCaserne' => $_POST['numCaserne'] ?? 0,
+            'dateNaissance' => $_POST['dateNaissance'] ?? '',
+            'codeGrade' => $_POST['codeGrade'] ?? '',
+            'matriculeRespo' => $_POST['matriculeRespo'] ?? '',
+        ];
+
+        $result = $this->verifyData($data, true);
 
         if (!$result['valid']) {
             echo Renderer::render('pompiers/error',
@@ -75,11 +147,29 @@ class PompiersController extends BaseController
      */
     public function show(): void
     {
+        // pas de controlle d'accès : tout le monde peut accéder à /pompiers/show
+
         // gestion des erreurs
         $pompiers = $this->pompierDAO->findAll(100000);
         if (!$pompiers) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
+        }
+
+        // récupérer le nom et prenom du responsable
+        $nomRespo = [];
+        foreach ($pompiers as $pompier) {
+            $matriculeRespo = $pompier->getMatriculeRespo();
+            if($matriculeRespo) {
+                $respo = $this->pompierDAO->find($matriculeRespo);
+                if ($respo) {
+                    $nomRespo[$pompier->getMatricule()] = $respo->getNom() . ' ' . $respo->getPrenom();
+                } else {
+                    $nomRespo[$pompier->getMatricule()] = 'Non défini';
+                }
+            } else {
+                $respo = 'Aucun';
+            }
         }
 
         // affichage des villes plutot que des numéro de caserne
@@ -91,13 +181,13 @@ class PompiersController extends BaseController
         // affichage des nom de grade plutot que des numéro
         $nomsGrades = [];
         foreach ($pompiers as $pompier) {
-            $nomsGrades[$pompier->getMatricule()] = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
+            $nomsGrades[$pompier->getMatricule()] = $this->gradeDAO->getCodeGradeNom($pompier->getCodeGrade());
         }
 
         // variable pour nuémroter les lignes du tableau
         $i = 1;
 
-        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i, 'nomsGrades' => $nomsGrades,]);
+        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i, 'nomsGrades' => $nomsGrades, 'nomRespo' => $nomRespo]);
     }
 
     /** display the detail page
@@ -106,6 +196,8 @@ class PompiersController extends BaseController
      */
     public function detail($id): void
     {
+        // pas de controlle d'accès : tout le monde peut accèder a /pompiers/show/detail
+
         // gestion des erreurs
         if (!$id) {
             header('Location: /pompiers/show');
@@ -115,7 +207,7 @@ class PompiersController extends BaseController
         // affichage du pompier par l'id et gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
         }
 
@@ -124,7 +216,7 @@ class PompiersController extends BaseController
         if (!$caserne) {
             $caserne = 'error';
         }
-        $grade = $this->pompierDAO->getCodeGradeNom($pompier->getCodeGrade());
+        $grade = $this->gradeDAO->getCodeGradeNom($pompier->getCodeGrade());
         if (!$grade) {
             $grade = 'error';
         }
@@ -134,9 +226,27 @@ class PompiersController extends BaseController
     /** display the update page
      * @param $id
      * @return void
+     * @throws RandomException
      */
     public function update($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        $errors = [];
+        // générer un token pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // gestion des erreurs
         if (!$id) {
             header('Location: /pompiers/show');
@@ -146,7 +256,7 @@ class PompiersController extends BaseController
         // affichage en fonction du pompier + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
-            header("location: /404.php");
+            header("location: /error404.php");
             exit;
         }
 
@@ -158,16 +268,25 @@ class PompiersController extends BaseController
         }
 
         // récuperer les noms des grades
-        $codesGrade = $this->pompierDAO->getAllCodeGrade();
+        $codesGrade = $this->gradeDAO->getAllCodeGrade();
         if (!$codesGrade) {
             echo 'Erreur: aucune grade disponible';
             exit;
+        }
+        // récupérer les responsables
+        $pompiers = $this->pompierDAO->findAll();
+
+        $responsables = [];
+        foreach ($pompiers as $pompier) {
+            $responsables[$pompier->getMatricule()] = $pompier->getPrenom() . ' ' . $pompier->getNom();
         }
 
         echo Renderer::render('pompiers/update', [
             'pompier' => $pompier,
             'casernes' => $casernes,
-            'codesGrade' => $codesGrade
+            'codesGrade' => $codesGrade,
+            'token' => $token,
+            'responsables' => $responsables
         ]);
     }
 
@@ -177,8 +296,36 @@ class PompiersController extends BaseController
      */
     public function do_update($data): void
     {
-        // vérifier la validité des données
-        $result = $this->verifyData(isCreate: false);
+        // controlle d'accès
+        if(!Auth::can("pompier_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        $errors = [];
+        // vérifier la validité du token
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
+        // vérifie la validité des données submit
+        $valide_data = [
+            'matricule' => $_POST['matricule'] ?? '',
+            'prenom' => $_POST['prenom'] ?? '',
+            'nom' => $_POST['nom'] ?? '',
+            'chefAgret' => $_POST['chefAgret'] ?? '',
+            'numCaserne' => $_POST['numCaserne'] ?? 0,
+            'dateNaissance' => $_POST['dateNaissance'] ?? '',
+            'codeGrade' => $_POST['codeGrade'] ?? '',
+            'matriculeRespo' => $_POST['matriculeRespo'] ?? '',
+        ];
+
+        $result = $this->verifyData($valide_data, false);
 
         if (!$result['valid']) {
             echo Renderer::render('pompiers/error',
@@ -220,6 +367,22 @@ class PompiersController extends BaseController
      */
     public function delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        // générer le token pour le passer à la vue
+        $token = self::$csrftoken::generateToken();
+        if (!$token) {
+            $errors[] = "Erreur lors de la génération du token";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // affichage du pompier en fonction de l'id + gestion des erreurs
         $pompier = $this->pompierDAO->find($id);
         if (!$pompier) {
@@ -227,7 +390,7 @@ class PompiersController extends BaseController
             return;
         }
         // affichage du modal de suppresion
-        echo Renderer::render('pompiers/delete', ['pompier' => $pompier]);
+        echo Renderer::render('pompiers/delete', ['pompier' => $pompier, 'token' => $token]);
     }
 
     /** delete a pompier
@@ -236,6 +399,23 @@ class PompiersController extends BaseController
      */
     public function do_delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("pompier_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        $errors = [];
+        // vérifier la validité du token
+        $token = $_POST['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            $errors[] = "Le token est expiré ou invalide";
+            echo Renderer::render('pompiers/error',
+                ['errors' => $errors, 'type' => 'create']
+            );
+            return;
+        }
+
         // appel de la méthode delete pour le pompier + gestion d'erreur
         $pompier = $this->pompierDAO->find($id);
         if ($this->pompierDAO->delete($pompier)) {
@@ -246,130 +426,89 @@ class PompiersController extends BaseController
         }
     }
 
-    /** verify the data submited when either updating or creating a pompier
-     * @param $isCreate
+    /**
+     * Verify the data submitted when either updating or creating a pompier
+     * @param array $data Les données à valider
+     * @param bool $isCreate
      * @return array
-     * @throws \DateMalformedStringException
      */
-    private function verifyData($isCreate = false): array
+    private function verifyData(array $data, bool $isCreate = false): array
     {
         $errors = [];
 
-        // Récupérer les données du formulaire
-        $matricule = $_POST['matricule'] ?? '';
-        $prenom = $_POST['prenom'] ?? '';
-        $nom = $_POST['nom'] ?? '';
-        $chefAgret = $_POST['chefAgret'] ?? '';
-        $numCaserne = (int) ($_POST['numCaserne'] ?? 0);
-        $dateNaissance = $_POST['dateNaissance'] ?? '';
-        $codeGrade = $_POST['codeGrade'] ?? '';
-        $matriculeRespo = $_POST['matriculeRespo'] ?? '';
+        // --- Configuration du filtre ---
+        $filtre = new Filtre();
 
-        // Vérifier que les champs ne sont pas vides
-        // Pour create : matricule peut être vide (il sera généré)
-        // Pour update : matricule est obligatoire
-        if (!$isCreate && empty($matricule)) {
-            $errors[] = 'Le matricule est requis';
+        // Matricule : optionnel en création, obligatoire en update
+        if (!$isCreate) {
+            $filtre->addValidator('matricule', new MatriculeValidator());
         }
 
-        if (empty($prenom)) {
-            $errors[] = 'Le prénom est requis';
+        $filtre->addValidator('prenom', new NameValidator());
+        $filtre->addValidator('nom', new NameValidator());
+        $filtre->addValidator('dateNaissance', new DateNaissanceValidator());
+        $filtre->addValidator('codeGrade', new GradeValidator());
+        $filtre->addValidator('matriculeRespo', new MatriculeValidator());
+
+        // --- Exécution de la validation ---
+        $result = $filtre->execute($data);
+
+        // --- Collecte des erreurs depuis le filtre ---
+        foreach ($result as $field => $isValid) {
+            if (!$isValid) {
+                $errors[] = $this->getErrorMessage($field);
+            }
         }
 
-        if (empty($nom)) {
-            $errors[] = 'Le nom est requis';
-        }
+        // --- Validations métier supplémentaires ---
+        $numCaserne = (int) ($data['numCaserne'] ?? 0);
+        $chefAgret = $data['chefAgret'] ?? '';
 
-        if (empty($chefAgret)) {
-            $errors[] = 'Le statut chef d\'agrès est requis';
-        }
-
-        if (empty($numCaserne)) {
-            $errors[] = 'Le numéro de caserne est requis';
-        }
-
-        if (empty($dateNaissance)) {
-            $errors[] = 'La date de naissance est requise';
-        }
-
-        if (empty($codeGrade)) {
-            $errors[] = 'Le code grade est requis';
-        }
-
-        if (empty($matriculeRespo)) {
-            $errors[] = 'Le matricule du responsable est requis';
-        }
-
-        // Si des champs sont vides, retourner les erreurs
-        if (!empty($errors)) {
-            return ['valid' => false, 'errors' => $errors, 'data' => null];
-        }
-
-        // Vérifier que le format de la date est bon
-        if (!DateTime::createFromFormat('Y-m-d', $dateNaissance)) {
-            $errors[] = "Le format de la date n'est pas valide (format valide : YYYY-MM-DD)";
-        }
-
-        // Vérifier que le type de données est bien un nombre pour caserne
-        if (!is_int($numCaserne) || $numCaserne <= 0) {
+        if ($numCaserne <= 0) {
             $errors[] = "Le numéro de caserne doit être un nombre valide";
+        } elseif (!$this->caserneDAO->find($numCaserne)) {
+            $errors[] = "La caserne avec le numéro $numCaserne n'existe pas";
         }
 
-        // Vérifier que chefAgret est valide (O ou N)
-        if (!in_array($chefAgret, ['O', 'N'])) {
+        if (!in_array($chefAgret, ['O', 'N'], true)) {
             $errors[] = "Le statut chef d'agrès doit être 'O' ou 'N'";
         }
 
+        // --- Retour ---
         if (!empty($errors)) {
             return ['valid' => false, 'errors' => $errors, 'data' => null];
         }
 
-        // Nettoyer les données
-        $matricule = htmlspecialchars($matricule, ENT_QUOTES, 'UTF-8');
-        $prenom = htmlspecialchars($prenom, ENT_QUOTES, 'UTF-8');
-        $nom = htmlspecialchars($nom, ENT_QUOTES, 'UTF-8');
-        $chefAgret = htmlspecialchars($chefAgret, ENT_QUOTES, 'UTF-8');
-        $dateNaissance = htmlspecialchars($dateNaissance, ENT_QUOTES, 'UTF-8');
-        $codeGrade = htmlspecialchars($codeGrade, ENT_QUOTES, 'UTF-8');
-        $matriculeRespo = htmlspecialchars($matriculeRespo, ENT_QUOTES, 'UTF-8');
-
-        // Vérification règles métier
-        // Age valide (au moins 16 ans)
-        $age = (new DateTime())->diff(new DateTime($dateNaissance))->y;
-        if ($age < 16) {
-            $errors[] = "Le pompier doit avoir au moins 16 ans";
-        }
-
-        // Le responsable existe
-        if (!$this->pompierDAO->find($matriculeRespo)) {
-            $errors[] = "Le matricule du responsable n'existe pas";
-        }
-
-        // FIXME : le matricule existe
-
-        // la caserne existe
-        if (!$this->caserneDAO->find($numCaserne)) {
-            $errors[] = "La caserne n'existe pas";
-        }
-
-        if (!empty($errors)) {
-            return ['valid' => false, 'errors' => $errors, 'data' => null];
-        }
-
-        // Retourner les données nettoyées si tout est valide
         return [
             'valid' => true,
             'errors' => [],
             'data' => [
-                'matricule' => $matricule,
-                'prenom' => $prenom,
-                'nom' => $nom,
+                'matricule' => $data['matricule'] ?? '',
+                'prenom' => $data['prenom'] ?? '',
+                'nom' => $data['nom'] ?? '',
                 'chefAgret' => $chefAgret,
                 'numCaserne' => $numCaserne,
-                'dateNaissance' => $dateNaissance,
-                'codeGrade' => $codeGrade,
-                'matriculeRespo' => $matriculeRespo
+                'dateNaissance' => $data['dateNaissance'] ?? '',
+                'codeGrade' => $data['codeGrade'] ?? '',
+                'matriculeRespo' => $data['matriculeRespo'] ?? ''
             ]
         ];
+    }
+
+    /**
+     * Retourne un message d'erreur personnalisé pour chaque champ
+     */
+    private function getErrorMessage(string $field): string
+    {
+        $messages = [
+            'matricule' => 'Le matricule est invalide',
+            'prenom' => 'Le prénom est invalide',
+            'nom' => 'Le nom est invalide',
+            'dateNaissance' => 'La date de naissance est invalide',
+            'codeGrade' => 'Le code grade est invalide',
+            'matriculeRespo' => 'Le matricule du responsable est invalide'
+        ];
+
+        return $messages[$field] ?? "Le champ '$field' est invalide";
     }
 }

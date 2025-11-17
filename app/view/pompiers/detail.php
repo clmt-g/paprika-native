@@ -131,9 +131,11 @@
                 <a href="/pompiers/show/" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left"></i> Retour à la liste
                 </a>
+                @if(Auth::can('pompier_update'))
                 <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-danger">
                     <i class="bi bi-pencil"></i> Modifier ce pompier
                 </a>
+                @endif
             </div>
         </form>
     </div>

@@ -87,6 +87,7 @@
 
     <form method="POST" action="/caserne/delete">
         <input type="hidden" name="id" value="{{ $caserne->getNumCaserne() }}">
+        <input type="hidden" name="token" value="{{ $token }}"
         <button type="submit">🗑️ Oui, supprimer</button>
     </form>
 

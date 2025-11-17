@@ -126,7 +126,17 @@
 
 <!-- HEADER -->
 <header class="text-center">
-    <div class="container d-flex flex-column align-items-center">
+    <div class="container d-flex flex-column align-items-center position-relative">
+        <!-- Icônes en haut à droite -->
+        <div class="position-absolute top-0 end-0 mt-2 me-3 d-flex gap-3">
+            <a href="/users/show/detail/{{ $_SESSION['auth']['id'] }}" class="text-decoration-none text-dark" title="Mon profil">
+                <i class="bi bi-person-circle fs-2"></i>
+            </a>
+            <a href="#" class="text-decoration-none text-dark" title="Se déconnecter" onclick="loadLogoutModal(); return false;">
+                <i class="bi bi-box-arrow-right fs-2"></i>
+            </a>
+        </div>
+
         <div class="d-flex align-items-center justify-content-center mb-2">
             <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
             <h1>Paprika</h1>
@@ -137,12 +147,14 @@
 
 <div class="container-fluid">
     <div class="row">
-
         <!-- SIDEBAR -->
         <aside class="col-md-2 sidebar">
-            <a href="" class="active"><i class="bi bi-house"></i> Accueil</a>
+            <a href="/" class=""><i class="bi bi-speedometer2"></i> Tableau de bord</a>
             <a href="/caserne/show"><i class="bi bi-building"></i> Casernes</a>
             <a href="/pompiers/show"><i class="bi bi-people"></i> Pompiers</a>
+            @if(Auth::can('user_show'))
+                <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @endif
         </aside>
 
         <!-- CONTENU PRINCIPAL -->
@@ -199,6 +211,7 @@
     <p>&copy; 2025 Paprika — Gestion des casernes et pompiers. Créé avec ❤️ par Clément.</p>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Animation d'apparition
     document.addEventListener("DOMContentLoaded", () => {
@@ -216,6 +229,26 @@
             msg.style.color = "green";
         }, 1500);
     });
+    // modal de logout
+    function loadLogoutModal() {
+        fetch('/auth/logout')
+            .then(response => response.text())
+            .then(html => {
+                let container = document.createElement('div');
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                let modal = new bootstrap.Modal(document.querySelector('#logoutModal'));
+                modal.show();
+
+                document.querySelector('#logoutModal').addEventListener('hidden.bs.modal', function() {
+                    this.parentElement.remove();
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement du modal:', error);
+            });
+    }
 </script>
 
 </body>

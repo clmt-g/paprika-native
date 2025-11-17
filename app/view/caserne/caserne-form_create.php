@@ -135,6 +135,8 @@ function h($v) {
 <?php endif; ?>
 
 <form method="POST" action="/caserne/add" novalidate>
+    <input type="hidden" name="token" value="{{ $csrf_token }}">
+
     <label>Adresse :
         <input type="text" name="adresse" value="<?php echo h($data['adresse'] ?? ''); ?>" required>
     </label>

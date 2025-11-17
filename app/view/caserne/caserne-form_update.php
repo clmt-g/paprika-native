@@ -103,6 +103,9 @@
 <h1>Modifier la Caserne {{ $caserne->getNumCaserne() }}</h1>
 
 <form method="POST" action="/caserne/update">
+
+    <input type="hidden" name="token" value="{{ $csrf_token }}">
+
     <input type="hidden" name="NumCaserne" value="{{ $caserne->getNumCaserne() }}">
 
     <label>Adresse :

@@ -23,7 +23,9 @@
   "require-dev": {
     "php" : "^8.3",
     "symfony/var-dumper": "^7.3",
-    "phpdocumentor/shim": "^3.8"
+    "phpdocumentor/shim": "^3.8",
+    "phpunit/phpunit": "^12.4",
+    "symfony/phpunit-bridge": "^7.3"
   },
   "scripts": {
     "serve": [
@@ -43,7 +45,11 @@
       "docker run --rm -v $(pwd):/app ghcr.io/phpstan/phpstan analyse -l 6 app --error-format=table"
     ],
     "phpmetrics": "vendor/bin/phpmetrics --report-html=storage/phpmetrics app/",
-    "phpmd": "vendor/bin/phpmd app text cleancode,codesize,unusedcode,naming"
+    "phpmd": "vendor/bin/phpmd app text cleancode,codesize,unusedcode,naming",
+    "runtests": [
+      "./vendor/bin/phpunit --color=always tests"
+    ],
+    "cover": "php -dxdebug.mode=coverage ./vendor/bin/phpunit --color=always --coverage-html cover-html --testsuite default"
   },
   "config": {
     "allow-plugins": {

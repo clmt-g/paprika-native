@@ -4,11 +4,8 @@ namespace Paprika\controller;
 
 abstract class BaseController
 {
-
-    public function __construct(){
-
-
-
+    public function __construct()
+    {
     }
 
     public abstract function show() : void ;

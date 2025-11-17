@@ -3,22 +3,29 @@
 namespace Paprika\controller;
 
 use Paprika\model\DAOCaserne;
+use Paprika\utils\Auth;
+use Paprika\utils\CSRFToken;
+use Paprika\utils\CSRFTokenSession;
 use Paprika\utils\SingletonDataBaseMariaDB;
 use Paprika\utils\Renderer;
 
 class CaserneController extends BaseController
 {
     private DAOCaserne $daoCaserne;
+    private static CSRFToken $csrftoken;
 
     public function __construct()
     {
         parent::__construct();
         $this->daoCaserne = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
+        self::$csrftoken = new CSRFTokenSession();
     }
 
     /** Liste des casernes */
     public function show(): void
     {
+        // pas d'access control : tout le monde peut voir cette page
+
         $casernes = $this->daoCaserne->findAll();
         echo Renderer::render('caserne/caserne-list', ['casernes' => $casernes]);
     }
@@ -26,6 +33,8 @@ class CaserneController extends BaseController
     /** Détail d'une caserne */
     public function detail($id): void
     {
+        // pas d'access control : tout le monde peut voir cette page
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
@@ -38,12 +47,36 @@ class CaserneController extends BaseController
     /** Formulaire création */
     public function create(): void
     {
-        echo Renderer::render('caserne/caserne-form_create');
+        // controlle d'accès
+        if(!Auth::can("caserne_save")) {
+            header('Location: /error403.php');
+            exit;
+        }
+        $token = CSRFTokenSession::generateToken();
+        echo Renderer::render('caserne/caserne-form_create', ['csrf_token' => $token]);
     }
 
     /** Création POST */
     public function do_create($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_save")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        // Check CSRF
+        $token = $data['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => ["Token CSRF invalide ou expiré. Veuillez réessayer."],
+                'type' => 'create',
+                'id' => null
+            ]);
+            return;
+        }
+
+        // Validate
         $errors = $this->validateCaserneData($data);
         if (!empty($errors)) {
             echo Renderer::render('caserne/caserne-error', [
@@ -54,6 +87,7 @@ class CaserneController extends BaseController
             return;
         }
 
+        // Sanitize et création
         $caserne = new \Paprika\model\Caserne();
         $caserne->setNumCaserne($this->daoCaserne->generateNextId())
             ->setAdresse($data['adresse'])
@@ -69,7 +103,7 @@ class CaserneController extends BaseController
             echo Renderer::render('caserne/caserne-error', [
                 'errors' => ["Erreur base de données : " . $e->getMessage()],
                 'type' => 'create',
-                'idOrMatricule' => null
+                'id' => null
             ]);
         }
     }
@@ -77,18 +111,45 @@ class CaserneController extends BaseController
     /** Formulaire update */
     public function update($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
         $caserne = $this->daoCaserne->find($id);
         if (!$caserne) { echo "Caserne introuvable."; return; }
 
-        echo Renderer::render('caserne/caserne-form_update', ['caserne' => $caserne]);
+        $token = CSRFTokenSession::generateToken();
+        echo Renderer::render('caserne/caserne-form_update', [
+            'caserne' => $caserne,
+            'csrf_token' => $token
+        ]);
     }
 
     /** Update POST */
     public function do_update($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        // Check CSRF
+        $token = $data['token'] ?? null;
+        if (!self::$csrftoken::check($token)) {
+            echo Renderer::render('caserne/caserne-error', [
+                'errors' => ["Token CSRF invalide ou expiré. Veuillez réessayer."],
+                'type' => 'update',
+                'id' => $data['NumCaserne'] ?? null
+            ]);
+            return;
+        }
+
         if (empty($data['NumCaserne']) || !is_numeric($data['NumCaserne'])) {
             echo "ID de la caserne invalide."; return;
         }
@@ -121,6 +182,12 @@ class CaserneController extends BaseController
     /** Confirmation suppression */
     public function delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
@@ -133,6 +200,15 @@ class CaserneController extends BaseController
     /** Suppression POST */
     public function do_delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
+        // Récupérer les données POST
+        $data = $_POST;
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
@@ -150,16 +226,21 @@ class CaserneController extends BaseController
     private function validateCaserneData($data): array
     {
         $errors = [];
+
         if (empty($data['adresse'])) $errors[] = "Adresse obligatoire.";
         if (empty($data['cp'])) $errors[] = "Code postal obligatoire.";
         if (empty($data['ville'])) $errors[] = "Ville obligatoire.";
         if (empty($data['codeTypeC'])) $errors[] = "Type de caserne obligatoire.";
 
-        if (!empty($data['cp']) && filter_var($data['cp'], FILTER_VALIDATE_INT) === false)
+        if (!empty($data['cp']) && !filter_var($data['cp'], FILTER_VALIDATE_INT))
             $errors[] = "Code postal invalide.";
 
-        if (!empty($data['codeTypeC']) && filter_var($data['codeTypeC'], FILTER_VALIDATE_INT) === false)
+        if (!empty($data['codeTypeC']) && !filter_var($data['codeTypeC'], FILTER_VALIDATE_INT))
             $errors[] = "Type de caserne invalide.";
+
+        if (!empty($data['ville']) && !preg_match("/^[\p{L} '-]+$/u", $data['ville'])) {
+            $errors[] = "Ville invalide, uniquement lettres et espaces autorisés.";
+        }
 
         return $errors;
     }

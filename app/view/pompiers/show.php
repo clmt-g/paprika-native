@@ -108,7 +108,17 @@
 <body>
 
 <header class="text-center">
-    <div class="container d-flex flex-column align-items-center">
+    <div class="container d-flex flex-column align-items-center position-relative">
+        <!-- Icônes en haut à droite -->
+        <div class="position-absolute top-0 end-0 mt-2 me-3 d-flex gap-3">
+            <a href="/users/show/detail/{{ $_SESSION['auth']['id'] }}" class="text-decoration-none text-dark" title="Mon profil">
+                <i class="bi bi-person-circle fs-2"></i>
+            </a>
+            <a href="#" class="text-decoration-none text-dark" title="Se déconnecter" onclick="loadLogoutModal(); return false;">
+                <i class="bi bi-box-arrow-right fs-2"></i>
+            </a>
+        </div>
+
         <div class="d-flex align-items-center justify-content-center mb-2">
             <img src="/assets/imagepap.png" alt="Logo Paprika" class="logo">
             <h1>Paprika</h1>
@@ -130,15 +140,20 @@
             <a href="/pompiers/show" class="active">
                 <i class="bi bi-people"></i> Pompiers
             </a>
+            @if(Auth::can('user_show'))
+                <a href="/users/show"><i class="bi bi-person-badge"></i> Users</a>
+            @endif
         </aside>
 
         <!-- Contenu principal -->
         <main class="col-md-10 fade-in">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2><i class="bi bi-fire text-danger"></i> Liste des pompiers</h2>
+                @if(Auth::can("pompier_save"))
                 <a href="/pompiers/create" class="btn btn-danger">
                     <i class="bi bi-plus-circle"></i> Ajouter un pompier
                 </a>
+                @endif
             </div>
 
             <div class="input-group mb-3 w-50">
@@ -179,18 +194,29 @@
                                     {{ $villes[$pompier->getMatricule()] }}
                                 </a>
                             </td>
-                            <td><span class="badge bg-info">{{ $nomsGrades[$pompier->getMatricule()] ?? $pompier->getCodeGrade() }}</span></td>                            <td>{{ $pompier->getMatriculeRespo() }}</td>
+                            <td><span class="badge bg-info">{{ $nomsGrades[$pompier->getMatricule()] ?? $pompier->getCodeGrade() }}</span></td>
+                            <td>
+                                <a href="/pompiers/show/detail/{{ $pompier->getMatriculeRespo() }}"
+                                   class="text-decoration-none text-primary fw-semibold">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    {{ $nomRespo[$pompier->getMatricule()] }}
+                                </a>
+                            </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
                                     <a href="/pompiers/show/detail/{{ $pompier->getMatricule() }}" class="btn btn-outline-primary" title="Détails">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
-                                        <i class="bi bi-pencil"></i>
-                                    </a>
+                                    @if(Auth::can('pompier_update'))
+                                        <a href="/pompiers/update/{{ $pompier->getMatricule() }}" class="btn btn-outline-warning" title="Modifier">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                    @endif
+                                    @if(Auth::can('pompier_delete'))
                                     <a href="#" class="btn btn-outline-danger" title="Supprimer" onclick="loadDeleteModal('/pompiers/delete/{{ $pompier->getMatricule() }}')">
                                         <i class="bi bi-trash"></i>
                                     </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -237,6 +263,26 @@
                     window.history.back();
                     this.parentElement.remove();
                 });
+            });
+    }
+    // modal de logout
+    function loadLogoutModal() {
+        fetch('/auth/logout')
+            .then(response => response.text())
+            .then(html => {
+                let container = document.createElement('div');
+                container.innerHTML = html;
+                document.body.appendChild(container);
+
+                let modal = new bootstrap.Modal(document.querySelector('#logoutModal'));
+                modal.show();
+
+                document.querySelector('#logoutModal').addEventListener('hidden.bs.modal', function() {
+                    this.parentElement.remove();
+                });
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement du modal:', error);
             });
     }
 </script>

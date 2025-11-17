@@ -10,3 +10,6 @@ public/template.php
 /sonar/
 /.scannerwork/
 /.php-cs-fixer.cache
+phpunit.xml
+.phpunit.cache
+cover-html/

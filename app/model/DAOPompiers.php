@@ -16,9 +16,10 @@ use PDO;
 class DAOPompiers
 {
     private \PDO $pdo;
-    private string $user = "clement";
+    private string $user;
 
     public function __construct(\PDO $pdo) {
+        $this->user = $_SESSION['auth']['login'] ?? 'anonyme';
         $this->pdo = $pdo;
     }
 
@@ -52,8 +53,7 @@ class DAOPompiers
         return $pompier;
     }
 
-    /**
-     * Return True when the key $pompier was successfuly added to the database, false if an error was encountered, and get updated if the $pompier already have a matricule
+    /** Save or update a pompier. If the pompier has no matricule, he get saved, but if he already has a matricule, then it get updated
      * @param \Paprika\model\Pompiers $pompier
      * @return bool
      */
@@ -61,6 +61,9 @@ class DAOPompiers
         $matricule = $pompier->getMatricule();
         if ($matricule === "") {
             try {
+                // netoyer les données
+                $pompier = $this->cleanPompier($pompier);
+
                 // calcule du matricule
                 $matricule = $this->keyGenerator();
 
@@ -99,6 +102,9 @@ class DAOPompiers
      */
     public function update(Pompiers $pompier): bool {
     try {
+        // netoyer les donnees
+        $pompier = $this->cleanPompier($pompier);
+
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "UPDATE pompiers SET Prenom = :prenom, Nom = :nom, ChefAgret = :chefAgret, DateNaissance = :dateNaissance, NumCaserne = :numCaserne, CodeGrade = :codeGrade, MatriculeRespo = :matriculeRespo 
                 WHERE Matricule = :matricule AND Deleted = 0";
@@ -251,48 +257,12 @@ class DAOPompiers
         }
     }
 
-    /** return all CodeGrade and Name to be displayed
-     * @return array|null
-     */
-    public function getAllCodeGrade() : ?array {
-        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
-        $sql = "SELECT CodeGrade, NomGrade FROM grades GROUP BY CodeGrade";
-        $preparedStatement = $pdo->prepare("$sql");
-        $preparedStatement->execute();
-
-        $codeGrades = [];
-        while ($row = $preparedStatement->fetch(\PDO::FETCH_ASSOC)) {
-            $codeGrades[] = $row;
-        }
-        if (empty($codeGrades)) {
-            null;
-        }
-        return $codeGrades;
-    }
-
-    /** return a NomGrade according to the key id
-     * @param $id
-     * @return string|null
-     */
-    public function getCodeGradeNom($id) : ?string {
-        $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
-        $sql = "SELECT NomGrade FROM grades WHERE CodeGrade = :codeGrade";
-        $preparedStatement = $pdo->prepare("$sql");
-        $preparedStatement->bindValue("codeGrade", $id, \PDO::PARAM_STR);
-        $preparedStatement->execute();
-        $codeGrade = $preparedStatement->fetchColumn();
-        if (empty($codeGrade)) {
-            return null;
-        }
-        return $codeGrade;
-    }
-
     /**
      * Generate an id for every pompiers that get saved
      * @return string
      * @throws Exception
      */
-    public function keyGenerator(): string {
+    private function keyGenerator(): string {
         // calcule du matricule
         $pdo = SingletonDataBaseMariaDB::getInstance()->getLoggedPDO();
         $sql = "SELECT MAX(matricule) FROM pompiers;";
@@ -311,5 +281,21 @@ class DAOPompiers
         $matricule++;
         $matricule = str_pad($matricule, 6, "0", STR_PAD_LEFT);
         return "P" . $matricule;
+    }
+
+    /** is used to clean the data before inserting it into the database
+     * @param \Paprika\model\Pompiers $pompier
+     * @return \Paprika\model\Pompiers
+     */
+    private function cleanPompier(Pompiers $pompier) : Pompiers {
+        // netoyer les données
+        $pompier->setNom(htmlspecialchars($pompier->getNom(), ENT_QUOTES, 'UTF-8'));
+        $pompier->setPrenom(htmlspecialchars($pompier->getPrenom(), ENT_QUOTES, 'UTF-8'));
+        $pompier->setChefAgret(htmlspecialchars($pompier->getChefAgret(), ENT_QUOTES, 'UTF-8'));
+        $pompier->setDateNaissance(htmlspecialchars($pompier->getDateNaissance(), ENT_QUOTES, 'UTF-8'));
+        $pompier->setNumCaserne(htmlspecialchars($pompier->getNumCaserne(), ENT_QUOTES, 'UTF-8'));
+        $pompier->setCodeGrade(htmlspecialchars($pompier->getCodeGrade(), ENT_QUOTES, 'UTF-8'));
+        $pompier->setMatriculeRespo(htmlspecialchars($pompier->getMatriculeRespo(), ENT_QUOTES, 'UTF-8'));
+        return $pompier;
     }
 }
