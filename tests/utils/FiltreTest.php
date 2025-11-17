@@ -136,6 +136,74 @@ class FiltreTest extends TestCase
         $result = $this->filtre->execute($data);
         $this->assertTrue($result['name'], "name should be valid");
     }
+    // --- plusieurs validateurs ---
+    public function testTwoValidators(): void {
+        $data = [
+            'email' => 'prenom.nom@test.fr',
+            'password' => 'MyPassword123!',
+        ];
+
+        $this->filtre->addValidator('email', new MailValidator());
+        $this->filtre->addValidator('password', new PasswordValidator());
+
+        $result = $this->filtre->execute($data);
+
+        $this->assertTrue($result['email'], "email should be valid");
+        $this->assertTrue($result['password'], "password should be valid");
+    }
+
+    public function testThreeValidators(): void {
+        $data = [
+            'name' => 'Pierre',
+            'matricule' => 'P000107',
+            'grade' => 'AC'
+        ];
+
+        $this->filtre->addValidator('name', new NameValidator());
+        $this->filtre->addValidator('matricule', new MatriculeValidator());
+        $this->filtre->addValidator('grade', new GradeValidator());
+
+        $result = $this->filtre->execute($data);
+
+        $this->assertTrue($result['name']);
+        $this->assertTrue($result['matricule']);
+        $this->assertTrue($result['grade']);
+    }
+
+    public function testFourValidatorsMixedValidity(): void {
+        $data = [
+            'password' => 'invalidPassword',
+            'name' => 'Clément',
+            'email' => 'invalidEmail',
+            'matricule' => 'P000107'
+        ];
+
+        $this->filtre->addValidator('password', new PasswordValidator());
+        $this->filtre->addValidator('name', new NameValidator());
+        $this->filtre->addValidator('email', new MailValidator());
+        $this->filtre->addValidator('matricule', new MatriculeValidator());
+
+        $result = $this->filtre->execute($data);
+
+        $this->assertFalse($result['password']);
+        $this->assertTrue($result['name']);
+        $this->assertFalse($result['email']);
+        $this->assertTrue($result['matricule']);
+    }
+
+    public function testFieldWithoutValidator(): void {
+        $data = [
+            'password' => 'MyPassword123!',
+            'notes' => 'hello world' // aucun validator ajouté
+        ];
+
+        $this->filtre->addValidator('password', new PasswordValidator());
+
+        $result = $this->filtre->execute($data);
+
+        $this->assertTrue($result['password']);
+        $this->assertArrayNotHasKey('notes', $result, "notes should not appear in result");
+    }
 
     public function testInvalidName() : void {
         $data = [
