@@ -24,6 +24,8 @@ class CaserneController extends BaseController
     /** Liste des casernes */
     public function show(): void
     {
+        // pas d'access control : tout le monde peut voir cette page
+
         $casernes = $this->daoCaserne->findAll();
         echo Renderer::render('caserne/caserne-list', ['casernes' => $casernes]);
     }
@@ -31,6 +33,8 @@ class CaserneController extends BaseController
     /** Détail d'une caserne */
     public function detail($id): void
     {
+        // pas d'access control : tout le monde peut voir cette page
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
@@ -43,6 +47,11 @@ class CaserneController extends BaseController
     /** Formulaire création */
     public function create(): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_save")) {
+            header('Location: /error403.php');
+            exit;
+        }
         $token = CSRFTokenSession::generateToken();
         echo Renderer::render('caserne/caserne-form_create', ['csrf_token' => $token]);
     }
@@ -50,6 +59,12 @@ class CaserneController extends BaseController
     /** Création POST */
     public function do_create($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_save")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // Check CSRF
         $token = $data['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
@@ -96,6 +111,12 @@ class CaserneController extends BaseController
     /** Formulaire update */
     public function update($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
@@ -112,6 +133,12 @@ class CaserneController extends BaseController
     /** Update POST */
     public function do_update($data): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_update")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // Check CSRF
         $token = $data['token'] ?? null;
         if (!self::$csrftoken::check($token)) {
@@ -155,6 +182,12 @@ class CaserneController extends BaseController
     /** Confirmation suppression */
     public function delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         $id = filter_var($id, FILTER_VALIDATE_INT);
         if (!$id) { echo "ID invalide."; return; }
 
@@ -167,6 +200,12 @@ class CaserneController extends BaseController
     /** Suppression POST */
     public function do_delete($id): void
     {
+        // controlle d'accès
+        if(!Auth::can("caserne_delete")) {
+            header('Location: /error403.php');
+            exit;
+        }
+
         // Récupérer les données POST
         $data = $_POST;
 
