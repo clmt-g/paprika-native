@@ -59,6 +59,14 @@ class PompiersController extends BaseController
             return;
         }
 
+        // récupérer les responsables
+        $pompiers = $this->pompierDAO->findAll();
+
+        $responsables = [];
+        foreach ($pompiers as $pompier) {
+            $responsables[$pompier->getMatricule()] = $pompier->getPrenom() . ' ' . $pompier->getNom();
+        }
+
         // recupere les casernesNum et ville pour les afficher dans une balise option
         $casernes = $this->caserneDAO->getAllVilles();
         if (!$casernes) {
@@ -76,7 +84,7 @@ class PompiersController extends BaseController
             );
             return;
         }
-        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade, 'token' => $token]);
+        echo Renderer::render('pompiers/create', ['casernes' => $casernes, 'codesGrade' => $codesGrade, 'token' => $token, 'responsables' => $responsables]);
     }
 
     /** create a pompier
@@ -148,6 +156,22 @@ class PompiersController extends BaseController
             exit;
         }
 
+        // récupérer le nom et prenom du responsable
+        $nomRespo = [];
+        foreach ($pompiers as $pompier) {
+            $matriculeRespo = $pompier->getMatriculeRespo();
+            if($matriculeRespo) {
+                $respo = $this->pompierDAO->find($matriculeRespo);
+                if ($respo) {
+                    $nomRespo[$pompier->getMatricule()] = $respo->getNom() . ' ' . $respo->getPrenom();
+                } else {
+                    $nomRespo[$pompier->getMatricule()] = 'Non défini';
+                }
+            } else {
+                $respo = 'Aucun';
+            }
+        }
+
         // affichage des villes plutot que des numéro de caserne
         $villes = [];
         foreach ($pompiers as $pompier) {
@@ -163,7 +187,7 @@ class PompiersController extends BaseController
         // variable pour nuémroter les lignes du tableau
         $i = 1;
 
-        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i, 'nomsGrades' => $nomsGrades,]);
+        echo Renderer::render('pompiers/show', ['pompiers' => $pompiers, 'villes' => $villes, 'i' => $i, 'nomsGrades' => $nomsGrades, 'nomRespo' => $nomRespo]);
     }
 
     /** display the detail page
@@ -249,12 +273,20 @@ class PompiersController extends BaseController
             echo 'Erreur: aucune grade disponible';
             exit;
         }
+        // récupérer les responsables
+        $pompiers = $this->pompierDAO->findAll();
+
+        $responsables = [];
+        foreach ($pompiers as $pompier) {
+            $responsables[$pompier->getMatricule()] = $pompier->getPrenom() . ' ' . $pompier->getNom();
+        }
 
         echo Renderer::render('pompiers/update', [
             'pompier' => $pompier,
             'casernes' => $casernes,
             'codesGrade' => $codesGrade,
-            'token' => $token
+            'token' => $token,
+            'responsables' => $responsables
         ]);
     }
 

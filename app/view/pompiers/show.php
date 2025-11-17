@@ -194,7 +194,14 @@
                                     {{ $villes[$pompier->getMatricule()] }}
                                 </a>
                             </td>
-                            <td><span class="badge bg-info">{{ $nomsGrades[$pompier->getMatricule()] ?? $pompier->getCodeGrade() }}</span></td>                            <td>{{ $pompier->getMatriculeRespo() }}</td>
+                            <td><span class="badge bg-info">{{ $nomsGrades[$pompier->getMatricule()] ?? $pompier->getCodeGrade() }}</span></td>
+                            <td>
+                                <a href="/pompiers/show/detail/{{ $pompier->getMatriculeRespo() }}"
+                                   class="text-decoration-none text-primary fw-semibold">
+                                    <i class="bi bi-person-circle me-1"></i>
+                                    {{ $nomRespo[$pompier->getMatricule()] }}
+                                </a>
+                            </td>
                             <td class="text-center">
                                 <div class="btn-group btn-group-sm">
                                     <a href="/pompiers/show/detail/{{ $pompier->getMatricule() }}" class="btn btn-outline-primary" title="Détails">

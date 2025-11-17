@@ -109,7 +109,14 @@
                     </select>
 
                     <label for="matriculeRespo">Matricule du responsable</label>
-                    <input type="text" id="matriculeRespo" name="matriculeRespo" class="form-control" value="{{ $pompier->getMatriculeRespo() }}" required>
+                    <select id="matriculeRespo" name="matriculeRespo" class="form-control" required>
+                        <option value="">-- Choisir un responsable --</option>
+                        @foreach($responsables as $matricule => $nom)
+                        <option value="{{ $matricule }}" @if($pompier->getMatriculeRespo() == $matricule) selected @endif>
+                            {{ $matricule }} | {{ $nom }}
+                        </option>
+                        @endforeach
+                    </select>
 
                     <input type="hidden" id="token" name="token" value="{{ $token }}">
                 </div>
