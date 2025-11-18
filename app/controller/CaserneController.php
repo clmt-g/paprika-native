@@ -222,26 +222,41 @@ class CaserneController extends BaseController
         }
     }
 
-    /** Validation des champs d'une caserne */
+
     private function validateCaserneData($data): array
     {
+        $filtre = new \Paprika\utils\Filtre();
+
+        // Ajout des validateurs
+        $filtre->addValidator('adresse', new \Paprika\utils\validators\AdresseValidator());
+        $filtre->addValidator('cp', new \Paprika\utils\validators\CodePostalValidator());
+        $filtre->addValidator('ville', new \Paprika\utils\validators\VilleValidator());
+        $filtre->addValidator('codeTypeC', new \Paprika\utils\validators\NumericValidator());
+
+        // Exécution
+        $result = $filtre->execute($data);
+
+        // Construction des erreurs
         $errors = [];
 
-        if (empty($data['adresse'])) $errors[] = "Adresse obligatoire.";
-        if (empty($data['cp'])) $errors[] = "Code postal obligatoire.";
-        if (empty($data['ville'])) $errors[] = "Ville obligatoire.";
-        if (empty($data['codeTypeC'])) $errors[] = "Type de caserne obligatoire.";
-
-        if (!empty($data['cp']) && !filter_var($data['cp'], FILTER_VALIDATE_INT))
-            $errors[] = "Code postal invalide.";
-
-        if (!empty($data['codeTypeC']) && !filter_var($data['codeTypeC'], FILTER_VALIDATE_INT))
-            $errors[] = "Type de caserne invalide.";
-
-        if (!empty($data['ville']) && !preg_match("/^[\p{L} '-]+$/u", $data['ville'])) {
-            $errors[] = "Ville invalide, uniquement lettres et espaces autorisés.";
+        foreach ($result as $field => $isValid) {
+            if (!$isValid) {
+                $errors[] = $this->getCaserneErrorMessage($field);
+            }
         }
 
         return $errors;
+    }
+
+    private function getCaserneErrorMessage(string $field): string
+    {
+        $messages = [
+            'adresse' => "Adresse invalide.",
+            'cp' => "Code postal invalide.",
+            'ville' => "Ville invalide.",
+            'codeTypeC' => "Type de caserne invalide.",
+        ];
+
+        return $messages[$field] ?? "Champ '$field' invalide.";
     }
 }
