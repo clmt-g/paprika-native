@@ -19,6 +19,18 @@ class DefaultController extends BaseController
         $this->caserneDAO = new DAOCaserne(SingletonDataBaseMariaDB::getInstance()->getLoggedPDO());
     }
 
+
+    public function home(): void
+    {
+        $nbPompiers = $this->pompierDAO->count();
+        $nbCasernes = $this->caserneDAO->count();
+        echo Renderer::render('home', [
+            'nbPompiers' => $nbPompiers,
+            'nbCasernes' => $nbCasernes
+        ]);
+    }
+
+
     public function index(): void
     {
         $nbPompiers = $this->pompierDAO->count();

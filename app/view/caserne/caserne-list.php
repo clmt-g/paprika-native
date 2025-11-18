@@ -1,3 +1,21 @@
+<?php
+
+require_once '../vendor/autoload.php';
+
+use Paprika\utils\Auth;
+use Paprika\middleware\AuthMiddleware;
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Bloque l'accès si pas connecté
+AuthMiddleware::requireLogin();
+
+// Récupère l'utilisateur connecté
+$user = $_SESSION['user'] ?? null;
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,8 +30,7 @@
             --rouge-fonce: #8b1a1a;
             --gris-fond: #f8f9fa;
         }
-
-        body { background-color: var(--gris-fond); overflow-x: hidden; font-family: "Segoe UI", sans-serif; }
+        body { background-color: var(--gris-fond); font-family: "Segoe UI", sans-serif; overflow-x: hidden; }
         header { background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d); color: white; padding: 1rem 0; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         header .logo { width: 181px; height: 40px; object-fit: scale-down; margin-right: -75px; vertical-align: middle; }
         header h1 { display: inline-block; vertical-align: middle; font-weight: 700; font-size: 1.8rem; margin: 0; }
@@ -21,19 +38,17 @@
         .sidebar a { color: #ddd; text-decoration: none; display: block; padding: 10px 20px; transition: background 0.2s, transform 0.2s; }
         .sidebar a:hover, .sidebar a.active { background-color: var(--rouge-paprika); color: white; transform: translateX(4px); }
         main { padding: 2rem; }
-        .card { border: none; border-radius: 15px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         table { border-radius: 10px; overflow: hidden; }
         thead { background-color: var(--rouge-paprika); color: white; }
         tbody tr:hover { background-color: #fff3f3; cursor: pointer; }
         footer { background: linear-gradient(90deg, var(--rouge-paprika), #e44d4d); color: #fff; text-align: center; padding: 1rem; font-size: 0.9rem; }
         .fade-in { animation: fadeIn 0.5s ease forwards; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .form-control:focus { border-color: var(--rouge-paprika); box-shadow: 0 0 0 0.2rem rgba(178, 34, 34, 0.25); }
+        .form-control:focus { border-color: var(--rouge-paprika); box-shadow: 0 0 0 0.2rem rgba(178,34,34,0.25); }
         .btn-danger, .btn-outline-warning, .btn-outline-primary, .btn-outline-danger { transition: all 0.25s ease, box-shadow 0.25s ease; }
         .btn-danger { background-color: var(--rouge-paprika); border: none; }
         .btn-danger:hover { background-color: var(--rouge-fonce); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(178,34,34,0.3); }
-        .btn-outline-danger { color: #b22222; border: 1px solid #b22222; background-color: transparent; position: relative; }
+        .btn-outline-danger { color: #b22222; border: 1px solid #b22222; background-color: transparent; }
         .btn-outline-danger i { transition: transform 0.25s ease; }
         .btn-outline-danger:hover { color: #fff; background-color: #b22222; border-color: #8b1a1a; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(178, 34, 34, 0.3); }
         .btn-outline-danger:hover i { transform: rotate(-15deg) scale(1.2); }
@@ -80,7 +95,7 @@
                             <th>Code Postal</th>
                             <th>Ville</th>
                             <th>Type Caserne</th>
-                            <th class="text-center">Nombre de pompiers</th>
+                            <th class="text-center">Pompiers</th>
                             <th class="text-center">Actions</th>
                         </tr>
                         </thead>
@@ -94,16 +109,10 @@
                                 <td><span class="badge bg-info"><?= $c->getTypeTexte() ?></span></td>
                                 <td class="text-center"><span class="badge bg-dark"><?= $c->getNbPompiers() ?></span></td>
                                 <td class="text-center">
-                                    <div class="btn-group btn-group-sm" role="group">
-                                        <a href="/caserne/show/detail/<?= $c->getNumCaserne() ?>" class="btn btn-outline-primary" title="Détails">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="/caserne/update/<?= $c->getNumCaserne() ?>" class="btn btn-outline-warning" title="Modifier">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-outline-danger" title="Supprimer" onclick="loadDeleteModal('<?= $c->getNumCaserne() ?>')">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/caserne/show/detail/<?= $c->getNumCaserne() ?>" class="btn btn-outline-primary"><i class="bi bi-eye"></i></a>
+                                        <a href="/caserne/update/<?= $c->getNumCaserne() ?>" class="btn btn-outline-warning"><i class="bi bi-pencil"></i></a>
+                                        <a href="#" class="btn btn-outline-danger" onclick="loadDeleteModal('<?= $c->getNumCaserne() ?>')"><i class="bi bi-trash"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -120,7 +129,6 @@
     <p>&copy; 2025 Paprika – Gestion des casernes et pompiers. Créé avec ❤️ par Clément.</p>
 </footer>
 
-<!-- Modal de suppression -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
@@ -144,15 +152,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Recherche dans le tableau
     const search = document.getElementById('searchCasernes');
     const rows = document.querySelectorAll('#tableCasernes tr');
+
     search.addEventListener('keyup', () => {
         const val = search.value.toLowerCase();
         rows.forEach(r => r.style.display = r.textContent.toLowerCase().includes(val) ? '' : 'none');
     });
 
-    // Chargement du modal et assignation de l'ID à supprimer
     function loadDeleteModal(caserneId) {
         document.getElementById('deleteCaserneId').value = caserneId;
         const modal = new bootstrap.Modal(document.getElementById('deleteModal'));

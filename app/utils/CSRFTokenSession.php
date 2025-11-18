@@ -12,15 +12,20 @@ class CSRFTokenSession extends CSRFToken
      */
     public static function generateToken(): string
     {
-        // Démarrer la session si elle n'est pas déjà active
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Générer un token aléatoire sécurisé
-        $token = bin2hex(random_bytes(32));
+        // Si un token existe déjà et n'est pas expiré, le réutiliser
+        if (isset($_SESSION[self::$token_name])) {
+            $data = $_SESSION[self::$token_name];
+            if (time() - $data['timestamp'] <= 600) {
+                return $data['token'];
+            }
+        }
 
-        // Stocker le token et son timestamp dans la session
+        // Sinon, créer un nouveau token
+        $token = bin2hex(random_bytes(32));
         $_SESSION[self::$token_name] = [
             'token' => $token,
             'timestamp' => time()
@@ -36,31 +41,22 @@ class CSRFTokenSession extends CSRFToken
      */
     public static function check(string $token): bool
     {
-        // Démarrer la session si elle n'est pas déjà active
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
 
-        // Vérifier si le token existe en session
         if (!isset($_SESSION[self::$token_name])) {
             return false;
         }
 
         $sessionData = $_SESSION[self::$token_name];
 
-        // Vérifier si le token fourni correspond au token stocke
-        if (!hash_equals($sessionData['token'], $token)) {
-            return false;
-        }
+        // Vérification du token
+        $isValid = hash_equals($sessionData['token'], $token) && (time() - $sessionData['timestamp'] <= 600);
 
-        // Vérifier l'expiration du token 10min
-        $tokenAge = time() - $sessionData['timestamp'];
+        // Supprimer le token pour qu’il ne soit utilisé qu’une seule fois
+        unset($_SESSION[self::$token_name]);
 
-        if ($tokenAge > 600 ) {
-            unset($_SESSION[self::$token_name]);
-            return false;
-        }
-
-        return true;
+        return $isValid;
     }
 }

@@ -41,7 +41,8 @@ class AuthController
 
         if (Auth::login($login, $password)) {
             $this->logger->getSQLLogger()->info("Utilisateur connecté : $login");
-            header('Location: /dashboard');
+            // Redirection vers home après connexion
+            header('Location: /home');
             exit;
         } else {
             $this->logger->getErrorLogger()->warning("Échec de connexion pour $login");

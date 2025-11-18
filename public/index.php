@@ -2,17 +2,28 @@
 
 require_once '../vendor/autoload.php';
 
-use \Paprika\controller\DefaultController;
-use \Paprika\controller\CaserneController;
-use \Paprika\controller\PompiersController;
+use Paprika\controller\DefaultController;
+use Paprika\controller\CaserneController;
+use Paprika\controller\PompiersController;
 use Paprika\controller\AuthController;
-use \Paprika\controller\UserController;
+use Paprika\controller\UserController;
+use Paprika\utils\Auth;
 
 // Récupère le path
 $path = $_SERVER["PATH_INFO"] ?? "";
 $path = trim($path, "/");
 $fragments = explode("/", $path);
 $control = array_shift($fragments);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Si l'utilisateur n'est pas connecté et qu'on n'est pas sur la page login
+if (!str_starts_with($path, 'login') && !Auth::is_logged()) {
+    header('Location: /login');
+    exit;
+}
 
 // Switch principal
 switch ($control) {
@@ -66,15 +77,18 @@ switch ($control) {
                 case "add": $userController->add(); break;
                 case "edit":
                     $id = $fragments[0] ?? null;
-                    $userController->edit($id);
-                    break;
+                    $userController->edit($id); break;
                 case "delete":
                     $id = $fragments[0] ?? null;
-                    $userController->delete($id);
-                    break;
+                    $userController->delete($id); break;
                 default: echo "Action '$action' non définie"; break;
             }
         }
+        break;
+
+    /* --- ROUTES HOME --- */
+    case "home":
+        call_user_func_array([new DefaultController(), "home"], $fragments);
         break;
 
     /* --- ROUTES PAR DÉFAUT --- */
@@ -84,8 +98,7 @@ switch ($control) {
 }
 
 /* --- Fonctions Caserne --- */
-function caserneRoutes_get($fragments)
-{
+function caserneRoutes_get($fragments) {
     $action = array_shift($fragments);
     $ctrl = new CaserneController();
 
@@ -104,8 +117,7 @@ function caserneRoutes_get($fragments)
     }
 }
 
-function caserneRoutes_post($fragments)
-{
+function caserneRoutes_post($fragments) {
     $action = array_shift($fragments);
     $ctrl = new CaserneController();
 
@@ -118,8 +130,7 @@ function caserneRoutes_post($fragments)
 }
 
 /* --- Fonctions Pompiers --- */
-function pompierRoutes_get($fragments)
-{
+function pompierRoutes_get($fragments) {
     $action = array_shift($fragments);
     $ctrl = new PompiersController();
 
@@ -138,8 +149,7 @@ function pompierRoutes_get($fragments)
     }
 }
 
-function pompierRoutes_post($fragments)
-{
+function pompierRoutes_post($fragments) {
     $action = array_shift($fragments);
     $ctrl = new PompiersController();
 
@@ -152,7 +162,6 @@ function pompierRoutes_post($fragments)
 }
 
 /* --- Default routes --- */
-function defaultRoutes_get($fragments)
-{
+function defaultRoutes_get($fragments) {
     call_user_func_array([new DefaultController(), "index"], $fragments);
 }
