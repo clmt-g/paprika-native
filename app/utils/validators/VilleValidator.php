@@ -15,7 +15,7 @@ class VilleValidator implements InterfaceValidator
         $trimmed = trim($value);
         $length = strlen($trimmed);
 
-        if ($length === 0 || $length > 20) {
+        if ($length === 0 || $length > 30) {
             return false;
         }
 
@@ -24,7 +24,7 @@ class VilleValidator implements InterfaceValidator
 
     public function getErrorMessage(): string
     {
-        return "La ville doit contenir maximum 20 caractères (lettres uniquement)";
+        return "La ville doit contenir maximum 30 caractères (lettres uniquement)";
     }
 
 }
