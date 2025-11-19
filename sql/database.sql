@@ -31,6 +31,7 @@ CREATE TABLE `casernes` (
   `CP` varchar(5) DEFAULT NULL,
   `Ville` varchar(50) DEFAULT NULL,
   `CodeTypeC` int(11) DEFAULT NULL,
+  `deleted` BOOL NOT NULL DEFAULT 0,
   PRIMARY KEY (`NumCaserne`),
   KEY `FK_typeC` (`CodeTypeC`),
   CONSTRAINT `FK_typeC` FOREIGN KEY (`CodeTypeC`) REFERENCES `typecasernes` (`CodeTypeC`)
@@ -172,6 +173,7 @@ CREATE TABLE `pompiers` (
   `NumCaserne` int(11) DEFAULT NULL,
   `CodeGrade` varchar(2) DEFAULT NULL,
   `MatriculeRespo` varchar(7) DEFAULT NULL,
+  `deleted` BOOL NOT NULL DEFAULT 0,
   PRIMARY KEY (`Matricule`),
   KEY `FK_Caserne1` (`NumCaserne`),
   KEY `FK_Grade1` (`CodeGrade`),
