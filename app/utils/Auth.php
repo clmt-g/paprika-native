@@ -74,7 +74,8 @@ class Auth
         $authLogger = SingletonLogger::getInstance()->getAuthLogger();
         $authLogger->info("Connexion réussie", [
             'username' => $_SESSION['auth']['login'],
-            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'timestamp' => date('Y-m-d H:i:s')
         ]);
 
         return $user;
