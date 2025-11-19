@@ -4,6 +4,7 @@ namespace Paprika\utils;
 
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Monolog\Level;
 
 class SingletonLogger
 {
@@ -11,6 +12,7 @@ class SingletonLogger
 
     private Logger $sqlLogger;
     private Logger $errorLogger;
+    private Logger $authlogger;
 
     private function __construct()
     {
@@ -45,6 +47,13 @@ class SingletonLogger
         //  logger Error
         $this->errorLogger = new Logger("error");
         $this->errorLogger->pushHandler(new StreamHandler(__DIR__ . "/../../storage/errorr.log", $errorLevel));
+
+        // Auth logger
+        $AUTHLoggerLevel = Level::Debug;
+        $authhandler = new StreamHandler('../../paprika/storage/auth.log', $AUTHLoggerLevel);
+        $this->authlogger = new Logger("AuthLogger"); // création d'un nouveau Logger pour Auth
+        $this->authlogger->pushHandler($authhandler);
+
     }
 
     public static function getInstance(): SingletonLogger
@@ -63,5 +72,10 @@ class SingletonLogger
     public function getErrorLogger(): Logger
     {
         return $this->errorLogger;
+    }
+
+    public function getAuthLogger()
+    {
+        return $this->authlogger;
     }
 }

@@ -13,3 +13,4 @@ public/template.php
 phpunit.xml
 .phpunit.cache
 cover-html/
+storage/auth.log

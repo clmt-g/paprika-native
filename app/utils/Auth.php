@@ -3,6 +3,7 @@ namespace Paprika\utils;
 
 use Paprika\model\User;
 use Paprika\model\DAOUser;
+use Paprika\utils\SingletonLogger;
 
 class Auth
 {
@@ -29,6 +30,7 @@ class Auth
             'user_update'
         ]
     ];
+    private $authLogger;
 
     public function __construct()
     {
@@ -68,8 +70,12 @@ class Auth
             'role' => $user->getRole()
         ];
 
-        // Logger l'action (optionnel) FIXME
-        error_log("User {$user->getLogin()} logged in successfully");
+        // Logger l'action
+        $authLogger = SingletonLogger::getInstance()->getAuthLogger();
+        $authLogger->info("Connexion réussie", [
+            'username' => $_SESSION['auth']['login'],
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+        ]);
 
         return $user;
     }
@@ -83,10 +89,13 @@ class Auth
             session_start();
         }
 
-        // Logger avant de déconnecter FIXME
-        if (isset($_SESSION['auth']['login'])) {
-            error_log("User {$_SESSION['auth']['login']} logged out");
-        }
+        // Logger avant de déconnecter
+        $authLogger = SingletonLogger::getInstance()->getAuthLogger();
+        $authLogger->info("Déconnexion", [
+            'username' => $_SESSION['auth']['login'],
+            'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'timestamp' => date('Y-m-d H:i:s')
+        ]);
 
         // Supprimer les données d'authentification
         unset($_SESSION['auth']);
