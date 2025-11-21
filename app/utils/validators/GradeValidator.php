@@ -19,7 +19,7 @@ class GradeValidator implements \Paprika\utils\validators\InterfaceValidator
         'Ma', // Major
         'SC', // Sgt Chef
         'Sg', // Sergent
-        'Sp'  // Sapeur
+        'SP'  // Sapeur
     ];
     /** Valide un code grade
      * @param string $data Le code grade à valider
