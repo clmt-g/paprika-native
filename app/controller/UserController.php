@@ -422,6 +422,11 @@ class UserController extends BaseController
             // stocke le message flash en session
             $_SESSION['success_message'] = "Le mot de passe a bien été mis à jour ✅";
 
+            if (!Auth::can('user_update')) {
+                header('Location: /');
+                exit;
+            }
+
             // redirige vers la page show des users
             header("Location: /users/show");
             exit;
